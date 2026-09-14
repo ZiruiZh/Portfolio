@@ -1,0 +1,316 @@
+import './style.css';
+import { gsap } from 'gsap';
+import { SculptureStage } from './physics.js';
+import { projects, projectImage } from './projects.js';
+import { TextReactions } from './text-reactions.js';
+import { installCursor } from './cursor.js';
+import { PlaygroundBackground } from './playground-background.js';
+import { installPlaygroundGallery } from './playground-gallery.js';
+import { AboutCube } from './about-cube.js';
+import { makeRun } from './palette.js';
+import { makeAccent } from './experience-math.js';
+
+const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
+let reduced = reducedQuery.matches;
+let accentHue = Math.floor(Math.random() * 360);
+function refreshAccent(shapeColor) {
+  // Advance by at least 45 degrees so consecutive routes always look different.
+  accentHue = (accentHue + 45 + Math.floor(Math.random() * 270)) % 360;
+  const color = shapeColor || makeAccent(() => accentHue / 360);
+  document.documentElement.style.setProperty('--accent', color);
+  document.documentElement.style.setProperty('--shape-color', color);
+}
+refreshAccent();
+const removeCursor = installCursor(reducedQuery);
+const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
+document.querySelectorAll('.resume-link').forEach(link => { link.href = resumeURL; });
+const pages = ['home', 'work', 'playground', 'about'];
+let current = 'home';
+let transition;
+let pendingShapeTheme = null;
+const sculptures = new SculptureStage(document.getElementById('stage'), reduced);
+const removeGallery = installPlaygroundGallery(sculptures, reducedQuery);
+const visuals = new PlaygroundBackground(reducedQuery);
+// Both layers read the same eased offset; pointer parallax cannot drift apart.
+sculptures.parallax = visuals.offset;
+sculptures.onNavigate = (page, color) => {
+  if (page === pageFromHash()) { refreshAccent(color); return; }
+  pendingShapeTheme = { page, color };
+  location.hash = page;
+};
+const aboutCube = new AboutCube(document.querySelector('.about-portraits'), reducedQuery);
+
+function renderArt(target, key, detail = false) {
+  const project = projects[key];
+  const image = document.createElement('img');
+  image.className = 'project-image';
+  image.src = projectImage(detail ? project.images[0].file : project.cover);
+  image.alt = project.images[0].caption;
+  image.width = project.images[0].width;
+  image.height = project.images[0].height;
+  image.decoding = 'async';
+  target.replaceChildren(image);
+}
+
+function applyPage(page, focus = false) {
+  current = page;
+  document.body.dataset.page = page;
+  document.querySelectorAll('.page').forEach(el => { el.hidden = el.id !== page; });
+  document.querySelectorAll('.nav-link').forEach(link => {
+    if (link.hash === `#${page}`) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+  document.title = 'Zirui Zhao';
+  sculptures.setMode(page);
+  visuals?.setMode(page);
+  aboutCube.setMode(page);
+  textReactions.measure();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  stopPreviewCycle();
+  if (page === 'work') { indexReached = false; showPreview('bcrc', false); schedulePreviewCycle(); }
+  else hidePreview();
+  if (focus) {
+    const heading = document.querySelector(`#${page} h1`);
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+  }
+}
+
+function navigate(page, animate = true) {
+  if (!pages.includes(page)) page = 'home';
+  if (transition) transition.kill();
+  const wipe = document.querySelector('.route-wipe');
+  if (page === current) {
+    gsap.set(wipe, { scaleY: 0 });
+    gsap.set('.page h1', { clearProps: 'transform,opacity' });
+    return;
+  }
+  const shapeColor = pendingShapeTheme?.page === page ? pendingShapeTheme.color : undefined;
+  pendingShapeTheme = null;
+  refreshAccent(shapeColor);
+  if (reduced || !animate) { gsap.set(wipe, { scaleY: 0 }); applyPage(page, true); return; }
+  transition = gsap.timeline()
+    .set(wipe, { transformOrigin: 'bottom', scaleY: 0 })
+    .to(wipe, { scaleY: 1, duration: .18, ease: 'power3.inOut' })
+    .call(() => applyPage(page, true))
+    .set(wipe, { transformOrigin: 'top' })
+    .to(wipe, { scaleY: 0, duration: .25, ease: 'power3.inOut' })
+    .fromTo(`#${page} h1`, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .3, ease: 'power3.out', clearProps: 'transform,opacity' }, '-=.16')
+    .call(() => textReactions.measure());
+}
+
+function pageFromHash() {
+  const hash = location.hash.slice(1);
+  return hash === 'top' || !pages.includes(hash) ? 'home' : hash;
+}
+window.addEventListener('hashchange', () => navigate(pageFromHash()));
+document.querySelector('.skip-link').addEventListener('click', e => { e.preventDefault(); document.getElementById('main').focus({ preventScroll: true }); });
+document.getElementById('previous').addEventListener('click', () => { location.hash = pages[(pages.indexOf(pageFromHash()) + pages.length - 1) % pages.length]; });
+document.getElementById('next').addEventListener('click', () => { location.hash = pages[(pages.indexOf(pageFromHash()) + 1) % pages.length]; });
+document.getElementById('reset-home').addEventListener('click', () => sculptures.build(!reduced));
+document.getElementById('reset-play').addEventListener('click', () => sculptures.build(!reduced));
+document.getElementById('remix').addEventListener('click', () => sculptures.remix());
+document.getElementById('scatter').addEventListener('click', () => sculptures.scatter());
+
+// A character responds to proximity without making the heading look like a link.
+const name = document.querySelector('.name');
+name.innerHTML = [...name.textContent].map(char => char === ' ' ? '<span class="letter space"> </span>' : `<span class="letter"><span class="text-impact">${char}</span></span>`).join('');
+document.querySelectorAll('.hero-line').forEach(line => {
+  const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const fragment = document.createDocumentFragment();
+    node.textContent.split(/(\s+)/).forEach(word => {
+      if (!word.trim()) fragment.appendChild(document.createTextNode(word));
+      else {
+        const span = document.createElement('span');
+        span.className = 'text-word';
+        const impact = document.createElement('span');
+        impact.className = 'text-impact';
+        impact.textContent = word;
+        span.appendChild(impact);
+        fragment.appendChild(span);
+      }
+    });
+    node.replaceWith(fragment);
+  });
+});
+const textReactions = new TextReactions(sculptures, reduced);
+sculptures.onFrame = (time, moving) => {
+  textReactions.update(time, moving);
+  if (sculptures.mode === 'playground') visuals?.pan(sculptures.looping.camera.x, sculptures.looping.camera.y);
+};
+
+const preview = document.getElementById('project-preview');
+let selectedProject = null;
+let cycleTimer;
+let indexReached = false;
+const previewCache = new Map();
+const projectKeys = Object.keys(projects);
+function stopPreviewCycle() { clearTimeout(cycleTimer); }
+function schedulePreviewCycle() {
+  stopPreviewCycle();
+  if (current !== 'work' || indexReached || reduced || document.hidden || dialog.open) return;
+  cycleTimer = setTimeout(() => {
+    showPreview(projectKeys[(projectKeys.indexOf(selectedProject) + 1) % projectKeys.length]);
+    schedulePreviewCycle();
+  }, 2100);
+}
+function reachIndex() { indexReached = true; stopPreviewCycle(); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopPreviewCycle(); else schedulePreviewCycle(); });
+function showPreview(key, animate = true) {
+  if (key === selectedProject && preview.style.visibility === 'visible') return;
+  selectedProject = key;
+  if (!previewCache.has(key)) { const art = document.createElement('div'); art.className = 'art-frame'; renderArt(art, key); previewCache.set(key, art); }
+  document.getElementById('preview-art').replaceChildren(previewCache.get(key));
+  document.getElementById('preview-caption').textContent = projects[key].caption;
+ 
+  gsap.killTweensOf(preview);
+  gsap.fromTo(preview, { autoAlpha: 0, y: reduced ? 0 : 18, rotation: reduced ? 0 : -1.5 }, { autoAlpha: 1, y: 0, rotation: 0, duration: reduced || !animate ? 0 : .22, ease: 'power3.out' });
+}
+function hidePreview() {
+  if (current === 'work') return;
+  gsap.to(preview, { autoAlpha: 0, y: reduced ? 0 : -12, duration: reduced ? 0 : .2, overwrite: true });
+}
+document.querySelectorAll('.project-row').forEach(button => {
+  button.addEventListener('pointerenter', () => { reachIndex(); showPreview(button.dataset.project); });
+  button.addEventListener('focus', () => { reachIndex(); showPreview(button.dataset.project); });
+  button.addEventListener('click', () => openProject(button.dataset.project));
+});
+document.querySelector('.work-index').addEventListener('pointerenter', reachIndex);
+document.querySelector('.work-index').addEventListener('focusout', e => { if (!e.currentTarget.contains(e.relatedTarget)) hidePreview(); });
+
+const dialog = document.getElementById('project-dialog');
+function openProject(key) {
+  reachIndex();
+  const project = projects[key];
+  document.getElementById('dialog-title').textContent = project.title;
+  document.getElementById('dialog-category').textContent = project.category;
+  document.getElementById('dialog-description').textContent = project.description;
+  const link = document.getElementById('dialog-link');
+  link.href = project.source;
+  link.innerHTML = '<span class="link-label">View original project ↗</span>';
+  renderArt(document.getElementById('dialog-art'), key, true);
+  const meta = document.getElementById('dialog-meta');
+  meta.replaceChildren(...Object.entries(project.metadata).map(([label, value]) => {
+    const group = document.createElement('div');
+    const term = document.createElement('dt'); term.textContent = label === 'My Role' ? 'Role' : label;
+    const description = document.createElement('dd'); description.textContent = value;
+    group.append(term, description); return group;
+  }));
+  document.getElementById('dialog-gallery').replaceChildren(...project.images.slice(1).map(image => {
+    const figure = document.createElement('figure');
+    const link = document.createElement('a'); link.href = projectImage(image.file); link.target = '_blank'; link.rel = 'noopener';
+    link.setAttribute('aria-label', `View full image: ${image.caption}`);
+    const img = document.createElement('img'); img.src = link.href; img.alt = image.caption;
+    img.width = image.width; img.height = image.height; img.loading = 'lazy'; img.decoding = 'async';
+    const caption = document.createElement('figcaption'); caption.textContent = image.caption;
+    link.appendChild(img); figure.append(link, caption); return figure;
+  }));
+  dialog.showModal();
+  dialog.scrollTop = 0;
+ 
+  document.dispatchEvent(new Event('portfolio:dialog-open'));
+  if (!reduced) gsap.fromTo(dialog, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: .3, clearProps: 'transform,opacity' });
+}
+document.getElementById('close-project').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', e => { if (e.target === dialog) { const r = dialog.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close(); } });
+
+let introTimeline;
+let introFinished = false;
+let introFailsafe;
+function finishIntro() {
+  if (introFinished) return;
+  introFinished = true;
+  clearTimeout(introFailsafe);
+  if (introTimeline) introTimeline.kill();
+  document.getElementById('intro').hidden = true;
+  document.querySelector('.intro-shapes').replaceChildren();
+  visuals?.setMode(current);
+  document.getElementById('main').inert = false;
+  document.querySelector('.topbar').inert = false;
+  gsap.set(['.topbar', '.hero-copy', '#stage', '.name .letter', '.chinese', '.hero-line'], { clearProps: 'opacity,visibility,transform,clipPath' });
+  sculptures.items.forEach(item => { if (!item.dropQueued) item.entrance = 1; });
+  sculptures.active = ['home', 'playground'].includes(current);
+  textReactions.measure();
+  if (document.activeElement === document.getElementById('skip-intro')) document.getElementById('main').focus({ preventScroll: true });
+}
+
+function runIntro() {
+  if (current === 'home') sculptures.build();
+  textReactions.measure();
+  if (introFinished || reduced || current !== 'home') { finishIntro(); return; }
+  const intro = document.getElementById('intro');
+  const host = document.querySelector('.intro-shapes');
+  intro.hidden = false;
+  sculptures.active = false;
+  document.getElementById('main').inert = true;
+  document.querySelector('.topbar').inert = true;
+  document.getElementById('skip-intro').focus({ preventScroll: true });
+  gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 0 });
+  introFailsafe = setTimeout(finishIntro, 4500);
+  introTimeline = gsap.timeline({ onComplete: finishIntro });
+  const circle = document.createElement('div');
+  circle.className = 'intro-circle';
+  const radii = [1, .91, .62, .57, .31, .12];
+  const colors = [...makeRun(radii.length - 1), '#FFFFFF'];
+  radii.forEach((radius, index) => {
+    const layer = document.createElement('div');
+    layer.className = 'intro-circle-layer';
+    layer.style.cssText = `width:${radius * 100}%;height:${radius * 100}%;background:${colors[index]}`;
+    circle.appendChild(layer);
+  });
+  host.appendChild(circle);
+  const diameter = Math.min(innerWidth, innerHeight) * .65;
+  circle.style.width = circle.style.height = `${diameter}px`;
+  // The white core must cover the corners, not just the short viewport edge.
+  const finalScale = Math.hypot(innerWidth, innerHeight) / (diameter * radii.at(-1)) * 1.02;
+  introTimeline.fromTo(circle, { scale: .001 }, { scale: finalScale, duration: 1.05, ease: t => .002 * t + .998 * Math.pow(t, 12) }, 0)
+    .set(intro, { autoAlpha: 0 }, 1.05)
+    .set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 1 }, 1.05)
+    .fromTo('.topbar', { yPercent: -110 }, { yPercent: 0, duration: .32, ease: 'power3.out' }, 1.05)
+    .fromTo('.name .letter', { yPercent: 110, rotationX: -75, opacity: 0 }, { yPercent: 0, rotationX: 0, opacity: 1, stagger: .018, duration: .38, ease: 'power3.out' }, 1.09)
+    .fromTo(['.chinese', '.hero-line'], { y: 28, opacity: 0 }, { y: 0, opacity: 1, stagger: .045, duration: .35, ease: 'power3.out' }, 1.16)
+    .call(() => {
+      sculptures.active = true;
+    }, [], 1.05)
+    .to({}, { duration: 1 }, 1.09);
+
+}
+document.getElementById('skip-intro').addEventListener('click', finishIntro);
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !introFinished) finishIntro();
+  if (!['home','playground'].includes(current) || !introFinished || document.querySelector('dialog[open]') || e.target.closest('button,a,input,textarea,[role=button]')) return;
+  if (e.key.toLowerCase() === 'r') sculptures.remix();
+});
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (!introFinished) finishIntro();
+    if (sculptures.active) sculptures.build();
+    textReactions.measure();
+    visuals?.paint();
+    if (current === 'work' && matchMedia('(max-width:600px)').matches) showPreview(selectedProject || 'bcrc', false);
+  }, 160);
+});
+reducedQuery.addEventListener('change', e => {
+  reduced = e.matches;
+  sculptures.reduced = reduced;
+  textReactions.reduced = reduced;
+  if (reduced) {
+    finishIntro();
+    textReactions.update();
+    if (transition) { transition.kill(); applyPage(pageFromHash()); }
+    gsap.set('.route-wipe', { scaleY: 0 });
+    if (sculptures.active) sculptures.build();
+  }
+});
+
+applyPage(pageFromHash());
+// The page is already usable if a font is slow or unavailable.
+Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);
+if (import.meta.env.DEV) window.__portfolio = { sculptures, textReactions };
+if (import.meta.hot) import.meta.hot.dispose(() => { aboutCube.dispose(); removeGallery(); sculptures.destroy(); visuals?.dispose(); removeCursor(); stopPreviewCycle(); });
