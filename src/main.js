@@ -105,8 +105,6 @@ function pageFromHash() {
 }
 window.addEventListener('hashchange', () => navigate(pageFromHash()));
 document.querySelector('.skip-link').addEventListener('click', e => { e.preventDefault(); document.getElementById('main').focus({ preventScroll: true }); });
-document.getElementById('previous').addEventListener('click', () => { location.hash = pages[(pages.indexOf(pageFromHash()) + pages.length - 1) % pages.length]; });
-document.getElementById('next').addEventListener('click', () => { location.hash = pages[(pages.indexOf(pageFromHash()) + 1) % pages.length]; });
 document.getElementById('reset-home').addEventListener('click', () => sculptures.build(!reduced));
 document.getElementById('reset-play').addEventListener('click', () => sculptures.build(!reduced));
 document.getElementById('remix').addEventListener('click', () => sculptures.remix());

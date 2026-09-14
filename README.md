@@ -66,6 +66,12 @@ The runtime uses **vanilla JavaScript, GSAP, and Matter.js**, with **Vite** for 
 
 Reduced-motion preferences skip the intro and automatic cube rotation. Keyboard navigation, visible link focus states, Escape-to-close dialogs, and lightbox focus return are part of the experience too.
 
+## UW CS webring
+
+The existing lion and arrow icons in the top-right navigation implement the [UW CS webring widget](https://github.com/JusGu/uwatering#widget-template). The lion opens the directory; the arrows request the previous or next member relative to `https://www.zirui.ca/`. Their artwork, dimensions, and hover behavior stay the same.
+
+The widget is ready on this site. Directory membership is managed separately through a pull request to the webring repository; the domain must be listed there for neighboring-site navigation to resolve.
+
 ## Run locally
 
 ```sh
