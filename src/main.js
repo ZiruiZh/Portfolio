@@ -10,6 +10,10 @@ import { installPlaygroundGallery } from './playground-gallery.js';
 import { AboutCube } from './about-cube.js';
 import { makeRun } from './palette.js';
 import { makeAccent } from './experience-math.js';
+import { inject } from '@vercel/analytics';
+
+// Initialize Vercel Web Analytics
+inject();
 
 const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
 let reduced = reducedQuery.matches;
