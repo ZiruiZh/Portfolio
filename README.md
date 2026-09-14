@@ -26,7 +26,7 @@ Hovering pulls the inner layers inward until the outside color fills the silhoue
 
 The intro starts with a layered circle growing from the center of the screen. Its rings have uneven thicknesses, and its acceleration is deliberately extreme: almost still at first, then suddenly rushing past you.
 
-A custom GSAP easing curve, dominated by a twelfth-power term, creates that last-second surge. The innermost layer is always white; it expands far enough to cover the viewport’s corners before the navigation, typography, and falling shapes make their entrance.
+A custom GSAP easing curve, dominated by a twelfth-power term, creates that last-second surge. The innermost layer is white; it expands far enough to cover the viewport’s corners before the navigation, typography, and falling shapes make their entrance.
 
 ### Color that keeps changing
 
@@ -46,11 +46,13 @@ The canvas wraps around its artwork bounds. Its camera and target positions are 
 
 About has six photos mapped onto a cube built from CSS 3D planes. Dragging rotates it around screen-space axes using quaternions, so the direction stays intuitive even when the cube is upside down or facing backward.
 
-Release it for a short inertial glide. Leave it alone for two seconds and it starts rotating gently. Arrow keys turn it, Home resets its orientation, and holding Space pauses it.
+Release it for a short inertial glide. On entering About, or after two seconds without interaction, it spins quickly and eases down to a gentle rotation over 2.8 seconds. Arrow keys turn it, Home resets its orientation, and holding Space pauses it.
 
 ### Small details that connect it all
 
-Project previews cycle until you reach the Work index. Each project opens in a viewer with sticky previous/next controls, a position indicator, and left/right keyboard navigation that loops through all four projects. Content links and project titles glide letter by letter and draw an underline on hover or keyboard focus. The three experience links have individual hover colors, and top navigation labels stay static. Navigation fills retract toward the top of each button. Arrow icons are inline SVGs, keeping their appearance consistent on phones and tablets without emoji substitution. The custom cursor follows the current accent and compresses on click. Homepage typography responds subtly to the pointer while physical shapes pass through it without distortion.
+Project previews cycle until you reach the Work index. Each project opens in a viewer with sticky previous/next controls, a position indicator, and left/right keyboard navigation that loops through all five projects. Content links and project titles glide letter by letter and draw an underline on hover or keyboard focus. The three experience links have individual hover colors, and top navigation labels stay static. Navigation fills retract toward the top of each button. Arrow icons are inline SVGs, keeping their appearance consistent on phones and tablets without emoji substitution. The custom cursor follows the current accent and compresses on click. Homepage typography responds subtly to the pointer while physical shapes pass through it without distortion.
+
+Contact links stay black and show their platform colors only on hover or keyboard focus. The interface uses a fixed light palette.
 
 ## Built to stay responsive
 
@@ -61,7 +63,9 @@ The runtime uses **vanilla JavaScript, GSAP, and Matter.js**, with **Vite** for 
 - Unchanged artwork transforms avoid repeated DOM writes.
 - Text proximity calculations run after pointer changes.
 - Playground thumbnails load near the viewport; larger lightbox images load on demand.
-- Work previews reuse cached artwork, and project galleries lazy-load their images.
+- Work previews use six-second MP4 covers made from each project’s artwork. Only the visible cover plays; playback pauses offscreen, behind a project viewer, and in hidden tabs. Reduced-motion and data-saving preferences use static posters.
+- PRISM Collective includes its full website walkthrough, three iridescent graphics, and an eight-week timeline.
+- Project galleries lazy-load their images; the walkthrough loads when requested.
 - Cube animation stops offscreen, outside About, and when the document is hidden.
 
 Reduced-motion preferences skip the intro and automatic cube rotation. Keyboard navigation, visible link focus states, Escape-to-close dialogs, and lightbox focus return are part of the experience too.
@@ -101,3 +105,7 @@ Both `/` and `/testi-physics.html` serve the portfolio. Keep their HTML markup s
 | `src/style.css` | Layout, Marr typography, responsive styles, and interaction states |
 
 The tests exercise real Matter.js collisions and extreme throws at mobile and desktop dimensions, along with palette contrast, canvas wrapping, and rotation invariants. The cube tests specifically check that dragging moves the facing surface in the same direction on both the front and back, and that thousands of rotations do not introduce scale drift.
+
+### Regenerating project covers
+
+Run `python3 scripts/generate-project-covers.py` with FFmpeg installed to regenerate the five cover videos. These are pre-rendered H.264 loops, so the browser does not need to composite the motion effects at runtime.

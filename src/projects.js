@@ -1,5 +1,26 @@
-// Imported from zirui.ca. Source text and image provenance: .reference/projects-source.json
+// Original four projects imported from zirui.ca; provenance: .reference/projects-source.json
+// PRISM assets, recording, and timeline supplied directly by Zirui.
 export const projects = {
+  "prism": {
+    "title": "Prism Collective",
+    "caption": "PRISM COLLECTIVE / WEBSITE",
+    "category": "Website Design",
+    "description": "A website for PRISM Collective, a creative technology community at the University of Waterloo. Iridescent graphics, playful motion, and expressive typography bring its world of art and technology online. The site introduces the collective, showcases its projects, and invites new collaborators to join.",
+    "metadata": {
+      "Project": "PRISM Collective",
+      "Timeline": "8 weeks",
+      "Focus": "Website and visual design"
+    },
+    "cover": "prism-thumb.webp",
+    "walkthrough": "prism-walkthrough.mp4",
+    "images": [
+      { "file": "prism-thumb.webp", "caption": "PRISM Collective — website home", "width": 1214, "height": 720 },
+      { "file": "prism-1.webp", "caption": "Iridescent graphic — electric spectrum", "width": 1488, "height": 1800 },
+      { "file": "prism-2.webp", "caption": "Iridescent graphic — flowing color", "width": 1800, "height": 1350 },
+      { "file": "prism-3.webp", "caption": "Iridescent graphic — light and texture", "width": 1350, "height": 1800 }
+    ],
+    "hoverColor": "#7047eb"
+  },
   "bcrc": {
     "title": "BCRC Montreal",
     "caption": "BCRC MONTREAL / COMMUNICATIONS",
@@ -162,3 +183,5 @@ export const projects = {
 
 const assets = import.meta.glob('../assets/projects/*.webp', { eager: true, query: '?url', import: 'default' });
 export const projectImage = file => assets[`../assets/projects/${file}`];
+const videos = import.meta.glob('../assets/projects/*.mp4', { eager: true, query: '?url', import: 'default' });
+export const projectVideo = file => videos[`../assets/projects/${file}`];

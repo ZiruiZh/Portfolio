@@ -30,8 +30,10 @@ export class AboutCube {
       return face;
     });
     this.render();
+    this.spinVelocity = { x: 3, y: 14 };
     this.spin = (_time, deltaTime) => {
-      this.orientation = screenRotate(this.orientation, Math.min(deltaTime, 40) * .003, Math.min(deltaTime, 40) * .014);
+      const dt = Math.min(deltaTime, 40) / 1000;
+      this.orientation = screenRotate(this.orientation, dt * this.spinVelocity.x, dt * this.spinVelocity.y);
       this.render();
     };
     this.stage.addEventListener('pointerdown', e => {
@@ -60,7 +62,9 @@ export class AboutCube {
     this.stage.addEventListener('blur', () => { this.paused = false; this.interact(); }, options);
     this.observer = new IntersectionObserver(([entry]) => {
       this.visible = entry.isIntersecting;
-      if (this.visible) this.interact(); else this.stopMotion();
+      if (this.visible && this.entryPending) this.startIdleSpin();
+      else if (this.visible) this.interact();
+      else this.stopMotion();
     }, { threshold: .05 });
     this.observer.observe(host);
     document.addEventListener('visibilitychange', () => { if (document.hidden) this.stopMotion(); else this.interact(); }, options);
@@ -69,14 +73,23 @@ export class AboutCube {
 
   render() { this.rotor.style.transform = `matrix3d(${matrix(this.orientation).join(',')})`; }
 
+  startIdleSpin() {
+    clearTimeout(this.idleTimer);
+    if (!this.active || !this.visible || document.hidden || this.reducedQuery.matches || this.drag || this.paused) return;
+    this.entryPending = false;
+    this.motion?.kill(); this.spinTween?.kill(); gsap.ticker.remove(this.spin);
+    this.stage.dataset.idle = 'true'; this.stage.dataset.spin = 'burst';
+    this.spinVelocity.x = 90; this.spinVelocity.y = 540;
+    gsap.ticker.add(this.spin);
+    this.spinTween = gsap.to(this.spinVelocity, { x: 3, y: 14, duration: 2.8, ease: 'power2.out',
+      onComplete: () => { this.stage.dataset.spin = 'cruise'; } });
+  }
+
   interact() {
-    clearTimeout(this.idleTimer); gsap.ticker.remove(this.spin); this.stage.dataset.idle = 'false';
+    clearTimeout(this.idleTimer); gsap.ticker.remove(this.spin); this.spinTween?.kill();
+    this.stage.dataset.idle = 'false'; this.stage.dataset.spin = 'paused';
     if (!this.active || !this.visible || document.hidden || this.reducedQuery.matches) return;
-    this.idleTimer = setTimeout(() => {
-      if (!this.drag && !this.paused && this.active && this.visible && !document.hidden && !this.reducedQuery.matches) {
-        this.stage.dataset.idle = 'true'; gsap.ticker.add(this.spin);
-      }
-    }, 2000);
+    this.idleTimer = setTimeout(() => this.startIdleSpin(), 2000);
   }
 
   pointer(e) {
@@ -112,7 +125,8 @@ export class AboutCube {
   }
 
   stopMotion() {
-    clearTimeout(this.idleTimer); gsap.ticker.remove(this.spin); this.stage.dataset.idle = 'false';
+    clearTimeout(this.idleTimer); gsap.ticker.remove(this.spin); this.spinTween?.kill();
+    this.stage.dataset.idle = 'false'; this.stage.dataset.spin = 'paused';
     this.cancelDrag(); this.motion?.kill(); this.paused = false;
   }
 
@@ -120,11 +134,8 @@ export class AboutCube {
     this.active = page === 'about';
     if (this.active) {
       this.cards.forEach(face => { const img = face.firstElementChild; if (!img.getAttribute('src')) img.src = img.dataset.src; });
-      if (!this.revealed && !this.reducedQuery.matches) {
-        this.revealed = true;
-        this.orientation = screenRotate(initialOrientation(), -12, -32); this.render(); this.rotate(12, 32);
-      }
-      this.interact();
+      this.entryPending = true;
+      if (this.visible) this.startIdleSpin();
     } else this.stopMotion();
   }
 
