@@ -50,7 +50,7 @@ Release it for a short inertial glide. Leave it alone for two seconds and it sta
 
 ### Small details that connect it all
 
-Project previews cycle until you reach the Work index. Link text glides and draws an underline on hover. Navigation fills retract toward the top of each button. The custom cursor follows the current accent and compresses on click. Homepage typography responds subtly to the pointer while physical shapes pass through it without distortion.
+Project previews cycle until you reach the Work index. Each project opens in a viewer with sticky previous/next controls, a position indicator, and left/right keyboard navigation that loops through all four projects. Link text glides and draws an underline on hover. Navigation fills retract toward the top of each button. Arrow icons are inline SVGs, keeping their appearance consistent on phones and tablets without emoji substitution. The custom cursor follows the current accent and compresses on click. Homepage typography responds subtly to the pointer while physical shapes pass through it without distortion.
 
 ## Built to stay responsive
 

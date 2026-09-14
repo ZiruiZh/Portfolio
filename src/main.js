@@ -144,12 +144,13 @@ const preview = document.getElementById('project-preview');
 let selectedProject = null;
 let cycleTimer;
 let indexReached = false;
+let previewHovered = false;
 const previewCache = new Map();
 const projectKeys = Object.keys(projects);
 function stopPreviewCycle() { clearTimeout(cycleTimer); }
 function schedulePreviewCycle() {
   stopPreviewCycle();
-  if (current !== 'work' || indexReached || reduced || document.hidden || dialog.open) return;
+  if (current !== 'work' || indexReached || previewHovered || document.activeElement === preview || reduced || document.hidden || dialog.open) return;
   cycleTimer = setTimeout(() => {
     showPreview(projectKeys[(projectKeys.indexOf(selectedProject) + 1) % projectKeys.length]);
     schedulePreviewCycle();
@@ -160,7 +161,8 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) stopP
 function showPreview(key, animate = true) {
   if (key === selectedProject && preview.style.visibility === 'visible') return;
   selectedProject = key;
-  if (!previewCache.has(key)) { const art = document.createElement('div'); art.className = 'art-frame'; renderArt(art, key); previewCache.set(key, art); }
+  preview.setAttribute('aria-label', `View project: ${projects[key].title}`);
+  if (!previewCache.has(key)) { const art = document.createElement('span'); art.className = 'art-frame'; renderArt(art, key); previewCache.set(key, art); }
   document.getElementById('preview-art').replaceChildren(previewCache.get(key));
   document.getElementById('preview-caption').textContent = projects[key].caption;
  
@@ -171,6 +173,11 @@ function hidePreview() {
   if (current === 'work') return;
   gsap.to(preview, { autoAlpha: 0, y: reduced ? 0 : -12, duration: reduced ? 0 : .2, overwrite: true });
 }
+preview.addEventListener('pointerenter', () => { previewHovered = true; stopPreviewCycle(); });
+preview.addEventListener('pointerleave', () => { previewHovered = false; schedulePreviewCycle(); });
+preview.addEventListener('focus', stopPreviewCycle);
+preview.addEventListener('blur', schedulePreviewCycle);
+preview.addEventListener('click', () => { if (selectedProject) openProject(selectedProject); });
 document.querySelectorAll('.project-row').forEach(button => {
   button.addEventListener('pointerenter', () => { reachIndex(); showPreview(button.dataset.project); });
   button.addEventListener('focus', () => { reachIndex(); showPreview(button.dataset.project); });
@@ -180,15 +187,21 @@ document.querySelector('.work-index').addEventListener('pointerenter', reachInde
 document.querySelector('.work-index').addEventListener('focusout', e => { if (!e.currentTarget.contains(e.relatedTarget)) hidePreview(); });
 
 const dialog = document.getElementById('project-dialog');
+let activeProjectKey = null;
+let projectOpener = null;
 function openProject(key) {
   reachIndex();
+  const wasOpen = dialog.open;
+  if (!wasOpen) projectOpener = document.activeElement;
+  activeProjectKey = key;
   const project = projects[key];
+  const index = projectKeys.indexOf(key);
+  document.querySelector('.project-position').textContent = `${String(index + 1).padStart(2, '0')} / ${String(projectKeys.length).padStart(2, '0')} — ${project.title}`;
+  document.getElementById('previous-project').title = projects[projectKeys[(index - 1 + projectKeys.length) % projectKeys.length]].title;
+  document.getElementById('next-project').title = projects[projectKeys[(index + 1) % projectKeys.length]].title;
   document.getElementById('dialog-title').textContent = project.title;
   document.getElementById('dialog-category').textContent = project.category;
   document.getElementById('dialog-description').textContent = project.description;
-  const link = document.getElementById('dialog-link');
-  link.href = project.source;
-  link.innerHTML = '<span class="link-label">View original project ↗</span>';
   renderArt(document.getElementById('dialog-art'), key, true);
   const meta = document.getElementById('dialog-meta');
   meta.replaceChildren(...Object.entries(project.metadata).map(([label, value]) => {
@@ -206,12 +219,29 @@ function openProject(key) {
     const caption = document.createElement('figcaption'); caption.textContent = image.caption;
     link.appendChild(img); figure.append(link, caption); return figure;
   }));
-  dialog.showModal();
+  if (!wasOpen) dialog.showModal();
   dialog.scrollTop = 0;
  
   document.dispatchEvent(new Event('portfolio:dialog-open'));
-  if (!reduced) gsap.fromTo(dialog, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: .3, clearProps: 'transform,opacity' });
+  gsap.killTweensOf(dialog);
+  if (!reduced && !wasOpen) gsap.fromTo(dialog, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: .3, clearProps: 'transform,opacity' });
+  else gsap.set(dialog, { clearProps: 'transform,opacity' });
 }
+function stepProject(direction) {
+  if (!dialog.open || !activeProjectKey) return;
+  const index = projectKeys.indexOf(activeProjectKey);
+  openProject(projectKeys[(index + direction + projectKeys.length) % projectKeys.length]);
+}
+document.getElementById('previous-project').addEventListener('click', () => stepProject(-1));
+document.getElementById('next-project').addEventListener('click', () => stepProject(1));
+dialog.addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  e.preventDefault(); e.stopPropagation(); stepProject(e.key === 'ArrowLeft' ? -1 : 1);
+});
+dialog.addEventListener('close', () => {
+  if (projectOpener?.isConnected) projectOpener.focus({ preventScroll: true });
+  activeProjectKey = null;
+});
 document.getElementById('close-project').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', e => { if (e.target === dialog) { const r = dialog.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close(); } });
 

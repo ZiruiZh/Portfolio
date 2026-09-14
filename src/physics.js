@@ -1,3 +1,4 @@
+import { arrowIcon } from './icons.js';
 import Matter from 'matter-js';
 import { gsap } from 'gsap';
 import { LoopingCanvas } from './looping-canvas.js';
@@ -101,7 +102,7 @@ export class SculptureStage {
         el.setAttribute('aria-label', `Open ${item.destination}. ${this.mode === 'playground' ? 'Drag to pan the canvas.' : 'Drag to move the shape.'}`);
         const label = document.createElement('span');
         label.className = 'shape-label';
-        label.textContent = `${item.destination} ↗`;
+        label.innerHTML = `${item.destination} ${arrowIcon()}`;
         el.appendChild(label);
       }
       item.layers = [...el.querySelectorAll('[data-fs],[data-ss]')];

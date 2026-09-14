@@ -1,3 +1,4 @@
+import { arrowIcon } from './icons.js';
 import { gsap } from 'gsap';
 import images from './playground-images.json';
 
@@ -9,7 +10,7 @@ export function installPlaygroundGallery(stage, reducedQuery) {
   const dialog = document.createElement('dialog');
   dialog.className = 'playground-lightbox';
   dialog.setAttribute('aria-label', 'Playground image viewer');
-  dialog.innerHTML = `<div class="lightbox-bar"><span class="lightbox-count" aria-live="polite"></span><div><button type="button" data-action="previous" aria-label="Previous image">←</button><button type="button" data-action="next" aria-label="Next image">→</button><button type="button" data-action="close" autofocus>Close ×</button></div></div><figure class="lightbox-figure"><div class="lightbox-art"></div><figcaption></figcaption></figure>`;
+  dialog.innerHTML = `<div class="lightbox-bar"><span class="lightbox-count" aria-live="polite"></span><div><button type="button" data-action="previous" aria-label="Previous image">${arrowIcon('left')}</button><button type="button" data-action="next" aria-label="Next image">${arrowIcon('right')}</button><button type="button" data-action="close" autofocus>Close ×</button></div></div><figure class="lightbox-figure"><div class="lightbox-art"></div><figcaption></figcaption></figure>`;
   document.body.appendChild(dialog);
   const art = dialog.querySelector('.lightbox-art');
   let index = 0, opener, tween;
