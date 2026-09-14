@@ -1,3 +1,4 @@
+import { installLinkGlide } from './link-motion.js';
 import './style.css';
 import { gsap } from 'gsap';
 import { SculptureStage } from './physics.js';
@@ -337,6 +338,7 @@ reducedQuery.addEventListener('change', e => {
   }
 });
 
+installLinkGlide();
 applyPage(pageFromHash());
 // The page is already usable if a font is slow or unavailable.
 Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);

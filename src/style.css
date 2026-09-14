@@ -163,14 +163,20 @@ a:is(:hover,:focus-visible)>.link-label:after,.project-row:is(:hover,:focus-visi
 
 .work-intro .section-heading,.about-page .section-heading{margin:0;font:500 clamp(23px,1.8vw,34px)/1.15 MarrCond,Arial,sans-serif;letter-spacing:-.015em}
 .work-intro .section-heading{margin-bottom:1.8em}
-.experience-link{display:inline-block}.experience-link:hover,.experience-link:focus-visible{color:#4D26CE}
+.experience-link{display:inline-block}.experience-link:hover,.experience-link:focus-visible{color:var(--experience-color)}
 
-.arrow-icon{display:inline-block;width:1em;height:1em;vertical-align:-.12em;flex-shrink:0;pointer-events:none}
-.topbar .square .arrow-icon{width:18px;height:18px}
-.shape-label .arrow-icon{display:inline-block;width:1em;height:1em;transform:none;will-change:auto}
+.arrow-icon{display:inline-block;width:.8em;height:.8em;vertical-align:-.12em;flex-shrink:0;pointer-events:none}
+.topbar .square .arrow-icon{width:14px;height:14px}
+.shape-label .arrow-icon{display:inline-block;width:.8em;height:.8em;transform:none;will-change:auto}
 .project-navigation{display:flex;align-self:stretch;flex-shrink:0}
 .dialog-bar .project-navigation button{display:flex;align-items:center;justify-content:center;min-width:48px;min-height:48px}
 .project-position{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px}
 @media(max-width:600px){#project-dialog .dialog-bar{padding-left:12px}#project-dialog .project-position{font-size:13px}#project-dialog .project-navigation button{padding:12px;min-width:44px}}
 
 .project-preview .art-frame{display:block}.project-preview:focus-visible{outline:2px solid currentColor;outline-offset:5px}
+
+.link-word,.link-char{display:inline-block}
+.link-char{transform-origin:50% 100%;transition:transform .38s cubic-bezier(.22,1,.36,1);transition-delay:0ms}
+a:is(:hover,:focus-visible)>.link-label,.project-row:is(:hover,:focus-visible)>.project-title{transform:none}
+a:is(:hover,:focus-visible)>.link-label .link-char,.project-row:is(:hover,:focus-visible)>.project-title .link-char{transform:translate3d(6px,-.3em,0) rotate(-4deg) scaleY(1.06);transition-duration:.6s;transition-timing-function:cubic-bezier(.2,1.6,.35,1);transition-delay:var(--glide-delay)}
+@media(prefers-reduced-motion:reduce){.link-char{transition:none!important;transform:none!important}}
