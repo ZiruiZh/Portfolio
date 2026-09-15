@@ -20,13 +20,13 @@ Three of those shapes are also navigation:
 - **R → Playground**
 - **Cursive I → About**
 
-Hovering pulls the inner layers inward until the outside color fills the silhouette. Other shapes recede, a destination label appears, and a matching gradient spreads down from beneath the navigation bar. Clicking carries that exact color into the next page’s cursor, highlights, and transition.
+Hovering pulls the inner layers partway inward, widening the outside color while keeping the glyph and every layer visible. Other shapes recede, a destination label appears, and a matching gradient spreads down from beneath the navigation bar. Clicking carries that exact color into the next page’s cursor, highlights, and transition.
 
-### A tiny tunnel of color
+### A tunnel of color
 
-The intro starts with a layered circle growing from the center of the screen. Its rings have uneven thicknesses, and its acceleration is deliberately extreme: almost still at first, then suddenly rushing past you.
+A centered circle grows from almost nothing into a rush of nested color bands. The original 1.05-second GSAP sequence starts slowly and accelerates sharply with a twelfth-power easing curve. Uneven layer widths give the tunnel depth, and its white core expands far enough to cover every viewport corner before the homepage appears.
 
-A custom GSAP easing curve, dominated by a twelfth-power term, creates that last-second surge. The innermost layer is white; it expands far enough to cover the viewport’s corners before the navigation, typography, and falling shapes make their entrance.
+The introduction completes automatically. The navigation bar glides in, sculptures arrive in a stagger, and the name and subtitles follow with a gentle reveal. Reduced-motion users bypass the tunnel; Escape and a keyboard-focusable skip link also lead straight into the site. UW links directly to the University of Waterloo.
 
 ### Color that keeps changing
 
@@ -68,7 +68,7 @@ The runtime uses **vanilla JavaScript, GSAP, and Matter.js**, with **Vite** for 
 - Project galleries lazy-load their images; the walkthrough loads when requested.
 - Cube animation stops offscreen, outside About, and when the document is hidden.
 
-Reduced-motion preferences skip the intro and automatic cube rotation. Keyboard navigation, visible link focus states, Escape-to-close dialogs, and lightbox focus return are part of the experience too.
+Reduced-motion preferences skip the intro and disable automatic cube rotation. Keyboard navigation, visible link focus states, Escape-to-close dialogs, and lightbox focus return are part of the experience too.
 
 ## UW CS webring
 

@@ -21,7 +21,8 @@ function refreshAccent(shapeColor) {
   document.documentElement.style.setProperty('--accent', color);
   document.documentElement.style.setProperty('--shape-color', color);
 }
-refreshAccent();
+const introAccents = ['#FF3899', '#CDFF00', '#FF5934', '#FFBE00', '#AC80FF', '#00FFD0', '#F0FF00'];
+refreshAccent(introAccents[Math.floor(Math.random() * introAccents.length)]);
 const removeCursor = installCursor(reducedQuery);
 const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
 document.querySelectorAll('.resume-link').forEach(link => { link.href = resumeURL; });
@@ -68,6 +69,7 @@ function renderArt(target, key, detail = false) {
 }
 
 function applyPage(page, focus = false) {
+  stopHeroReveal();
   current = page;
   document.body.dataset.page = page;
   document.querySelectorAll('.page').forEach(el => { el.hidden = el.id !== page; });
@@ -84,6 +86,7 @@ function applyPage(page, focus = false) {
   stopPreviewCycle();
   if (page === 'work') { indexReached = false; showPreview(projectKeys[0], false); schedulePreviewCycle(); }
   else hidePreview();
+  if (page === 'home' && introFinished) revealHome(!reduced);
   if (focus) {
     const heading = document.querySelector(`#${page} h1`);
     heading.setAttribute('tabindex', '-1');
@@ -93,6 +96,7 @@ function applyPage(page, focus = false) {
 
 function navigate(page, animate = true) {
   if (!pages.includes(page)) page = 'home';
+  if (!introFinished) finishIntro();
   if (transition) transition.kill();
   const wipe = document.querySelector('.route-wipe');
   if (page === current) {
@@ -134,14 +138,29 @@ document.querySelectorAll('.hero-line').forEach(line => {
   nodes.forEach(node => {
     const fragment = document.createDocumentFragment();
     node.textContent.split(/(\s+)/).forEach(word => {
-      if (!word.trim()) fragment.appendChild(document.createTextNode(word));
-      else {
+      if (!word.trim()) {
+        const space = document.createElement('span');
+        space.className = 'text-space';
+        space.setAttribute('aria-hidden', 'true');
+        space.textContent = ' ';
+        fragment.appendChild(space);
+      } else {
         const span = document.createElement('span');
         span.className = 'text-word';
         const impact = document.createElement('span');
         impact.className = 'text-impact';
-        impact.textContent = word;
-        span.appendChild(impact);
+        impact.setAttribute('aria-hidden', 'true');
+        const readable = document.createElement('span');
+        readable.className = 'sr-only';
+        readable.textContent = word;
+        // Individual characters type on without changing the final word wrapping.
+        for (const char of word) {
+          const letter = document.createElement('span');
+          letter.className = 'typed-char';
+          letter.textContent = char;
+          impact.appendChild(letter);
+        }
+        span.append(readable, impact);
         fragment.appendChild(span);
       }
     });
@@ -303,70 +322,131 @@ dialog.addEventListener('close', () => {
 document.getElementById('close-project').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', e => { if (e.target === dialog) { const r = dialog.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close(); } });
 
-let introTimeline;
 let introFinished = false;
+let introTimeline;
 let introFailsafe;
-function finishIntro() {
+let heroTimeline;
+const heroAnimated = '.hero-copy, .name .letter, .chinese, .hero-line, .text-word, .typed-char';
+
+function stopHeroReveal() {
+  heroTimeline?.kill();
+  heroTimeline = null;
+  gsap.set(heroAnimated, { clearProps: 'opacity,visibility,transform,clipPath' });
+  document.querySelector('.hero-copy').inert = false;
+  delete document.body.dataset.homeReveal;
+}
+
+function revealHome(animate = true) {
+  stopHeroReveal();
+  if (current !== 'home') return;
+  sculptures.active = true;
+  if (!animate || reduced) { textReactions.measure(); return; }
+  sculptures.reveal();
+  document.body.dataset.homeReveal = 'shapes';
+  document.querySelector('.hero-copy').inert = true;
+  gsap.set('.hero-copy', { autoAlpha: 0 });
+  gsap.set('.name .letter', { yPercent: 115, xPercent: -18, rotation: -5 });
+  gsap.set('.chinese', { autoAlpha: 0, x: -18 });
+  gsap.set('.text-word', { y: 5, x: 0, rotation: 0 });
+  gsap.set('.typed-char', { autoAlpha: 0, yPercent: 25, scaleX: 1, scaleY: .94, rotation: 0 });
+  const subtitles = [...document.querySelectorAll('.hero-line')];
+  heroTimeline = gsap.timeline({ onComplete: () => {
+    stopHeroReveal();
+    textReactions.measure();
+  } });
+  // Start the text as the last shapes pop in, without a separate pause.
+  heroTimeline.call(() => { document.body.dataset.homeReveal = 'text'; }, [], .72)
+    .set('.hero-copy', { autoAlpha: 1 }, .72)
+    .to('.name .letter', { yPercent: 0, xPercent: 0, rotation: 0, duration: .65, stagger: .035, ease: 'power4.out' }, .72)
+    .to('.chinese', { autoAlpha: 1, x: 0, duration: .45, ease: 'power3.out' }, .95);
+  let nextLine = .88;
+  subtitles.forEach(line => {
+    let characterOffset = 0;
+    line.querySelectorAll('.text-word').forEach(word => {
+      const letters = word.querySelectorAll('.typed-char');
+      const start = nextLine + characterOffset * .012;
+      heroTimeline.to(word, { y: 0, x: 0, rotation: 0, duration: .3,
+        ease: 'power2.out' }, start)
+        .to(letters, { autoAlpha: 1, yPercent: 0, scaleX: 1, scaleY: 1, rotation: 0,
+          duration: .3, stagger: .012, ease: 'back.out(1.1)' }, start);
+      characterOffset += letters.length;
+    });
+    nextLine += characterOffset * .012 + .13;
+  });
+}
+
+function finishIntro(animateHero = false) {
   if (introFinished) return;
   introFinished = true;
   clearTimeout(introFailsafe);
-  if (introTimeline) introTimeline.kill();
-  document.getElementById('intro').hidden = true;
+  introTimeline?.kill();
+  introTimeline = null;
+  const intro = document.getElementById('intro');
+  const restoreFocus = intro.contains(document.activeElement);
+  intro.hidden = true;
+  document.body.classList.remove('intro-open');
   document.querySelector('.intro-shapes').replaceChildren();
-  visuals?.setMode(current);
+  document.querySelector('.skip-link').inert = false;
   document.getElementById('main').inert = false;
   document.querySelector('.topbar').inert = false;
-  gsap.set(['.topbar', '.hero-copy', '#stage', '.name .letter', '.chinese', '.hero-line'], { clearProps: 'opacity,visibility,transform,clipPath' });
-  sculptures.items.forEach(item => { if (!item.dropQueued) item.entrance = 1; });
+  visuals?.setMode(current);
+  gsap.set(['.topbar', '#stage'], { clearProps: 'opacity,visibility,transform' });
   sculptures.active = ['home', 'playground'].includes(current);
-  textReactions.measure();
-  if (document.activeElement === document.getElementById('skip-intro')) document.getElementById('main').focus({ preventScroll: true });
+  revealHome(animateHero);
+  if (animateHero && !reduced) {
+    gsap.fromTo('.topbar', { yPercent: -110 }, {
+      yPercent: 0, duration: .32, ease: 'power3.out', clearProps: 'transform',
+    });
+  }
+  if (restoreFocus) document.getElementById('main').focus({ preventScroll: true });
 }
 
 function runIntro() {
+  if (introFinished) return;
   if (current === 'home') sculptures.build();
   textReactions.measure();
-  if (introFinished || reduced || current !== 'home') { finishIntro(); return; }
+  if (reduced || current !== 'home') { finishIntro(); return; }
   const intro = document.getElementById('intro');
   const host = document.querySelector('.intro-shapes');
   intro.hidden = false;
+  document.body.classList.add('intro-open');
   sculptures.active = false;
   document.getElementById('main').inert = true;
   document.querySelector('.topbar').inert = true;
-  document.getElementById('skip-intro').focus({ preventScroll: true });
+  document.querySelector('.skip-link').inert = true;
   gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 0 });
-  introFailsafe = setTimeout(finishIntro, 4500);
-  introTimeline = gsap.timeline({ onComplete: finishIntro });
+
   const circle = document.createElement('div');
   circle.className = 'intro-circle';
   const radii = [1, .91, .62, .57, .31, .12];
-  const colors = [...makeRun(radii.length - 1), 'var(--paper)'];
+  const colors = [...makeRun(radii.length - 1), '#FFFFFF'];
   radii.forEach((radius, index) => {
     const layer = document.createElement('div');
     layer.className = 'intro-circle-layer';
     layer.style.cssText = `width:${radius * 100}%;height:${radius * 100}%;background:${colors[index]}`;
     circle.appendChild(layer);
   });
-  host.appendChild(circle);
+  host.replaceChildren(circle);
   const diameter = Math.min(innerWidth, innerHeight) * .65;
   circle.style.width = circle.style.height = `${diameter}px`;
-  // The white core must cover the corners, not just the short viewport edge.
+  // The innermost white circle covers every corner before revealing the page.
   const finalScale = Math.hypot(innerWidth, innerHeight) / (diameter * radii.at(-1)) * 1.02;
-  introTimeline.fromTo(circle, { scale: .001 }, { scale: finalScale, duration: 1.05, ease: t => .002 * t + .998 * Math.pow(t, 12) }, 0)
-    .set(intro, { autoAlpha: 0 }, 1.05)
-    .set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 1 }, 1.05)
-    .fromTo('.topbar', { yPercent: -110 }, { yPercent: 0, duration: .32, ease: 'power3.out' }, 1.05)
-    .fromTo('.name .letter', { yPercent: 110, rotationX: -75, opacity: 0 }, { yPercent: 0, rotationX: 0, opacity: 1, stagger: .018, duration: .38, ease: 'power3.out' }, 1.09)
-    .fromTo(['.chinese', '.hero-line'], { y: 28, opacity: 0 }, { y: 0, opacity: 1, stagger: .045, duration: .35, ease: 'power3.out' }, 1.16)
-    .call(() => {
-      sculptures.active = true;
-    }, [], 1.05)
-    .to({}, { duration: 1 }, 1.09);
-
+  introFailsafe = setTimeout(() => finishIntro(true), 4500);
+  introTimeline = gsap.timeline({ onComplete: () => finishIntro(true) })
+    .fromTo(circle, { scale: .001 }, {
+      scale: finalScale, duration: 1.05,
+      ease: t => .002 * t + .998 * Math.pow(t, 12),
+    });
+  intro.focus({ preventScroll: true });
 }
-document.getElementById('skip-intro').addEventListener('click', finishIntro);
+
+document.getElementById('enter-portfolio').addEventListener('click', e => {
+  e.preventDefault();
+  finishIntro(true);
+});
 window.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !introFinished) finishIntro();
+  if (e.key === 'Escape' && !introFinished) finishIntro(true);
+  else if (e.key === 'Escape' && heroTimeline) { stopHeroReveal(); textReactions.measure(); }
   if (!['home','playground'].includes(current) || !introFinished || document.querySelector('dialog[open]') || e.target.closest('button,a,input,textarea,[role=button]')) return;
   if (e.key.toLowerCase() === 'r') sculptures.remix();
 });
@@ -375,7 +455,7 @@ let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (!introFinished) finishIntro();
+    if (!introFinished) finishIntro(true);
     if (sculptures.active) sculptures.build();
     textReactions.measure();
     visuals?.paint();
@@ -390,6 +470,7 @@ reducedQuery.addEventListener('change', e => {
   textReactions.reduced = reduced;
   if (reduced) {
     finishIntro();
+    stopHeroReveal();
     textReactions.update();
     if (transition) { transition.kill(); applyPage(pageFromHash()); }
     gsap.set('.route-wipe', { scaleY: 0 });
@@ -399,7 +480,8 @@ reducedQuery.addEventListener('change', e => {
 
 installLinkGlide();
 applyPage(pageFromHash());
+if (current === 'home') gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 0 });
 // The page is already usable if a font is slow or unavailable.
 Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);
 if (import.meta.env.DEV) window.__portfolio = { sculptures, textReactions };
-if (import.meta.hot) import.meta.hot.dispose(() => { coverObserver.disconnect(); previewCache.forEach(art => art.querySelector('video')?.pause()); aboutCube.dispose(); removeGallery(); sculptures.destroy(); visuals?.dispose(); removeCursor(); stopPreviewCycle(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); coverObserver.disconnect(); previewCache.forEach(art => art.querySelector('video')?.pause()); aboutCube.dispose(); removeGallery(); sculptures.destroy(); visuals?.dispose(); removeCursor(); stopPreviewCycle(); });

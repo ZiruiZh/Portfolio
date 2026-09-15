@@ -419,7 +419,7 @@ export class SculptureStage {
       svg.style.transform = `scale(${1 - p * .12})`;
       item.layers.forEach(layer => {
         const slot = +(layer.dataset.fs ?? layer.dataset.ss);
-        const collapse = slot === 0 ? 0 : Math.min(1, item.hover * (1 + slot * .12));
+        const collapse = slot === 0 ? 0 : Math.min(.38, item.hover * (.16 + slot * .045));
         layer.style.transformOrigin = `${item.def.ox}px ${item.def.oy}px`;
         layer.style.transform = `scale(${1 - collapse})`;
       });

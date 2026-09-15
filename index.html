@@ -48,7 +48,7 @@
         <div class="hero-copy">
           <h1 aria-label="Zirui Zhao (趙孜睿)"><span class="name" aria-hidden="true">Zirui Zhao</span><span class="chinese" lang="zh" aria-hidden="true">(趙孜睿)</span></h1>
           <p class="hero-line">is a design engineer making products friendlier<br class="desktop-break" /> (and cooler) for startups.</p>
-          <p class="hero-line study">Currently studying Computer Science @ UW.</p>
+          <p class="hero-line study">Currently studying Computer Science @ <a class="hero-university" href="https://uwaterloo.ca/" target="_blank" rel="noopener noreferrer" aria-label="University of Waterloo">UW</a>.</p>
         </div>
         <div id="stage" aria-label="Interactive letter sculptures"></div>
         <div class="home-note"><button id="reset-home">Reset shapes <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 8a8 8 0 1 1-1 8M5 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></button></div>
@@ -113,10 +113,10 @@
       <div class="project-gallery" id="dialog-gallery" aria-label="Project images"></div>
     </dialog>
 
-    <div class="intro" id="intro" hidden>
+    <section class="intro" id="intro" tabindex="-1" aria-label="Opening animation" hidden>
       <div class="intro-shapes" aria-hidden="true"></div>
-      <button id="skip-intro" aria-label="Skip intro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
-    </div>
+      <a class="intro-skip" id="enter-portfolio" href="#main">Skip to portfolio</a>
+    </section>
     <div class="shape-gradient" aria-hidden="true"></div>
     <div class="route-wipe" aria-hidden="true"></div>
     <script type="module" src="/src/main.js"></script>
