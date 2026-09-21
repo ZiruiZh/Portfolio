@@ -19,9 +19,9 @@ export const projects = {
       { "file": "prism-2.webp", "caption": "Iridescent graphic, flowing color", "width": 1800, "height": 1350 },
       { "file": "prism-3.webp", "caption": "Iridescent graphic, light and texture", "width": 1350, "height": 1800 }
     ],
-    "summary": "A website for a creative technology community at Waterloo.",
-    "tags": "Website Design, Visual Design, Motion",
-    "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "5 / 4", "glyph": "sparkle" },
+    "headline": "Bringing art and technology online",
+    "year": "2026",
+    "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "1150 / 720" },
     "hoverColor": "#7047eb"
   },
   "bha": {
@@ -75,9 +75,9 @@ export const projects = {
       }
     ],
     "source": "https://www.zirui.ca/works/bha",
-    "summary": "Brand, website, and merch for a heart nonprofit.",
-    "tags": "Product Design, Brand Identity, Web, Merchandise",
-    "card": { "images": ["bha-0.webp"], "ratio": "3 / 2", "glyph": "heart" },
+    "headline": "Raising Awareness for CHD",
+    "year": "2025",
+    "card": { "images": ["bha-0.webp"], "ratio": "3 / 2" },
     "hoverColor": "#d92b63"
   },
   "bcrc": {
@@ -119,9 +119,9 @@ export const projects = {
       }
     ],
     "source": "https://www.zirui.ca/works/bcrc",
-    "summary": "Event posters and web materials that reached over 20,000 viewers.",
-    "tags": "Communications, Poster Design, Web",
-    "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "4 / 3", "mat": true, "glyph": "square" },
+    "headline": "Empowering the Black Community in Montreal",
+    "year": "2025",
+    "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "3 / 2", "mat": true },
     "hoverColor": "#537c00"
   },
   "yearbook": {
@@ -163,9 +163,9 @@ export const projects = {
       }
     ],
     "source": "https://www.zirui.ca/works/yearbook",
-    "summary": "Cover and spread design while leading a team of 36.",
-    "tags": "Editorial Design, Creative Direction",
-    "card": { "images": ["yearbook-0.webp"], "ratio": "1800 / 1156", "glyph": "diamond" },
+    "headline": "A yearbook built by a team of 36",
+    "year": "2025–26",
+    "card": { "images": ["yearbook-0.webp"], "ratio": "1800 / 1156" },
     "hoverColor": "#2259af"
   },
   "artsfest": {
@@ -195,28 +195,28 @@ export const projects = {
       }
     ],
     "source": "https://www.zirui.ca/works/artsfest",
-    "summary": "The poster that welcomed the whole school to the festival.",
-    "tags": "Poster Design",
-    "card": { "images": ["artsfest-1-grid.webp"], "ratio": "4 / 5", "mat": true, "glyph": "dot" },
+    "headline": "One poster for a whole festival",
+    "year": "2024",
+    "card": { "images": ["artsfest-1-grid.webp"], "ratio": "4 / 5", "mat": true },
     "hoverColor": "#a33cbf"
   }
 };
 
-// Work tab "Visual" grid, in reading order. Playground captions come from the
-// titles in playground-images.json; `mat` sets artwork on a surface with room around it.
+// Work tab "Visual" grid, in reading order. Captions show only the title;
+// `mat` sets artwork on a surface with room around it.
 export const visualWork = [
   { project: 'artsfest' },
-  { playground: '16', title: 'Weightless', note: '2025' },
-  { playground: '07', title: 'Luciole', note: 'Product concept', mat: true, ratio: '1 / 1' },
-  { playground: '06', title: 'FILLED', note: 'Poster' },
+  { playground: '16', title: 'Weightless' },
+  { playground: '07', title: 'Luciole', mat: true, ratio: '1 / 1' },
+  { playground: '06', title: 'FILLED' },
   { playground: '11', title: 'What’s an ORTBO?' },
-  { playground: '24', title: 'Summer gone', note: 'Poster', mat: true, ratio: '4 / 5' },
+  { playground: '24', title: 'Summer gone', mat: true, ratio: '4 / 5' },
   { playground: '12', title: 'Teenager Room Design' },
-  { playground: '02', title: 'Eggloo', note: 'Odyssey de l’objet 2025', mat: true, ratio: '5 / 4' },
-  { playground: '23', title: 'AI Dehumanization', note: '2024' },
-  { playground: '18', title: 'Student agenda', note: 'Cover', mat: true, ratio: '4 / 5' },
+  { playground: '02', title: 'Eggloo', mat: true, ratio: '5 / 4' },
+  { playground: '23', title: 'AI Dehumanization' },
+  { playground: '18', title: 'Student agenda', mat: true, ratio: '4 / 5' },
   { playground: '20', title: 'Pixel bunny' },
-  { playground: '21', title: 'Red-haired character', note: 'Illustration', mat: true, ratio: '1 / 1' },
+  { playground: '21', title: 'Red-haired character', mat: true, ratio: '1 / 1' },
 ];
 
 const assets = import.meta.glob('../assets/projects/*.webp', { eager: true, query: '?url', import: 'default' });

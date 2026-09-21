@@ -1,13 +1,13 @@
 // Pure layout rules for the work tab, kept free of DOM and Vite imports for tests.
 
-// Rows alternate wide/narrow then narrow/wide across a 12-column grid.
-export function featureSpan(index) {
-  return [7, 5, 5, 7][index % 4];
-}
-
 export function parseRatio(ratio) {
   const [width, height = 1] = String(ratio).split('/').map(Number);
   return width / height;
+}
+
+// Case studies sit in two equal columns until phones stack them.
+export function featureColumns(viewportWidth) {
+  return viewportWidth > 600 ? 2 : 1;
 }
 
 export function visualColumns(viewportWidth) {

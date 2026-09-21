@@ -1,11 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { featureSpan, parseRatio, visualColumns, distributeColumns } from '../src/work-layout.js';
+import { parseRatio, featureColumns, visualColumns, distributeColumns } from '../src/work-layout.js';
 
-test('feature rows alternate wide and narrow cards across twelve columns', () => {
-  const spans = [0, 1, 2, 3, 4, 5].map(featureSpan);
-  assert.deepEqual(spans, [7, 5, 5, 7, 7, 5]);
-  for (let row = 0; row < spans.length; row += 2) assert.equal(spans[row] + spans[row + 1], 12);
+test('case studies use two columns until phones stack them', () => {
+  assert.equal(featureColumns(1512), 2);
+  assert.equal(featureColumns(768), 2);
+  assert.equal(featureColumns(601), 2);
+  assert.equal(featureColumns(600), 1);
+  assert.equal(featureColumns(375), 1);
 });
 
 test('aspect ratios parse from CSS ratio strings', () => {

@@ -44,7 +44,7 @@ The canvas wraps around its artwork bounds. Its camera and target positions are 
 
 ### A work page with room to breathe
 
-Work opens straight onto the case studies. Square-cornered cards alternate wide and narrow across a twelve-column grid. Prism's card plays a clip of the site's own motion; the rest are stills, and posters rest on a mat instead of being cropped. Below them, a masonry grid of visual work mixes the ArtsFest poster with pieces from the playground; items fill the shortest column so the columns end close together. Captions pair the project name in Marr Sans with a line in Marr Sans Condensed. On hover, the image eases back and each piece's small colored glyph turns into an arrow.
+Work opens straight onto the case studies: two square-cornered cards per row that stagger as their heights differ. Prism's card plays a clip of the site's own motion; the rest are stills, and posters rest on a mat instead of being cropped. Each caption sets a short headline against the client, discipline, and year in small capitals. Below them, a four-column masonry grid of visual work mixes the ArtsFest poster with pieces from the playground, captioned by title alone. Both grids fill the shortest column first so the columns end close together, and images ease back on hover.
 
 ### A photo cube you can actually steer
 
@@ -110,7 +110,7 @@ Both `/` and `/testi-physics.html` serve the portfolio. Keep their HTML markup s
 | `src/projects.js` | Project descriptions, card captions, metadata, galleries, and the visual grid selection |
 | `src/style.css` | Layout, Marr typography, responsive styles, and interaction states |
 
-The tests exercise real Matter.js collisions and extreme throws at mobile and desktop dimensions, along with palette contrast, canvas wrapping, and rotation invariants. The cube tests specifically check that dragging moves the facing surface in the same direction on both the front and back, and that thousands of rotations do not introduce scale drift. The work layout tests check that feature rows alternate spans and that the masonry keeps reading order while balancing its columns.
+The tests exercise real Matter.js collisions and extreme throws at mobile and desktop dimensions, along with palette contrast, canvas wrapping, and rotation invariants. The cube tests specifically check that dragging moves the facing surface in the same direction on both the front and back, and that thousands of rotations do not introduce scale drift. The work layout tests check the column counts at each breakpoint and that the masonry keeps reading order while balancing its columns.
 
 ### Regenerating the Prism cover
 
