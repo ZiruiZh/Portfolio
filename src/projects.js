@@ -77,7 +77,7 @@ export const projects = {
     "source": "https://www.zirui.ca/works/bha",
     "summary": "Brand, website, and merch for a heart nonprofit.",
     "tags": "Product Design, Brand Identity, Web, Merchandise",
-    "card": { "video": "bha-cover.mp4", "poster": "bha-cover.webp", "ratio": "5 / 4", "glyph": "heart" },
+    "card": { "images": ["bha-0.webp"], "ratio": "3 / 2", "glyph": "heart" },
     "hoverColor": "#d92b63"
   },
   "bcrc": {
@@ -121,7 +121,7 @@ export const projects = {
     "source": "https://www.zirui.ca/works/bcrc",
     "summary": "Event posters and web materials that reached over 20,000 viewers.",
     "tags": "Communications, Poster Design, Web",
-    "card": { "video": "bcrc-cover.mp4", "poster": "bcrc-cover.webp", "ratio": "5 / 4", "glyph": "square" },
+    "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "4 / 3", "mat": true, "glyph": "square" },
     "hoverColor": "#537c00"
   },
   "yearbook": {
@@ -165,7 +165,7 @@ export const projects = {
     "source": "https://www.zirui.ca/works/yearbook",
     "summary": "Cover and spread design while leading a team of 36.",
     "tags": "Editorial Design, Creative Direction",
-    "card": { "video": "yearbook-cover.mp4", "poster": "yearbook-cover.webp", "ratio": "5 / 4", "glyph": "diamond" },
+    "card": { "images": ["yearbook-0.webp"], "ratio": "1800 / 1156", "glyph": "diamond" },
     "hoverColor": "#2259af"
   },
   "artsfest": {
@@ -197,16 +197,15 @@ export const projects = {
     "source": "https://www.zirui.ca/works/artsfest",
     "summary": "The poster that welcomed the whole school to the festival.",
     "tags": "Poster Design",
-    "card": { "video": "artsfest-cover.mp4", "poster": "artsfest-cover.webp", "ratio": "5 / 4", "glyph": "dot" },
+    "card": { "images": ["artsfest-1-grid.webp"], "ratio": "4 / 5", "mat": true, "glyph": "dot" },
     "hoverColor": "#a33cbf"
   }
 };
 
 // Work tab "Visual" grid, in reading order. Playground captions come from the
 // titles in playground-images.json; `mat` sets artwork on a surface with room around it.
-// A case study plays its cover reel here unless it lists still `images`.
 export const visualWork = [
-  { project: 'artsfest', images: ['artsfest-1-grid.webp'], ratio: '4 / 5', mat: true },
+  { project: 'artsfest' },
   { playground: '16', title: 'Weightless', note: '2025' },
   { playground: '07', title: 'Luciole', note: 'Product concept', mat: true, ratio: '1 / 1' },
   { playground: '06', title: 'FILLED', note: 'Poster' },

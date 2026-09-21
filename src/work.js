@@ -73,7 +73,8 @@ function caption(title, summary, tags, mark) {
 }
 
 // Case studies share one card builder between the feature grid and the visual grid.
-function projectCard(key, className, tags, still) {
+// A card shows a still unless it names a video recorded from the project itself.
+function projectCard(key, className, tags) {
   const project = projects[key];
   const { card } = project;
   const button = h('button', className);
@@ -81,9 +82,9 @@ function projectCard(key, className, tags, still) {
   button.dataset.project = key;
   button.setAttribute('aria-haspopup', 'dialog');
   button.setAttribute('aria-controls', 'project-dialog');
-  const art = still
-    ? { ...still, images: still.images.map(projectImage) }
-    : { ratio: card.ratio, video: projectVideo(card.video), poster: projectImage(card.poster) };
+  const art = card.video
+    ? { ratio: card.ratio, video: projectVideo(card.video), poster: projectImage(card.poster) }
+    : { ratio: card.ratio, mat: card.mat, images: card.images.map(projectImage) };
   button.append(media(art), caption(project.title, project.summary, tags && project.tags, glyph(card.glyph, project.hoverColor)));
   return button;
 }
@@ -106,10 +107,9 @@ export function installWork({ reducedQuery, openProject, openImage }) {
   const imageIds = visualWork.filter(item => item.playground).map(item => item.playground);
   const visuals = visualWork.map((item, index) => {
     if (item.project) {
-      const still = item.images && { images: item.images, ratio: item.ratio, mat: item.mat };
-      const button = projectCard(item.project, 'visual-item', false, still);
+      const button = projectCard(item.project, 'visual-item', false);
       button.addEventListener('click', () => openProject(item.project));
-      return { el: button, ratio: parseRatio(still ? still.ratio : projects[item.project].card.ratio) };
+      return { el: button, ratio: parseRatio(projects[item.project].card.ratio) };
     }
     const data = playgroundImages.find(entry => entry.id === item.playground);
     const ratio = item.ratio || `${data.width} / ${data.height}`;

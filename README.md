@@ -44,7 +44,7 @@ The canvas wraps around its artwork bounds. Its camera and target positions are 
 
 ### A work page with room to breathe
 
-Work opens straight onto the case studies. Each square-cornered card plays its project's cover reel, and the cards alternate wide and narrow across a twelve-column grid. Below them, a masonry grid of visual work mixes the ArtsFest poster with pieces from the playground; posters rest on a mat instead of being cropped, and items fill the shortest column so the columns end close together. Captions pair the project name in Marr Sans with a line in Marr Sans Condensed. On hover, the image eases back and each piece's small colored glyph turns into an arrow.
+Work opens straight onto the case studies. Square-cornered cards alternate wide and narrow across a twelve-column grid. Prism's card plays a clip of the site's own motion; the rest are stills, and posters rest on a mat instead of being cropped. Below them, a masonry grid of visual work mixes the ArtsFest poster with pieces from the playground; items fill the shortest column so the columns end close together. Captions pair the project name in Marr Sans with a line in Marr Sans Condensed. On hover, the image eases back and each piece's small colored glyph turns into an arrow.
 
 ### A photo cube you can actually steer
 
@@ -67,7 +67,7 @@ The runtime uses **vanilla JavaScript, GSAP, and Matter.js**, with **Vite** for 
 - Unchanged artwork transforms avoid repeated DOM writes.
 - Text proximity calculations run after pointer changes.
 - Playground thumbnails load near the viewport; larger lightbox images load on demand.
-- Case study cards play six-second MP4 reels made from each project’s artwork. Reels load as they near the viewport and play only while on screen; they pause behind dialogs, in hidden tabs, and outside Work. Reduced-motion and data-saving preferences keep a first-frame poster.
+- The Prism card plays a six-second clip from the recorded website walkthrough. It loads as it nears the viewport and plays only while on screen; it pauses behind dialogs, in hidden tabs, and outside Work. Reduced-motion and data-saving preferences keep a first-frame poster.
 - Playground pieces on the work page use 800px renditions instead of their 2200px originals.
 - PRISM Collective includes its full website walkthrough, three iridescent graphics, and an eight-week timeline.
 - Project galleries lazy-load their images; the walkthrough loads when requested.
@@ -112,10 +112,10 @@ Both `/` and `/testi-physics.html` serve the portfolio. Keep their HTML markup s
 
 The tests exercise real Matter.js collisions and extreme throws at mobile and desktop dimensions, along with palette contrast, canvas wrapping, and rotation invariants. The cube tests specifically check that dragging moves the facing surface in the same direction on both the front and back, and that thousands of rotations do not introduce scale drift. The work layout tests check that feature rows alternate spans and that the masonry keeps reading order while balancing its columns.
 
-### Regenerating project covers
+### Regenerating the Prism cover
 
-Run `python3 scripts/generate-project-covers.py` with FFmpeg installed to regenerate the five cover videos. These are pre-rendered H.264 loops, so the browser does not need to composite the motion effects at runtime.
+Run `python3 scripts/generate-project-covers.py` with FFmpeg installed to regenerate the Prism cover video from its website walkthrough. It is a pre-rendered H.264 loop, so the browser does not need to composite the motion at runtime.
 
 ### Regenerating grid images
 
-Run `python3 scripts/generate-grid-images.py` with FFmpeg and cwebp (libwebp) installed to rebuild the work page's grid-sized WebP renditions and the first-frame posters for the cover videos. Run it again after regenerating the covers. It covers every playground image, so any of them can join the visual grid in `src/projects.js`.
+Run `python3 scripts/generate-grid-images.py` with FFmpeg and cwebp (libwebp) installed to rebuild the work page's grid-sized WebP renditions and the first-frame poster for the Prism cover. Run it again after regenerating the cover. It covers every playground image, so any of them can join the visual grid in `src/projects.js`.
