@@ -1,6 +1,6 @@
 // Split only content links; navigation-bar labels deliberately stay static.
 export function installLinkGlide() {
-  document.querySelectorAll('.link-label, .project-title').forEach(label => {
+  document.querySelectorAll('.link-label').forEach(label => {
     if (label.dataset.glide) return;
     label.dataset.glide = 'true';
     const accessible = document.createElement('span');

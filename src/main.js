@@ -8,6 +8,7 @@ import { installCursor } from './cursor.js';
 import { PlaygroundBackground } from './playground-background.js';
 import { installPlaygroundGallery } from './playground-gallery.js';
 import { AboutCube } from './about-cube.js';
+import { installWork } from './work.js';
 import { makeRun } from './palette.js';
 import { makeAccent } from './experience-math.js';
 
@@ -25,13 +26,14 @@ const introAccents = ['#FF3899', '#CDFF00', '#FF5934', '#FFBE00', '#AC80FF', '#0
 refreshAccent(introAccents[Math.floor(Math.random() * introAccents.length)]);
 const removeCursor = installCursor(reducedQuery);
 const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
-document.querySelectorAll('.resume-link').forEach(link => { link.href = resumeURL; });
+document.querySelectorAll('.resume-link, [data-resume-link]').forEach(link => { link.href = resumeURL; });
 const pages = ['home', 'work', 'playground', 'about'];
 let current = 'home';
 let transition;
 let pendingShapeTheme = null;
 const sculptures = new SculptureStage(document.getElementById('stage'), reduced);
-const removeGallery = installPlaygroundGallery(sculptures, reducedQuery);
+const gallery = installPlaygroundGallery(sculptures, reducedQuery);
+const work = installWork({ reducedQuery, openProject, openImage: gallery.open });
 const visuals = new PlaygroundBackground(reducedQuery);
 // Both layers read the same eased offset; pointer parallax cannot drift apart.
 sculptures.parallax = visuals.offset;
@@ -42,25 +44,11 @@ sculptures.onNavigate = (page, color) => {
 };
 const aboutCube = new AboutCube(document.querySelector('.about-portraits'), reducedQuery);
 
-function renderArt(target, key, detail = false) {
+function renderArt(target, key) {
   const project = projects[key];
-  if (!detail) {
-    const video = document.createElement('video');
-    video.className = 'project-cover';
-    video.poster = projectImage(project.cover);
-    video.dataset.src = projectVideo(`${key}-cover.mp4`);
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.preload = 'none';
-    video.setAttribute('aria-hidden', 'true');
-    video.tabIndex = -1;
-    target.replaceChildren(video);
-    return;
-  }
   const image = document.createElement('img');
   image.className = 'project-image';
-  image.src = projectImage(detail ? project.images[0].file : project.cover);
+  image.src = projectImage(project.images[0].file);
   image.alt = project.images[0].caption;
   image.width = project.images[0].width;
   image.height = project.images[0].height;
@@ -83,9 +71,7 @@ function applyPage(page, focus = false) {
   aboutCube.setMode(page);
   textReactions.measure();
   window.scrollTo({ top: 0, behavior: 'instant' });
-  stopPreviewCycle();
-  if (page === 'work') { indexReached = false; showPreview(projectKeys[0], false); schedulePreviewCycle(); }
-  else hidePreview();
+  work.setMode(page);
   if (page === 'home' && introFinished) revealHome(!reduced);
   if (focus) {
     const heading = document.querySelector(`#${page} h1`);
@@ -173,94 +159,28 @@ sculptures.onFrame = (time, moving) => {
   if (sculptures.mode === 'playground') visuals?.pan(sculptures.looping.camera.x, sculptures.looping.camera.y);
 };
 
-const preview = document.getElementById('project-preview');
-let selectedProject = null;
-let cycleTimer;
-let indexReached = false;
-let previewHovered = false;
-const previewCache = new Map();
 const projectKeys = Object.keys(projects);
-let previewInView = true;
-function syncCoverPlayback() {
-  const canPlay = current === 'work' && !dialog.open && !document.hidden && !reduced && previewInView && !navigator.connection?.saveData;
-  for (const [key, art] of previewCache) {
-    const video = art.querySelector('video');
-    if (canPlay && key === selectedProject) {
-      if (!video.getAttribute('src')) video.src = video.dataset.src;
-      video.play().catch(() => {}); // The poster remains if autoplay is unavailable.
-    } else video.pause();
-  }
-}
-const coverObserver = new IntersectionObserver(([entry]) => {
-  previewInView = entry.isIntersecting;
-  syncCoverPlayback();
-}, { threshold: .1 });
-coverObserver.observe(preview);
-function stopPreviewCycle() { clearTimeout(cycleTimer); }
-function schedulePreviewCycle() {
-  stopPreviewCycle();
-  if (current !== 'work' || indexReached || previewHovered || document.activeElement === preview || reduced || document.hidden || dialog.open) return;
-  cycleTimer = setTimeout(() => {
-    showPreview(projectKeys[(projectKeys.indexOf(selectedProject) + 1) % projectKeys.length]);
-    schedulePreviewCycle();
-  }, 6000);
-}
-function reachIndex() { indexReached = true; stopPreviewCycle(); }
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    stopPreviewCycle();
-    dialog.querySelectorAll('video').forEach(video => video.pause());
-  } else schedulePreviewCycle();
-  syncCoverPlayback();
+  if (document.hidden) dialog.querySelectorAll('video').forEach(video => video.pause());
 });
-function showPreview(key, animate = true) {
-  if (key === selectedProject && preview.style.visibility === 'visible') { syncCoverPlayback(); return; }
-  selectedProject = key;
-  preview.setAttribute('aria-label', `View project: ${projects[key].title}`);
-  if (!previewCache.has(key)) { const art = document.createElement('span'); art.className = 'art-frame'; renderArt(art, key); previewCache.set(key, art); }
-  document.getElementById('preview-art').replaceChildren(previewCache.get(key));
-  document.getElementById('preview-caption').textContent = projects[key].caption;
-  syncCoverPlayback();
- 
-  gsap.killTweensOf(preview);
-  gsap.fromTo(preview, { autoAlpha: 0, y: reduced ? 0 : 18, rotation: reduced ? 0 : -1.5 }, { autoAlpha: 1, y: 0, rotation: 0, duration: reduced || !animate ? 0 : .22, ease: 'power3.out' });
-}
-function hidePreview() {
-  if (current === 'work') return;
-  syncCoverPlayback();
-  gsap.to(preview, { autoAlpha: 0, y: reduced ? 0 : -12, duration: reduced ? 0 : .2, overwrite: true });
-}
-preview.addEventListener('pointerenter', () => { previewHovered = true; stopPreviewCycle(); });
-preview.addEventListener('pointerleave', () => { previewHovered = false; schedulePreviewCycle(); });
-preview.addEventListener('focus', stopPreviewCycle);
-preview.addEventListener('blur', schedulePreviewCycle);
-preview.addEventListener('click', () => { if (selectedProject) openProject(selectedProject); });
-document.querySelectorAll('.project-row').forEach(button => {
-  button.addEventListener('pointerenter', () => { reachIndex(); showPreview(button.dataset.project); });
-  button.addEventListener('focus', () => { reachIndex(); showPreview(button.dataset.project); });
-  button.addEventListener('click', () => openProject(button.dataset.project));
-});
-document.querySelector('.work-index').addEventListener('pointerenter', reachIndex);
-document.querySelector('.work-index').addEventListener('focusout', e => { if (!e.currentTarget.contains(e.relatedTarget)) hidePreview(); });
 
 const dialog = document.getElementById('project-dialog');
 let activeProjectKey = null;
 let projectOpener = null;
 function openProject(key) {
-  reachIndex();
   dialog.querySelectorAll('video').forEach(video => video.pause());
   const wasOpen = dialog.open;
   if (!wasOpen) projectOpener = document.activeElement;
   activeProjectKey = key;
   const project = projects[key];
   const index = projectKeys.indexOf(key);
-  document.querySelector('.project-position').textContent = `${String(index + 1).padStart(2, '0')} / ${String(projectKeys.length).padStart(2, '0')} — ${project.title}`;
+  document.querySelector('.project-position').textContent = `${String(index + 1).padStart(2, '0')} / ${String(projectKeys.length).padStart(2, '0')} · ${project.title}`;
   document.getElementById('previous-project').title = projects[projectKeys[(index - 1 + projectKeys.length) % projectKeys.length]].title;
   document.getElementById('next-project').title = projects[projectKeys[(index + 1) % projectKeys.length]].title;
   document.getElementById('dialog-title').textContent = project.title;
   document.getElementById('dialog-category').textContent = project.category;
   document.getElementById('dialog-description').textContent = project.description;
-  renderArt(document.getElementById('dialog-art'), key, true);
+  renderArt(document.getElementById('dialog-art'), key);
   const meta = document.getElementById('dialog-meta');
   meta.replaceChildren(...Object.entries(project.metadata).map(([label, value]) => {
     const group = document.createElement('div');
@@ -288,12 +208,11 @@ function openProject(key) {
     video.preload = 'none';
     video.setAttribute('aria-label', 'PRISM Collective website walkthrough');
     const caption = document.createElement('figcaption');
-    caption.textContent = 'PRISM Collective — full website walkthrough';
+    caption.textContent = 'Full PRISM Collective website walkthrough';
     figure.append(video, caption);
     document.getElementById('dialog-gallery').prepend(figure);
   }
   if (!wasOpen) dialog.showModal();
-  syncCoverPlayback();
   dialog.scrollTop = 0;
  
   document.dispatchEvent(new Event('portfolio:dialog-open'));
@@ -317,7 +236,6 @@ dialog.addEventListener('close', () => {
   dialog.querySelectorAll('video').forEach(video => video.pause());
   if (projectOpener?.isConnected) projectOpener.focus({ preventScroll: true });
   activeProjectKey = null;
-  syncCoverPlayback();
 });
 document.getElementById('close-project').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', e => { if (e.target === dialog) { const r = dialog.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close(); } });
@@ -459,13 +377,10 @@ window.addEventListener('resize', () => {
     if (sculptures.active) sculptures.build();
     textReactions.measure();
     visuals?.paint();
-    if (current === 'work' && matchMedia('(max-width:600px)').matches) showPreview(selectedProject || projectKeys[0], false);
   }, 160);
 });
 reducedQuery.addEventListener('change', e => {
   reduced = e.matches;
-  syncCoverPlayback();
-  schedulePreviewCycle();
   sculptures.reduced = reduced;
   textReactions.reduced = reduced;
   if (reduced) {
@@ -484,4 +399,4 @@ if (current === 'home') gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlph
 // The page is already usable if a font is slow or unavailable.
 Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);
 if (import.meta.env.DEV) window.__portfolio = { sculptures, textReactions };
-if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); coverObserver.disconnect(); previewCache.forEach(art => art.querySelector('video')?.pause()); aboutCube.dispose(); removeGallery(); sculptures.destroy(); visuals?.dispose(); removeCursor(); stopPreviewCycle(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); work.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });
