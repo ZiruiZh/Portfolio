@@ -14,13 +14,6 @@
     "height": 2160
   },
   {
-    "id": "03",
-    "title": "Map of Care poster",
-    "source": "BQN8crMvlhkYvDlXVkPoxLejQ.png",
-    "width": 2480,
-    "height": 3508
-  },
-  {
     "id": "04",
     "title": "RUN.",
     "source": "BSARqZGWvwwOg24lR4D9ruXCuw.png",
@@ -63,13 +56,6 @@
     "height": 3508
   },
   {
-    "id": "10",
-    "title": "ArtsFest 2025 poster",
-    "source": "NK6ykdK7foSf4cyWQSushTxPolc.png",
-    "width": 6600,
-    "height": 10200
-  },
-  {
     "id": "11",
     "title": "What's an ORTBO?",
     "source": "ORTBOSEVER.png",
@@ -89,13 +75,6 @@
     "source": "PROFIL_FINISSANT_discord_sendabl.jpg",
     "width": 1984,
     "height": 2806
-  },
-  {
-    "id": "14",
-    "title": "New Mari City",
-    "source": "QGL580QhAGyUiM42mUExeaPM.jpg",
-    "width": 7659,
-    "height": 4950
   },
   {
     "id": "15",
@@ -124,13 +103,6 @@
     "source": "XV6NmXn29Sqs0h1PnaBo6H4ER4.png",
     "width": 1290,
     "height": 1606
-  },
-  {
-    "id": "19",
-    "title": "Yearbook cover spread",
-    "source": "ahHXiISfKAhACFTzq2A5gAAM.jpg",
-    "width": 5375,
-    "height": 3451
   },
   {
     "id": "20",
@@ -166,12 +138,5 @@
     "source": "summergone.jpg",
     "width": 3190,
     "height": 3668
-  },
-  {
-    "id": "25",
-    "title": "Brave Hearts Alliance illustration",
-    "source": "bha-illustration.webp",
-    "width": 2000,
-    "height": 2000
   }
 ]

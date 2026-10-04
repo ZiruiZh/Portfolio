@@ -2,13 +2,14 @@ import { installLinkGlide } from './link-motion.js';
 import './style.css';
 import { gsap } from 'gsap';
 import { SculptureStage } from './physics.js';
-import { projects, projectImage, projectVideo } from './projects.js';
 import { TextReactions } from './text-reactions.js';
 import { installCursor } from './cursor.js';
 import { PlaygroundBackground } from './playground-background.js';
 import { installPlaygroundGallery } from './playground-gallery.js';
 import { AboutCube } from './about-cube.js';
 import { installWork } from './work.js';
+import { installCaseStudy } from './case-study.js';
+import { isProject } from './projects.js';
 import { makeRun } from './palette.js';
 import { makeAccent } from './experience-math.js';
 
@@ -27,50 +28,50 @@ refreshAccent(introAccents[Math.floor(Math.random() * introAccents.length)]);
 const removeCursor = installCursor(reducedQuery);
 const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
 document.querySelectorAll('.resume-link, [data-resume-link]').forEach(link => { link.href = resumeURL; });
+// The router decides where each route lands, so the browser must not also guess.
+history.scrollRestoration = 'manual';
 const pages = ['home', 'work', 'playground', 'about'];
 let current = 'home';
+let currentProject = null;
+let workScroll = 0;
 let transition;
 let pendingShapeTheme = null;
 const sculptures = new SculptureStage(document.getElementById('stage'), reduced);
 const gallery = installPlaygroundGallery(sculptures, reducedQuery);
-const work = installWork({ reducedQuery, openProject, openImage: gallery.open });
+const caseStudy = installCaseStudy({ reducedQuery });
+const work = installWork({ reducedQuery, openImage: gallery.open });
 const visuals = new PlaygroundBackground(reducedQuery);
 // Both layers read the same eased offset; pointer parallax cannot drift apart.
 sculptures.parallax = visuals.offset;
 sculptures.onNavigate = (page, color) => {
-  if (page === pageFromHash()) { refreshAccent(color); return; }
+  if (page === routeFromHash().page) { refreshAccent(color); return; }
   pendingShapeTheme = { page, color };
   location.hash = page;
 };
 const aboutCube = new AboutCube(document.querySelector('.about-portraits'), reducedQuery);
 
-function renderArt(target, key) {
-  const project = projects[key];
-  const image = document.createElement('img');
-  image.className = 'project-image';
-  image.src = projectImage(project.images[0].file);
-  image.alt = project.images[0].caption;
-  image.width = project.images[0].width;
-  image.height = project.images[0].height;
-  image.decoding = 'async';
-  target.replaceChildren(image);
-}
-
-function applyPage(page, focus = false) {
+function applyPage({ page, project }, focus = false) {
   stopHeroReveal();
+  // Work is tall, so returning from a case study lands where the card was.
+  if (current === 'work') workScroll = scrollY;
+  const from = current;
   current = page;
+  currentProject = project;
   document.body.dataset.page = page;
   document.querySelectorAll('.page').forEach(el => { el.hidden = el.id !== page; });
+  const title = project ? caseStudy.render(project) : null;
+  const tab = page === 'project' ? 'work' : page;
   document.querySelectorAll('.nav-link').forEach(link => {
-    if (link.hash === `#${page}`) link.setAttribute('aria-current', 'page');
+    if (link.hash === `#${tab}`) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
-  document.title = 'Zirui Zhao';
+  document.title = title ? `${title} · Zirui Zhao` : 'Zirui Zhao';
   sculptures.setMode(page);
   visuals?.setMode(page);
   aboutCube.setMode(page);
+  caseStudy.setMode(page);
   textReactions.measure();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  window.scrollTo({ top: page === 'work' && from === 'project' ? workScroll : 0, behavior: 'instant' });
   work.setMode(page);
   if (page === 'home' && introFinished) revealHome(!reduced);
   if (focus) {
@@ -80,12 +81,12 @@ function applyPage(page, focus = false) {
   }
 }
 
-function navigate(page, animate = true) {
-  if (!pages.includes(page)) page = 'home';
+function navigate(route, animate = true) {
+  const { page, project } = route;
   if (!introFinished) finishIntro();
   if (transition) transition.kill();
   const wipe = document.querySelector('.route-wipe');
-  if (page === current) {
+  if (page === current && project === currentProject) {
     gsap.set(wipe, { scaleY: 0 });
     gsap.set('.page h1', { clearProps: 'transform,opacity' });
     return;
@@ -93,25 +94,27 @@ function navigate(page, animate = true) {
   const shapeColor = pendingShapeTheme?.page === page ? pendingShapeTheme.color : undefined;
   pendingShapeTheme = null;
   refreshAccent(shapeColor);
-  if (reduced || !animate) { gsap.set(wipe, { scaleY: 0 }); applyPage(page, true); return; }
+  if (reduced || !animate) { gsap.set(wipe, { scaleY: 0 }); applyPage(route, true); return; }
   transition = gsap.timeline()
     .set(wipe, { transformOrigin: 'bottom', scaleY: 0 })
     .to(wipe, { scaleY: 1, duration: .18, ease: 'power3.inOut' })
-    .call(() => applyPage(page, true))
+    .call(() => applyPage(route, true))
     .set(wipe, { transformOrigin: 'top' })
     .to(wipe, { scaleY: 0, duration: .25, ease: 'power3.inOut' })
     .fromTo(`#${page} h1`, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .3, ease: 'power3.out', clearProps: 'transform,opacity' }, '-=.16')
     .call(() => textReactions.measure());
 }
 
-function pageFromHash() {
-  const hash = location.hash.slice(1);
-  return hash === 'top' || !pages.includes(hash) ? 'home' : hash;
+// #work/prism is a case study; anything unknown falls back to the home page.
+function routeFromHash() {
+  const [name, key] = location.hash.slice(1).split('/');
+  if (name === 'work' && isProject(key)) return { page: 'project', project: key };
+  return { page: pages.includes(name) ? name : 'home', project: null };
 }
-window.addEventListener('hashchange', () => navigate(pageFromHash()));
+window.addEventListener('hashchange', () => navigate(routeFromHash()));
 document.querySelector('.skip-link').addEventListener('click', e => { e.preventDefault(); document.getElementById('main').focus({ preventScroll: true }); });
-document.getElementById('reset-home').addEventListener('click', () => sculptures.build(!reduced));
-document.getElementById('reset-play').addEventListener('click', () => sculptures.build(!reduced));
+document.getElementById('reset-home').addEventListener('click', () => sculptures.reset(!reduced));
+document.getElementById('reset-play').addEventListener('click', () => sculptures.reset(!reduced));
 document.getElementById('remix').addEventListener('click', () => sculptures.remix());
 
 // A character responds to proximity without making the heading look like a link.
@@ -158,87 +161,6 @@ sculptures.onFrame = (time, moving) => {
   textReactions.update(time, moving);
   if (sculptures.mode === 'playground') visuals?.pan(sculptures.looping.camera.x, sculptures.looping.camera.y);
 };
-
-const projectKeys = Object.keys(projects);
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) dialog.querySelectorAll('video').forEach(video => video.pause());
-});
-
-const dialog = document.getElementById('project-dialog');
-let activeProjectKey = null;
-let projectOpener = null;
-function openProject(key) {
-  dialog.querySelectorAll('video').forEach(video => video.pause());
-  const wasOpen = dialog.open;
-  if (!wasOpen) projectOpener = document.activeElement;
-  activeProjectKey = key;
-  const project = projects[key];
-  const index = projectKeys.indexOf(key);
-  document.querySelector('.project-position').textContent = `${String(index + 1).padStart(2, '0')} / ${String(projectKeys.length).padStart(2, '0')} · ${project.title}`;
-  document.getElementById('previous-project').title = projects[projectKeys[(index - 1 + projectKeys.length) % projectKeys.length]].title;
-  document.getElementById('next-project').title = projects[projectKeys[(index + 1) % projectKeys.length]].title;
-  document.getElementById('dialog-title').textContent = project.title;
-  document.getElementById('dialog-category').textContent = project.category;
-  document.getElementById('dialog-description').textContent = project.description;
-  renderArt(document.getElementById('dialog-art'), key);
-  const meta = document.getElementById('dialog-meta');
-  meta.replaceChildren(...Object.entries(project.metadata).map(([label, value]) => {
-    const group = document.createElement('div');
-    const term = document.createElement('dt'); term.textContent = label === 'My Role' ? 'Role' : label;
-    const description = document.createElement('dd'); description.textContent = value;
-    group.append(term, description); return group;
-  }));
-  document.getElementById('dialog-gallery').replaceChildren(...project.images.slice(1).map(image => {
-    const figure = document.createElement('figure');
-    const link = document.createElement('a'); link.href = projectImage(image.file); link.target = '_blank'; link.rel = 'noopener';
-    link.setAttribute('aria-label', `View full image: ${image.caption}`);
-    const img = document.createElement('img'); img.src = link.href; img.alt = image.caption;
-    img.width = image.width; img.height = image.height; img.loading = 'lazy'; img.decoding = 'async';
-    const caption = document.createElement('figcaption'); caption.textContent = image.caption;
-    link.appendChild(img); figure.append(link, caption); return figure;
-  }));
-  if (project.walkthrough) {
-    const figure = document.createElement('figure');
-    figure.className = 'project-walkthrough';
-    const video = document.createElement('video');
-    video.src = projectVideo(project.walkthrough);
-    video.poster = projectImage(project.cover);
-    video.controls = true;
-    video.playsInline = true;
-    video.preload = 'none';
-    video.setAttribute('aria-label', 'PRISM Collective website walkthrough');
-    const caption = document.createElement('figcaption');
-    caption.textContent = 'Full PRISM Collective website walkthrough';
-    figure.append(video, caption);
-    document.getElementById('dialog-gallery').prepend(figure);
-  }
-  if (!wasOpen) dialog.showModal();
-  dialog.scrollTop = 0;
- 
-  document.dispatchEvent(new Event('portfolio:dialog-open'));
-  gsap.killTweensOf(dialog);
-  if (!reduced && !wasOpen) gsap.fromTo(dialog, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: .3, clearProps: 'transform,opacity' });
-  else gsap.set(dialog, { clearProps: 'transform,opacity' });
-}
-function stepProject(direction) {
-  if (!dialog.open || !activeProjectKey) return;
-  const index = projectKeys.indexOf(activeProjectKey);
-  openProject(projectKeys[(index + direction + projectKeys.length) % projectKeys.length]);
-}
-document.getElementById('previous-project').addEventListener('click', () => stepProject(-1));
-document.getElementById('next-project').addEventListener('click', () => stepProject(1));
-dialog.addEventListener('keydown', e => {
-  if (e.target.closest('video')) return;
-  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
-  e.preventDefault(); e.stopPropagation(); stepProject(e.key === 'ArrowLeft' ? -1 : 1);
-});
-dialog.addEventListener('close', () => {
-  dialog.querySelectorAll('video').forEach(video => video.pause());
-  if (projectOpener?.isConnected) projectOpener.focus({ preventScroll: true });
-  activeProjectKey = null;
-});
-document.getElementById('close-project').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', e => { if (e.target === dialog) { const r = dialog.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close(); } });
 
 let introFinished = false;
 let introTimeline;
@@ -387,16 +309,16 @@ reducedQuery.addEventListener('change', e => {
     finishIntro();
     stopHeroReveal();
     textReactions.update();
-    if (transition) { transition.kill(); applyPage(pageFromHash()); }
+    if (transition) { transition.kill(); applyPage(routeFromHash()); }
     gsap.set('.route-wipe', { scaleY: 0 });
     if (sculptures.active) sculptures.build();
   }
 });
 
 installLinkGlide();
-applyPage(pageFromHash());
+applyPage(routeFromHash());
 if (current === 'home') gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 0 });
 // The page is already usable if a font is slow or unavailable.
 Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);
 if (import.meta.env.DEV) window.__portfolio = { sculptures, textReactions };
-if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); work.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); work.dispose(); caseStudy.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });

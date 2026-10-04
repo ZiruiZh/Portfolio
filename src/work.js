@@ -1,4 +1,4 @@
-import { projects, projectImage, projectVideo, visualWork } from './projects.js';
+import { projects, projectImage, projectVideo, projectRoute, visualWork } from './projects.js';
 import { playgroundImages, playgroundImage } from './playground-gallery.js';
 import { parseRatio, featureColumns, visualColumns, distributeColumns } from './work-layout.js';
 
@@ -50,21 +50,20 @@ function caption(title, meta) {
 
 // Case studies share one card builder between the feature grid and the visual grid.
 // A card shows a still unless it names a video recorded from the project itself.
+// Each one links to the case study's own route, so it behaves like any other link.
 function projectCard(key, className, featured) {
   const project = projects[key];
   const { card } = project;
-  const button = h('button', className);
-  button.type = 'button';
-  button.dataset.project = key;
-  button.setAttribute('aria-haspopup', 'dialog');
-  button.setAttribute('aria-controls', 'project-dialog');
+  const link = h('a', className);
+  link.href = projectRoute(key);
+  link.dataset.project = key;
   const art = card.video
     ? { ratio: card.ratio, video: projectVideo(card.video), poster: projectImage(card.poster) }
     : { ratio: card.ratio, mat: card.mat, images: card.images.map(projectImage) };
-  button.append(media(art), featured
+  link.append(media(art), featured
     ? caption(project.headline, `${project.title} • ${project.category} ${project.year}`)
     : caption(project.title));
-  return button;
+  return link;
 }
 
 // Places cards into columns by estimated height so every column ends close together.
@@ -77,7 +76,7 @@ function masonry(grid, cards, count, captionHeight) {
     h('div', 'work-column', ...indices.map(index => cards[index].el))));
 }
 
-export function installWork({ reducedQuery, openProject, openImage }) {
+export function installWork({ reducedQuery, openImage }) {
   const featureGrid = document.getElementById('feature-grid');
   const visualGrid = document.getElementById('visual-grid');
   const controller = new AbortController();
@@ -85,18 +84,13 @@ export function installWork({ reducedQuery, openProject, openImage }) {
 
   // Case studies listed in the visual grid are left out of the feature grid.
   const inVisual = new Set(visualWork.map(item => item.project).filter(Boolean));
-  const features = Object.keys(projects).filter(key => !inVisual.has(key)).map(key => {
-    const el = projectCard(key, 'work-card', true);
-    el.addEventListener('click', () => openProject(key));
-    return { el, ratio: parseRatio(projects[key].card.ratio) };
-  });
+  const features = Object.keys(projects).filter(key => !inVisual.has(key))
+    .map(key => ({ el: projectCard(key, 'work-card', true), ratio: parseRatio(projects[key].card.ratio) }));
 
   const imageIds = visualWork.filter(item => item.playground).map(item => item.playground);
   const visuals = visualWork.map(item => {
     if (item.project) {
-      const el = projectCard(item.project, 'visual-item', false);
-      el.addEventListener('click', () => openProject(item.project));
-      return { el, ratio: parseRatio(projects[item.project].card.ratio) };
+      return { el: projectCard(item.project, 'visual-item', false), ratio: parseRatio(projects[item.project].card.ratio) };
     }
     const data = playgroundImages.find(entry => entry.id === item.playground);
     const ratio = item.ratio || `${data.width} / ${data.height}`;
@@ -119,7 +113,7 @@ export function installWork({ reducedQuery, openProject, openImage }) {
   layoutGrids();
   ['(max-width:1024px)', '(max-width:600px)'].forEach(query => matchMedia(query).addEventListener('change', layoutGrids, options));
 
-  // Only videos near the viewport play; everything pauses outside Work, behind a dialog, or in a hidden tab.
+  // Only videos near the viewport play; everything pauses outside Work, behind the lightbox, or in a hidden tab.
   const reels = [...document.querySelectorAll('#work video[data-src]')];
   const nearby = new Set();
   let enabled = false;

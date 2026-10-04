@@ -1,11 +1,112 @@
 // Original four projects imported from zirui.ca; provenance: .reference/projects-source.json
 // PRISM assets, recording, and timeline supplied directly by Zirui.
 export const projects = {
+  "allot": {
+    "title": "Ramp Allot",
+    "category": "Product Design",
+    "sections": [
+      {
+        "label": "Overview",
+        "heading": "Budget by the event, not by the day",
+        "body": "Allot is a concept for Ramp that budgets by the event instead of by the day. It skips the events that need no money, sizes each budget from the attendees, place, and policy, opens a Ramp limit when the event starts and closes it when the event ends, then matches every charge back to the event it belongs to."
+      },
+      {
+        "label": "Problem",
+        "body": "Company budgets are set by the day, so the same money goes to a client dinner and a catered lunch, and finance only finds out what each charge was for after it's spent.",
+        "images": [
+          "allot-0.webp"
+        ]
+      },
+      {
+        "label": "Insights",
+        "heading": "A good budget belongs to one event, fits that event, and closes when the event ends."
+      },
+      {
+        "label": "Solution",
+        "heading": "Everything you need to budget by the event, not by the day",
+        "list": [
+          {
+            "term": "Filter",
+            "text": "Skip standups, focus blocks, and catered sessions"
+          },
+          {
+            "term": "Price",
+            "text": "Size each budget from attendees, place, and policy"
+          },
+          {
+            "term": "Lock",
+            "text": "Open a Ramp limit at the event, close it after"
+          },
+          {
+            "term": "Match",
+            "text": "Reconcile every charge to its event automatically"
+          }
+        ],
+        "images": [
+          "allot-1.webp"
+        ]
+      },
+      {
+        "label": "Outcome",
+        "body": "With Allot, each event gets its own budget, and the money goes away once the event is over. Nobody pays for a lunch the conference already served or puts a client dinner on their personal card. Finance gets to close the month without playing detective.",
+        "stats": [
+          {
+            "value": "$140K",
+            "text": "Saved every year by a 100-person team that travels monthly"
+          },
+          {
+            "value": "1,200",
+            "text": "Reimbursement reports that never get written"
+          },
+          {
+            "value": "58 days",
+            "text": "Of work back each year from forms nobody has to file"
+          },
+          {
+            "value": "$0",
+            "text": "Out of an employee's pocket for a client dinner"
+          }
+        ],
+        "note": "Model: 1,200 trips a year, each saving $117 and 23 minutes. Sources: GSA FY2026, GBTA, Engine 2026.",
+        "images": [
+          "allot-2.webp"
+        ]
+      }
+    ],
+    "metadata": {
+      "Project": "Allot, a concept for Ramp",
+      "Team": ["Fiona Cai", "Kuan Yi Wang", "Sharon Basovich", "Me (Designer!)"],
+      "Focus": "Product design"
+    },
+    "cover": "allot-cover.webp",
+    "walkthrough": "allot-walkthrough.mp4",
+    "images": [
+      { "file": "allot-0.webp", "caption": "Context and problem", "width": 1800, "height": 1013 },
+      { "file": "allot-1.webp", "caption": "Filter, price, lock, and match", "width": 1800, "height": 1013 },
+      { "file": "allot-2.webp", "caption": "Impacts for a 100-person team", "width": 1800, "height": 1013 }
+    ],
+    "headline": "Budget by the event, not by the day",
+    "year": "2026",
+    "card": { "video": "allot-cover.mp4", "poster": "allot-cover.webp", "ratio": "1280 / 724" }
+  },
   "prism": {
     "title": "Prism Collective",
-    "caption": "PRISM COLLECTIVE / WEBSITE",
     "category": "Website Design",
-    "description": "A website for PRISM Collective, a creative technology community at the University of Waterloo. Iridescent graphics, playful motion, and expressive typography bring its world of art and technology online. The site introduces the collective, showcases its projects, and invites new collaborators to join.",
+    "sections": [
+      {
+        "label": "Overview",
+        "body": "A website for PRISM Collective, a creative technology community at the University of Waterloo."
+      },
+      {
+        "label": "Solution",
+        "body": "Iridescent graphics, playful motion, and expressive typography bring its world of art and technology online. The site introduces the collective, showcases its projects, and invites new collaborators to join.",
+        "images": [
+          "prism-1.webp",
+          "prism-2.webp",
+          "prism-3.webp"
+        ]
+      }
+    ],
     "metadata": {
       "Project": "PRISM Collective",
       "Timeline": "8 weeks",
@@ -21,14 +122,32 @@ export const projects = {
     ],
     "headline": "Bringing art and technology online",
     "year": "2026",
-    "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "1150 / 720" },
-    "hoverColor": "#7047eb"
+    "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "1150 / 720" }
   },
   "bha": {
     "title": "Brave Hearts Alliance",
-    "caption": "BRAVE HEARTS ALLIANCE / PRODUCT DESIGN",
     "category": "Product Design",
-    "description": "Brave Hearts Alliance needed a brand that matched the heart behind their mission. As founder and creative director, I designed the website, brand identity, and merchandise to give the organization a cohesive visual voice that inspires action and builds community.",
+    "sections": [
+      {
+        "label": "Overview",
+        "body": "As founder and creative director, I designed the website, brand identity, and merchandise for Brave Hearts Alliance."
+      },
+      {
+        "label": "Problem",
+        "body": "Brave Hearts Alliance needed a brand that matched the heart behind their mission."
+      },
+      {
+        "label": "Solution",
+        "body": "The website, brand identity, and merchandise give the organization a cohesive visual voice that inspires action and builds community.",
+        "images": [
+          "bha-1.webp",
+          "bha-2.webp",
+          "bha-5.webp",
+          "bha-3.webp",
+          "bha-4.webp"
+        ]
+      }
+    ],
     "metadata": {
       "Client": "Brave Hearts Alliance, a Heart Nonprofit",
       "Industry": "Nonprofit, Heart",
@@ -77,14 +196,28 @@ export const projects = {
     "source": "https://www.zirui.ca/works/bha",
     "headline": "Raising Awareness for CHD",
     "year": "2025",
-    "card": { "images": ["bha-0.webp"], "ratio": "3 / 2" },
-    "hoverColor": "#d92b63"
+    "card": { "images": ["bha-0.webp"], "ratio": "3 / 2" }
   },
   "bcrc": {
     "title": "BCRC Montreal",
-    "caption": "BCRC MONTREAL / COMMUNICATIONS",
     "category": "Communications",
-    "description": "As communications coordinator for the Black Community Resource Center, I led the creative promotion efforts behind their events, designing posters and web materials that reached over 20,000 viewers and brought more than 200 people through the door.",
+    "sections": [
+      {
+        "label": "Overview",
+        "body": "As communications coordinator for the Black Community Resource Center, I led the creative promotion behind their events, designing posters and web materials.",
+        "images": [
+          "bcrc-1.webp",
+          "bcrc-2.webp"
+        ]
+      },
+      {
+        "label": "Outcome",
+        "body": "The work reached over 20,000 viewers and brought more than 200 people through the door.",
+        "images": [
+          "bcrc-3.webp"
+        ]
+      }
+    ],
     "metadata": {
       "Client": "The Black Community Resource Center of Montreal",
       "Industry": "Nonprofit, Social Services",
@@ -121,14 +254,28 @@ export const projects = {
     "source": "https://www.zirui.ca/works/bcrc",
     "headline": "Empowering the Black Community in Montreal",
     "year": "2025",
-    "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "3 / 2", "mat": true },
-    "hoverColor": "#537c00"
+    "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "3 / 2", "mat": true }
   },
   "yearbook": {
     "title": "Marianopolis Yearbook",
-    "caption": "MARIANOPOLIS YEARBOOK / EDITORIAL",
     "category": "Editorial",
-    "description": "As yearbook chief, I took on the design of the cover and a spread while coordinating 36 people working toward the same goal. It was a lot of moving pieces, but the final product made it worth it.",
+    "sections": [
+      {
+        "label": "Overview",
+        "body": "As yearbook chief, I took on the design of the cover and a spread while coordinating 36 people working toward the same goal.",
+        "images": [
+          "yearbook-1.webp",
+          "yearbook-2.webp"
+        ]
+      },
+      {
+        "label": "Outcome",
+        "body": "It was a lot of moving pieces, but the final product made it worth it.",
+        "images": [
+          "yearbook-3.webp"
+        ]
+      }
+    ],
     "metadata": {
       "Client": "Marianopolis College",
       "Industry": "Education",
@@ -165,14 +312,24 @@ export const projects = {
     "source": "https://www.zirui.ca/works/yearbook",
     "headline": "A yearbook built by a team of 36",
     "year": "2025–26",
-    "card": { "images": ["yearbook-0.webp"], "ratio": "1800 / 1156" },
-    "hoverColor": "#2259af"
+    "card": { "images": ["yearbook-0.webp"], "ratio": "1800 / 1156" }
   },
   "artsfest": {
     "title": "ArtsFest",
-    "caption": "ARTSFEST / POSTER",
     "category": "Poster",
-    "description": "For Marianopolis' ArtsFest convention, I designed the poster that welcomed the whole school into the event. Getting the energy of the day into a single graphic was the challenge, and the fun.",
+    "sections": [
+      {
+        "label": "Overview",
+        "body": "For Marianopolis' ArtsFest convention, I designed the poster that welcomed the whole school into the event.",
+        "images": [
+          "artsfest-1.webp"
+        ]
+      },
+      {
+        "label": "Problem",
+        "body": "Getting the energy of the day into a single graphic was the challenge, and the fun."
+      }
+    ],
     "metadata": {
       "Client": "ArtsFest, an Arts Festival",
       "Industry": "Education",
@@ -197,8 +354,7 @@ export const projects = {
     "source": "https://www.zirui.ca/works/artsfest",
     "headline": "One poster for a whole festival",
     "year": "2024",
-    "card": { "images": ["artsfest-1-grid.webp"], "ratio": "4 / 5", "mat": true },
-    "hoverColor": "#a33cbf"
+    "card": { "images": ["artsfest-1-grid.webp"], "ratio": "4 / 5", "mat": true }
   }
 };
 
@@ -218,6 +374,10 @@ export const visualWork = [
   { playground: '20', title: 'Pixel bunny' },
   { playground: '21', title: 'Red-haired character', mat: true, ratio: '1 / 1' },
 ];
+
+// Each case study is its own route under the work page.
+export const projectRoute = key => `#work/${key}`;
+export const isProject = key => Object.hasOwn(projects, key);
 
 const assets = import.meta.glob('../assets/projects/*.webp', { eager: true, query: '?url', import: 'default' });
 export const projectImage = file => assets[`../assets/projects/${file}`];

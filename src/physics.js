@@ -11,6 +11,7 @@ import { createEnclosure, containBody, SCULPTURE_MATERIAL } from './enclosure.js
 const artwork = import.meta.glob('../assets/shapes/*.svg', { query: '?raw', import: 'default', eager: true });
 const { Engine, Bodies, Body, Composite, Constraint, Vertices, Sleeping, Query } = Matter;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const hoverCapable = matchMedia('(hover: hover)');
 
 export class SculptureStage {
   constructor(element, reduced) {
@@ -55,7 +56,7 @@ export class SculptureStage {
   build(animate = false) {
     this.release();
     this.clearFocus();
-    this.items.forEach(item => { item.colorTween?.kill(); gsap.killTweensOf(item); });
+    this.items.forEach(item => { item.colorTween?.kill(); gsap.killTweensOf(item); if (item.rings) gsap.killTweensOf(item.rings); });
     gsap.killTweensOf(this.items.map(item => item.el));
     Composite.clear(this.engine.world, false);
     Engine.clear(this.engine);
@@ -202,9 +203,13 @@ export class SculptureStage {
       el.setAttribute('role', 'button');
       el.setAttribute('aria-label', `Recolor circle ${i + 1}. ${this.mode === 'playground' ? 'Drag to pan.' : 'Drag to move.'}`);
       const body = Bodies.circle(spawn.x, spawn.y, r, { density: .008, friction: .65, frictionAir: .022, restitution: .16 });
-      const item = { entrance: 1, el, body, center: { x: r, y: r }, w: diameter, h: diameter, layers: [], radii };
+      const item = { entrance: 1, el, body, center: { x: r, y: r }, w: diameter, h: diameter, layers: [], rings: [...el.children], radii, pulse: 0 };
       el.addEventListener('pointerdown', e => this.grab(e, item));
-      el.addEventListener('focus', () => { if (this.mode === 'playground') this.looping.focus(item); });
+      el.addEventListener('pointerenter', () => { if (hoverCapable.matches) this.ringHover(item, true); });
+      el.addEventListener('pointerleave', () => this.ringHover(item, false));
+      // Keyboard focus earns the same hint; a tap does not, so it cannot stick.
+      el.addEventListener('focus', () => { if (el.matches(':focus-visible')) this.ringHover(item, true); if (this.mode === 'playground') this.looping.focus(item); });
+      el.addEventListener('blur', () => this.ringHover(item, false));
       el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.activate(item); } });
       this.element.appendChild(el);
       this.items.push(item);
@@ -259,10 +264,30 @@ export class SculptureStage {
     this.hovered = null;
   }
 
+  // Rings pull back from the rim in sequence, so a circle reads as clickable
+  // before it is clicked and the click can then throw them outwards.
+  ringHover(item, on) {
+    if (!item.rings) return;
+    item.ringHover = on;
+    const duration = this.reduced ? 0 : on ? .34 : .26;
+    gsap.to(item, { pulse: on ? .022 : 0, duration, ease: 'power3.out', overwrite: 'auto' });
+    // A recolor owns the rings until it ends, and then restores the hint itself.
+    if (item.el.dataset.recoloring) return;
+    gsap.to(item.rings, {
+      // The outermost ring fills the clipped silhouette and has to stay put.
+      scale: index => on && index ? 1 - Math.min(.1, .035 + index * .018) : 1,
+      duration,
+      stagger: this.reduced ? 0 : { each: .035, from: on ? 'end' : 'start' },
+      ease: on ? 'power3.out' : 'power2.inOut',
+      overwrite: 'auto',
+    });
+  }
+
   extrudeCircle(item) {
     // Finish an interrupted color cycle before starting the next one.
     if (item.colorTween) { const previous = item.colorTween; previous.progress(1); previous.kill(); }
     const oldLayers = [...item.el.children];
+    gsap.killTweensOf(oldLayers);
     const colors = makeRun(item.radii.length, { allowWhite: true });
     if (this.reduced) {
       oldLayers.forEach((layer, i) => { layer.style.backgroundColor = colors[i]; });
@@ -275,12 +300,14 @@ export class SculptureStage {
       item.el.appendChild(next);
       return next;
     });
+    item.rings = newLayers;
     item.el.dataset.recoloring = 'true';
     item.colorTween = gsap.timeline({ onComplete: () => {
       oldLayers.forEach(layer => layer.remove());
       gsap.set(newLayers, { clearProps: 'transform,opacity' });
       delete item.el.dataset.recoloring;
       item.colorTween = null;
+      if (item.ringHover) this.ringHover(item, true);
     } });
     // Opaque colors replace each other inside the fixed circular silhouette.
     item.colorTween.to(oldLayers, { scale: 2.4, duration: .42, stagger: .018, ease: 'power4.inOut' }, 0)
@@ -294,6 +321,12 @@ export class SculptureStage {
       if (el.dataset.fs !== undefined) el.setAttribute('fill', colors[+el.dataset.fs]);
       if (el.dataset.ss !== undefined) el.setAttribute('stroke', colors[+el.dataset.ss]);
     });
+  }
+
+  // Reset is a fresh start, colors included; remix changes them in place.
+  reset(animate = false) {
+    this.palettes = DEFS.map(shapePalette);
+    this.build(animate);
   }
 
   remix() {

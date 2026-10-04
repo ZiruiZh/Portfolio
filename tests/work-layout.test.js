@@ -1,6 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRatio, featureColumns, visualColumns, distributeColumns } from '../src/work-layout.js';
+import { slugify, parseRatio, featureColumns, visualColumns, distributeColumns } from '../src/work-layout.js';
+
+test('section labels become stable anchor ids', () => {
+  assert.equal(slugify('Overview'), 'overview');
+  assert.equal(slugify('The problem'), 'the-problem');
+  assert.equal(slugify('The outcome'), 'the-outcome');
+  assert.equal(slugify('Context & insights'), 'context-insights');
+});
 
 test('case studies use two columns until phones stack them', () => {
   assert.equal(featureColumns(1512), 2);

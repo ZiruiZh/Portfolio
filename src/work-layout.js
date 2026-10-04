@@ -1,5 +1,10 @@
 // Pure layout rules for the work tab, kept free of DOM and Vite imports for tests.
 
+// Section labels become anchor ids for the case study rail.
+export function slugify(label) {
+  return String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
 export function parseRatio(ratio) {
   const [width, height = 1] = String(ratio).split('/').map(Number);
   return width / height;

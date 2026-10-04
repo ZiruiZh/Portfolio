@@ -30,21 +30,23 @@ The introduction completes automatically. The navigation bar glides in, sculptur
 
 ### Color that keeps changing
 
-Each refresh generates new shape palettes from curated color families: electric blues, violets, coral, mint, pale yellow, and deep tinted inks. Neighboring layers are chosen for luminance separation as well as color, keeping the silhouettes readable.
+Each refresh, and every press of Reset shapes, generates new shape palettes from curated color families: electric blues, violets, coral, mint, pale yellow, and deep tinted inks. Neighboring layers are chosen for luminance separation as well as color, keeping the silhouettes readable.
 
-The circles are interactive too. Click one and fresh colors expand from its core, replacing the old palette. Every layer stays opaque and inside the original circle, so the animation reads as a solid object changing from within.
+The circles are interactive too. Hovering one draws its rings back from the rim in sequence, innermost first, as a hint that it answers to a click. Clicking it sends fresh colors expanding from its core, replacing the old palette. Every layer stays opaque and inside the original circle, so the animation reads as a solid object changing from within.
 
 Regular page transitions generate a new accent hue at a fixed OKLCH lightness. Shape-led transitions inherit the shape’s outside color instead.
 
 ### A playground with no edge
 
-The Playground scatters 25 illustrations, posters, sketches, and product concepts across a field of layered circles. Scroll, drag, or use the arrow keys to explore in any direction. Images open in a lightbox when clicked.
+The Playground scatters 20 illustrations, posters, sketches, and product concepts across a field of layered circles. Scroll, drag, or use the arrow keys to explore in any direction. Images open in a lightbox when clicked.
 
 The canvas wraps around its artwork bounds. Its camera and target positions are normalized together, keeping navigation continuous even after long pans. Artwork and the dotted background share the same eased cursor offset, so the parallax moves the whole scene together.
 
 ### A work page with room to breathe
 
-Work opens straight onto the case studies: two square-cornered cards per row that stagger as their heights differ. Prism's card plays a clip of the site's own motion; the rest are stills, and posters rest on a mat instead of being cropped. Each caption sets a short headline against the client, discipline, and year in small capitals. Below them, a four-column masonry grid of visual work mixes the ArtsFest poster with pieces from the playground, captioned by title alone. Both grids fill the shortest column first so the columns end close together, and images ease back on hover.
+Work opens straight onto the case studies: two square-cornered cards per row that stagger as their heights differ. The Prism and Allot cards play clips of the work itself; the rest are stills, and posters rest on a mat instead of being cropped. Each caption sets a short headline against the client, discipline, and year in small capitals. Below them, a four-column masonry grid of visual work mixes the ArtsFest poster with pieces from the playground, captioned by title alone. Both grids fill the shortest column first so the columns end close together, and images ease back on hover.
+
+Every case study is a page of its own at `#work/<project>`, so it can be linked, bookmarked, and reached with the back button. A narrow rail down the left lists only the sections that project actually has, out of overview, context, insights, problem, solution, and outcome, and stays beside the reader marking the one in view. The case runs next to it at the full width of the column: walkthrough or cover image, title, project facts, then each section with its label, heading, copy, and artwork. A fact that names several people, such as a team, sets them in a column. On phones the rail becomes a scrolling bar under the navigation. Returning to Work lands back on the card that was clicked.
 
 ### A photo cube you can actually steer
 
@@ -54,7 +56,7 @@ Release it for a short inertial glide. On entering About, or after two seconds w
 
 ### Small details that connect it all
 
-Each project opens in a viewer with sticky previous/next controls, a position indicator, and left/right keyboard navigation that loops through all five projects in page order. Playground pieces on the work page open the lightbox and step through just the pieces shown there. Content links and project titles glide letter by letter and draw an underline on hover or keyboard focus. The three experience links have individual hover colors, and top navigation labels stay static. Navigation fills retract toward the top of each button. Arrow icons are inline SVGs, keeping their appearance consistent on phones and tablets without emoji substitution. The custom cursor follows the current accent and compresses on click. Homepage typography responds subtly to the pointer while physical shapes pass through it without distortion.
+The case study rail carries the section list and a link back to Work, set in the navigation bar's own type. Playground pieces on the work page open the lightbox and step through just the pieces shown there. Content links and project titles glide letter by letter and draw an underline on hover or keyboard focus. The three experience links have individual hover colors, and top navigation labels stay static. Navigation fills retract toward the top of each button. Arrow icons are inline SVGs, keeping their appearance consistent on phones and tablets without emoji substitution. The custom cursor follows the current accent and compresses on click. Homepage typography responds subtly to the pointer while physical shapes pass through it without distortion.
 
 Contact links stay black and show their platform colors only on hover or keyboard focus. The interface uses a fixed light palette.
 
@@ -67,7 +69,7 @@ The runtime uses **vanilla JavaScript, GSAP, and Matter.js**, with **Vite** for 
 - Unchanged artwork transforms avoid repeated DOM writes.
 - Text proximity calculations run after pointer changes.
 - Playground thumbnails load near the viewport; larger lightbox images load on demand.
-- The Prism card plays a six-second clip from the recorded website walkthrough. It loads as it nears the viewport and plays only while on screen; it pauses behind dialogs, in hidden tabs, and outside Work. Reduced-motion and data-saving preferences keep a first-frame poster.
+- The Prism and Allot cards play short clips cut from their recorded walkthroughs. They load as they near the viewport and play only while on screen; they pause behind the lightbox, in hidden tabs, and outside Work. Reduced-motion and data-saving preferences keep a first-frame poster.
 - Playground pieces on the work page use 800px renditions instead of their 2200px originals.
 - PRISM Collective includes its full website walkthrough, three iridescent graphics, and an eight-week timeline.
 - Project galleries lazy-load their images; the walkthrough loads when requested.
@@ -102,20 +104,21 @@ Both `/` and `/testi-physics.html` serve the portfolio. Keep their HTML markup s
 | --- | --- |
 | `src/main.js` | Navigation, intro choreography, typography, and the project viewer |
 | `src/work.js` + `src/work-layout.js` | Work feature grid and visual masonry |
+| `src/case-study.js` | Project case studies, their section rail, and project stepping |
 | `src/physics.js` + `src/enclosure.js` | Physical sculptures, boundaries, dragging, and circle animations |
 | `src/palette.js` | Curated random palettes with contrast between layers |
 | `src/looping-canvas.js` | Two-axis panning, wrapping, and artwork placement |
 | `src/playground-gallery.js` | Image lightbox and gallery navigation |
 | `src/about-cube.js` + `src/cube-math.js` | Photo cube, quaternion rotation, inertia, and idle motion |
-| `src/projects.js` | Project descriptions, card captions, metadata, galleries, and the visual grid selection |
+| `src/projects.js` | Project case study sections, card captions, metadata, images, and the visual grid selection |
 | `src/style.css` | Layout, Marr typography, responsive styles, and interaction states |
 
 The tests exercise real Matter.js collisions and extreme throws at mobile and desktop dimensions, along with palette contrast, canvas wrapping, and rotation invariants. The cube tests specifically check that dragging moves the facing surface in the same direction on both the front and back, and that thousands of rotations do not introduce scale drift. The work layout tests check the column counts at each breakpoint and that the masonry keeps reading order while balancing its columns.
 
-### Regenerating the Prism cover
+### Regenerating the cover videos
 
-Run `python3 scripts/generate-project-covers.py` with FFmpeg installed to regenerate the Prism cover video from its website walkthrough. It is a pre-rendered H.264 loop, so the browser does not need to composite the motion at runtime.
+Run `python3 scripts/generate-project-covers.py` with FFmpeg installed to regenerate the Prism and Allot cover videos from their recorded walkthroughs. They are pre-rendered H.264 loops, so the browser does not need to composite the motion at runtime.
 
 ### Regenerating grid images
 
-Run `python3 scripts/generate-grid-images.py` with FFmpeg and cwebp (libwebp) installed to rebuild the work page's grid-sized WebP renditions and the first-frame poster for the Prism cover. Run it again after regenerating the cover. It covers every playground image, so any of them can join the visual grid in `src/projects.js`.
+Run `python3 scripts/generate-grid-images.py` with FFmpeg and cwebp (libwebp) installed to rebuild the work page's grid-sized WebP renditions and the first-frame posters for the cover videos. Run it again after regenerating a cover. It covers every playground image, so any of them can join the visual grid in `src/projects.js`.
