@@ -244,12 +244,12 @@ html:has(body[data-page=project]){scroll-padding-top:calc(var(--bar) + env(safe-
 #project-title{margin:0;font:600 clamp(32px,3.2vw,46px)/1.05 Marr,Arial,sans-serif;letter-spacing:-.05em}
 .case-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:22px 28px;margin:28px 0 0}
 .case-meta div{min-width:0}
-.case-meta dt{font:400 12px/1 MarrCondRegular,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.case-meta dt{font:500 13px/1 MarrCond,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .case-meta dd{margin:8px 0 0;font:400 18px/1.35 MarrCondRegular,Arial,sans-serif;color:var(--ink)}
 .case-meta dd + dd{margin-top:2px}
 .case-sections{padding:0 40px 60px}
 .case-section{padding-top:58px}
-.case-label{font:500 13px/1 MarrCond,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.case-label{font:500 13px/1 MarrCond,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .case-heading{margin:16px 0 0;max-width:44ch;font:400 clamp(22px,1.9vw,30px)/1.25 MarrCondRegular,Arial,sans-serif;letter-spacing:-.005em;color:var(--ink);text-wrap:pretty}
 .case-text{margin:14px 0 0;max-width:92ch;font:400 19px/1.45 MarrCondRegular,Arial,sans-serif;color:var(--case-text);text-wrap:pretty}
 .case-list{margin:28px 0 0;max-width:92ch}

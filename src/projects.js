@@ -12,14 +12,14 @@ export const projects = {
       },
       {
         "label": "Problem",
-        "body": "Company budgets are set by the day, so the same money goes to a client dinner and a catered lunch, and finance only finds out what each charge was for after it's spent.",
-        "images": [
-          "allot-0.webp"
-        ]
+        "body": "Company budgets are set by the day, so the same money goes to a client dinner and a catered lunch, and finance only finds out what each charge was for after it's spent."
       },
       {
         "label": "Insights",
-        "heading": "A good budget belongs to one event, fits that event, and closes when the event ends."
+        "heading": "A good budget belongs to one event, fits that event, and closes when the event ends.",
+        "images": [
+          "allot-3.webp"
+        ]
       },
       {
         "label": "Solution",
@@ -81,13 +81,13 @@ export const projects = {
     "cover": "allot-cover.webp",
     "walkthrough": "allot-walkthrough.mp4",
     "images": [
-      { "file": "allot-0.webp", "caption": "Context and problem", "width": 1800, "height": 1013 },
-      { "file": "allot-1.webp", "caption": "Filter, price, lock, and match", "width": 1800, "height": 1013 },
-      { "file": "allot-2.webp", "caption": "Impacts for a 100-person team", "width": 1800, "height": 1013 }
+      { "file": "allot-1.webp", "caption": "The limit closes with the event, and the charge matches it", "width": 1006, "height": 648 },
+      { "file": "allot-2.webp", "caption": "Impacts for a 100-person team", "width": 1800, "height": 1013 },
+      { "file": "allot-3.webp", "caption": "A budget for each event that needs one", "width": 960, "height": 1080 }
     ],
     "headline": "Budget by the event, not by the day",
     "year": "2026",
-    "card": { "video": "allot-cover.mp4", "poster": "allot-cover.webp", "ratio": "1280 / 724" }
+    "card": { "images": ["allot-1.webp"], "ratio": "1006 / 648" }
   },
   "prism": {
     "title": "Prism Collective",
