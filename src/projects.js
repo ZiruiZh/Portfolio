@@ -196,7 +196,7 @@ export const projects = {
     "source": "https://www.zirui.ca/works/bha",
     "headline": "Raising Awareness for CHD",
     "year": "2025",
-    "card": { "images": ["bha-0.webp"], "ratio": "3 / 2" }
+    "card": { "images": ["bha-logo.webp"], "ratio": "971 / 651" }
   },
   "bcrc": {
     "title": "BCRC Montreal",

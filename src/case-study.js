@@ -24,7 +24,7 @@ function figure(image) {
   img.loading = 'lazy';
   img.decoding = 'async';
   link.append(img);
-  return h('figure', 'case-figure', link, h('figcaption', null, image.caption));
+  return h('figure', 'case-figure', link);
 }
 
 // The recorded walkthrough leads when a project has one; otherwise its first image does.

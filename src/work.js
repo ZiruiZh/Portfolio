@@ -137,7 +137,7 @@ export function installWork({ reducedQuery, openImage }) {
   reducedQuery.addEventListener('change', syncReels, options);
 
   return {
-    setMode(mode) { enabled = mode === 'work'; syncReels(); },
+    setMode(mode) { enabled = mode === 'work' || mode === 'home'; syncReels(); },
     dispose() { controller.abort(); reelObserver.disconnect(); reels.forEach(video => video.pause()); },
   };
 }

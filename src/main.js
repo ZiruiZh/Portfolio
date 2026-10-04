@@ -33,7 +33,7 @@ history.scrollRestoration = 'manual';
 const pages = ['home', 'work', 'playground', 'about'];
 let current = 'home';
 let currentProject = null;
-let workScroll = 0;
+const scrollMemory = { home: 0, work: 0 };
 let transition;
 let pendingShapeTheme = null;
 const sculptures = new SculptureStage(document.getElementById('stage'), reduced);
@@ -52,13 +52,15 @@ const aboutCube = new AboutCube(document.querySelector('.about-portraits'), redu
 
 function applyPage({ page, project }, focus = false) {
   stopHeroReveal();
-  // Work is tall, so returning from a case study lands where the card was.
-  if (current === 'work') workScroll = scrollY;
+  // Both are tall, so returning from a case study lands where the card was.
+  if (current in scrollMemory) scrollMemory[current] = scrollY;
   const from = current;
   current = page;
   currentProject = project;
   document.body.dataset.page = page;
-  document.querySelectorAll('.page').forEach(el => { el.hidden = el.id !== page; });
+  // Work continues under the home screen, one scroll down from the sculptures.
+  const shown = page === 'home' ? ['home', 'work'] : [page];
+  document.querySelectorAll('.page').forEach(el => { el.hidden = !shown.includes(el.id); });
   const title = project ? caseStudy.render(project) : null;
   const tab = page === 'project' ? 'work' : page;
   document.querySelectorAll('.nav-link').forEach(link => {
@@ -71,7 +73,7 @@ function applyPage({ page, project }, focus = false) {
   aboutCube.setMode(page);
   caseStudy.setMode(page);
   textReactions.measure();
-  window.scrollTo({ top: page === 'work' && from === 'project' ? workScroll : 0, behavior: 'instant' });
+  window.scrollTo({ top: from === 'project' && page in scrollMemory ? scrollMemory[page] : 0, behavior: 'instant' });
   work.setMode(page);
   if (page === 'home' && introFinished) revealHome(!reduced);
   if (focus) {
