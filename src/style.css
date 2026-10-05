@@ -195,7 +195,7 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 .visual-item .work-caption{padding-top:12px}
 .visual-item .work-title{font:600 18px/1.25 Marr,Arial,sans-serif;letter-spacing:-.025em;color:var(--ink)}
 .visual-item .work-mat{inset:13%}
-@media(hover:hover){:is(.work-card,.visual-item):hover .work-media{transform:scale(.975)}}
+@media(hover:hover){:is(.work-card,.visual-item):hover .work-media{transform:scale(1.025)}}
 .visual-more{margin-top:44px;font-size:18px}
 .work-info{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--wk-gap);margin-top:112px;padding:56px 0 140px}
 .work-info:before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--soft-line)}

@@ -28,15 +28,25 @@ function figure(image) {
 }
 
 // The recorded walkthrough leads when a project has one; otherwise its first image does.
-function hero(project) {
+// It runs itself as a silent loop, and only falls back to controls when motion is unwelcome.
+function hero(project, autoplay) {
   if (project.walkthrough) {
     const video = h('video');
     video.src = projectVideo(project.walkthrough);
     video.poster = projectImage(project.cover);
-    video.controls = true;
     video.playsInline = true;
-    video.preload = 'none';
+    video.disablePictureInPicture = true;
+    video.setAttribute('playsinline', '');
     video.setAttribute('aria-label', `${project.title} walkthrough`);
+    if (autoplay) {
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.setAttribute('muted', '');
+    } else {
+      video.controls = true;
+      video.preload = 'none';
+    }
     return video;
   }
   const first = project.images[0];
@@ -76,7 +86,7 @@ export function installCaseStudy({ reducedQuery }) {
   const index = document.getElementById('case-index');
   const controller = new AbortController();
   const options = { signal: controller.signal };
-  let frame = 0, current = -1;
+  let frame = 0, current = -1, rendered = null;
 
   function setCurrent(position) {
     if (position === current) return;
@@ -102,10 +112,29 @@ export function installCaseStudy({ reducedQuery }) {
   window.addEventListener('scroll', requestUpdate, { ...options, passive: true });
   window.addEventListener('resize', requestUpdate, options);
 
+  // The loop runs only while it is on screen, on this page, and in a visible tab.
+  let walkthrough = null, onScreen = false;
+  function syncHero() {
+    if (!walkthrough?.loop) return;
+    if (onScreen && !page.hidden && !document.hidden) walkthrough.play().catch(() => {});
+    else walkthrough.pause();
+  }
+  const heroWatcher = new IntersectionObserver(entries => {
+    entries.forEach(entry => { onScreen = entry.isIntersecting; });
+    syncHero();
+  }, { rootMargin: '100px 0px' });
+
   function render(key) {
+    rendered = key;
     const project = projects[key];
     document.getElementById('project-title').textContent = project.title;
-    document.getElementById('case-hero').replaceChildren(hero(project));
+    const autoplay = !reducedQuery.matches && !navigator.connection?.saveData;
+    const art = hero(project, autoplay);
+    document.getElementById('case-hero').replaceChildren(art);
+    heroWatcher.disconnect();
+    walkthrough = art.tagName === 'VIDEO' ? art : null;
+    onScreen = true;
+    if (walkthrough) heroWatcher.observe(walkthrough);
 
     // A fact can name several people, and they stand in a column of their own.
     document.getElementById('case-meta').replaceChildren(...Object.entries(project.metadata).map(([label, value]) =>
@@ -130,12 +159,14 @@ export function installCaseStudy({ reducedQuery }) {
   }
 
   const pause = () => page.querySelectorAll('video').forEach(video => video.pause());
-  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); }, options);
+  document.addEventListener('visibilitychange', () => { document.hidden ? pause() : syncHero(); }, options);
+  // Turning reduced motion on swaps the silent loop back for a video the reader starts.
+  reducedQuery.addEventListener('change', () => { if (!page.hidden && rendered) render(rendered); }, options);
 
   return {
     render,
     // A walkthrough left playing is still audible from another page.
-    setMode(mode) { if (mode !== 'project') pause(); },
-    dispose: () => { controller.abort(); cancelAnimationFrame(frame); },
+    setMode(mode) { if (mode === 'project') syncHero(); else pause(); },
+    dispose: () => { controller.abort(); cancelAnimationFrame(frame); heroWatcher.disconnect(); },
   };
 }
