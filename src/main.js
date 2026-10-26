@@ -12,6 +12,10 @@ import { installCaseStudy } from './case-study.js';
 import { isProject } from './projects.js';
 import { makeRun } from './palette.js';
 import { makeAccent } from './experience-math.js';
+import { inject } from '@vercel/analytics';
+
+// Initialize Vercel Web Analytics
+inject();
 
 const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
 let reduced = reducedQuery.matches;
