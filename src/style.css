@@ -228,7 +228,7 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 /* Project page: a rail of sections beside the case study. */
 .project-page{--case-text:#4f4f4f;overflow:clip}
 html:has(body[data-page=project]){scroll-padding-top:calc(var(--bar) + env(safe-area-inset-top) + 24px)}
-.case{display:grid;grid-template-columns:clamp(168px,12vw,228px) minmax(0,1fr);align-items:start}
+.case{display:grid;grid-template-columns:clamp(168px,12vw,228px) minmax(0,1fr) clamp(24px,12vw,228px);align-items:start}
 .case-rail{position:sticky;top:calc(var(--bar) + env(safe-area-inset-top));z-index:6;height:calc(100svh - var(--bar) - env(safe-area-inset-top));display:flex;flex-direction:column;gap:26px;padding:20px 18px;background:var(--paper);overflow:auto}
 .case-back{position:relative;isolation:isolate;overflow:hidden;align-self:start;display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:var(--line);font:500 clamp(21px,1.4vw,28px)/1 MarrCond,Arial,sans-serif;text-transform:lowercase}
 .case-index{display:grid;gap:9px;margin:0;padding:0;list-style:none}
