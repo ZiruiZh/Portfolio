@@ -42,9 +42,8 @@ body[data-bg="peach"] { --zeen-backdrop: #ffe6d2; }
 }
 .bg-switch button:focus-visible { outline: 2px solid #ff4934; outline-offset: 2px; }
 
-@media (max-width: 420px) {
-  .bg-switch { left: 50%; transform: translateX(-50%); padding: 6px; gap: 6px; }
-  .bg-switch button { width: 24px; height: 24px; }
+@media (width < 600px) {
+  .bg-switch { display: none; }
 }
 
 .zeen-back {

@@ -325,13 +325,13 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   .project-page{--case-side:180px}
 }
 @media(max-width:860px){
-  html:has(body[data-page=project]){scroll-padding-top:calc(var(--bar) + env(safe-area-inset-top) + 104px)}
   .project-page{--case-col:calc(100vw - 32px);--case-offset:16px}
   .case{display:block}
-  .case-rail{width:auto;max-height:none;flex-flow:row wrap;align-items:center;gap:10px 14px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--soft-line)}
-  .case-index{flex:1 0 100%;grid-auto-flow:column;justify-content:start;gap:16px;overflow-x:auto;scrollbar-width:none}
-  .case-index::-webkit-scrollbar{display:none}
-  .case-index a[aria-current]:before{display:none}
+  /* no index on a small screen, just the way back, set like the navigation */
+  .case-rail{position:static;width:auto;max-height:none;padding:10px 16px}
+  .case-index{display:none}
+  .case-back{font:500 21px/1 MarrCond,Arial,sans-serif;letter-spacing:0;color:var(--ink)}
+  .case-back .arrow-icon{width:16px;height:16px}
   .case-body{margin:0 auto}
   .case-hero{width:100vw;margin-left:-16px}
   .case-head{padding-top:28px}
@@ -346,4 +346,7 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   .case-grid{gap:28px 12px;grid-template-columns:repeat(2,minmax(0,1fr))}
   .case-grid .case-text{margin-top:10px;font-size:15px;line-height:22px}
   .case-figures{gap:12px}
+}
+@media(max-width:600px){
+  .case-back{font-size:19px}
 }
