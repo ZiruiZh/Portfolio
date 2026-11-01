@@ -1,6 +1,7 @@
 import { projects, projectImage, projectVideo } from './projects.js';
 import { slugify } from './work-layout.js';
 import { arrowIcon } from './icons.js';
+import { installIllustration } from './illustrations.js';
 
 // A section can go by another name in the index, so two can share a label.
 const railLabel = section => section.rail ?? section.label;
@@ -13,7 +14,17 @@ function h(tag, className, ...children) {
   return node;
 }
 
-function figure(image, caption) {
+// An illustration with a scene plays once as it comes into view; anything else is a plain picture.
+const sceneStops = new Set();
+function picture(image, img, autoplay) {
+  if (!image.scene || !autoplay) return img;
+  img.classList.add('case-anim-final');
+  const node = h('div', 'case-anim', img);
+  sceneStops.add(installIllustration(node, image.scene));
+  return node;
+}
+
+function figure(image, caption, autoplay) {
   const link = h('a');
   link.href = projectImage(image.file);
   link.target = '_blank';
@@ -26,7 +37,7 @@ function figure(image, caption) {
   img.height = image.height;
   img.loading = 'lazy';
   img.decoding = 'async';
-  link.append(img);
+  link.append(picture(image, img, autoplay));
   return h('figure', image.height >= image.width ? 'case-figure case-figure--tall' : 'case-figure', link,
     caption ? h('figcaption', 'case-text', caption) : null);
 }
@@ -133,8 +144,8 @@ const sectionParts = {
   subhead: part => h('h3', 'case-subhead', part.text),
   label: part => h('p', 'case-label case-label--inner', part.text),
   text: part => h('p', 'case-text', part.text),
-  image: (part, project) => figure(artwork(project, part.file), part.caption),
-  images: (part, project) => h('div', 'case-figures', ...part.files.map(file => figure(artwork(project, file)))),
+  image: (part, project, autoplay) => figure(artwork(project, part.file), part.caption, autoplay),
+  images: (part, project, autoplay) => h('div', 'case-figures', ...part.files.map(file => figure(artwork(project, file), null, autoplay))),
   columns: part => {
     const node = h('div', 'case-columns', ...part.items.map(item =>
       h('div', null, h('h3', 'case-term', item.term), h('p', 'case-text', item.text))));
@@ -142,7 +153,7 @@ const sectionParts = {
     node.style.setProperty('--count', node.dataset.count);
     return node;
   },
-  cards: (part, project) => h('div', 'case-cards', ...part.items.map(card => {
+  cards: (part, project, autoplay) => h('div', 'case-cards', ...part.items.map(card => {
     const art = artwork(project, card.image);
     const img = h('img');
     img.src = projectImage(art.file);
@@ -151,7 +162,7 @@ const sectionParts = {
     img.height = art.height;
     img.loading = 'lazy';
     img.decoding = 'async';
-    return h('figure', 'case-card', img,
+    return h('figure', 'case-card', picture(art, img, autoplay),
       h('figcaption', null, h('h3', 'case-term', card.term), h('p', 'case-text', card.text)));
   })),
   clip: (part, _project, autoplay) => h('div', 'case-feature', clip(part, autoplay),
@@ -261,6 +272,8 @@ export function installCaseStudy({ reducedQuery }) {
     document.documentElement.style.setProperty('--case-accent', project.accent);
     document.getElementById('project-title').textContent = project.pageTitle ?? project.title;
     const autoplay = !reducedQuery.matches && !navigator.connection?.saveData;
+    sceneStops.forEach(stop => stop());
+    sceneStops.clear();
     document.getElementById('case-hero').replaceChildren(...hero(project, autoplay));
 
     // A fact can name several people, and they stand in a column of their own.

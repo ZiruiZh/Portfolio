@@ -231,12 +231,12 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 .project-page{--case-side:clamp(200px,17vw,280px);--case-col:min(922px,calc(100vw - var(--case-side) - 48px));--case-offset:calc((100vw - var(--case-side) - var(--case-col)) / 2);--case-text:#767676;--case-type:400 16px/24px MarrRegular,MarrWebMedium,Arial,sans-serif;overflow:clip}
 html:has(body[data-page=project]){scroll-padding-top:calc(var(--bar) + env(safe-area-inset-top) + 40px)}
 .case{display:grid;grid-template-columns:var(--case-side) minmax(0,1fr)}
-.case-rail{position:sticky;align-self:start;top:calc(var(--bar) + env(safe-area-inset-top));z-index:6;max-height:calc(100svh - var(--bar) - env(safe-area-inset-top));display:flex;flex-direction:column;gap:clamp(56px,14svh,190px);padding:26px 24px;overflow:auto}
+.case-rail{position:sticky;align-self:start;top:calc(var(--bar) + env(safe-area-inset-top));z-index:6;max-height:calc(100svh - var(--bar) - env(safe-area-inset-top));display:flex;flex-direction:column;gap:28px;padding:26px 24px;overflow:auto}
 .case-back{position:relative;isolation:isolate;overflow:hidden;align-self:start;display:inline-flex;align-items:center;gap:6px;padding:4px 8px;margin-left:-8px;font:400 16px/1 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;color:var(--muted)}
 .case-back .arrow-icon{width:14px;height:14px}
 .case-back:is(:hover,:focus-visible){color:var(--ink)}
 .case-index{display:grid;gap:8px;margin:0;padding:0;list-style:none}
-.case-index a{position:relative;display:inline-block;white-space:nowrap;font:400 16px/1.3 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;color:var(--muted);transition:color .2s}
+.case-index a{position:relative;display:inline-block;white-space:nowrap;font:400 18px/1.3 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;color:var(--muted);transition:color .2s}
 .case-index a:is(:hover,:focus-visible){color:var(--ink)}
 .case-index a[aria-current]{color:var(--ink)}
 .case-index a[aria-current]:before{content:'';position:absolute;left:-12px;top:50%;width:5px;height:5px;margin-top:-2.5px;background:var(--case-accent)}
@@ -266,6 +266,11 @@ html:has(body[data-page=project]){scroll-padding-top:calc(var(--bar) + env(safe-
 .case-figure a{display:block;overflow:hidden}
 .case-figure img{display:block;width:100%;height:auto}
 .case-figure .case-text{margin-top:20px}
+/* an illustration in moving pieces, which gives way to the finished artwork once it has played */
+.case-anim{position:relative;overflow:hidden;background:#f7f5f2}
+.case-anim>img{position:absolute;display:block;max-width:none;aspect-ratio:auto;object-fit:fill}
+.case-anim:not(.case-anim--ready):not(.case-anim--settled)>img{visibility:hidden}
+.case-anim>.case-anim-final{inset:0;z-index:1;width:100%;height:100%;visibility:hidden}
 /* a run of artwork: wide pieces take the whole column, tall ones sit two to a row */
 .case-figures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:33px;margin:28px 0 0}
 .case-figures .case-figure{grid-column:1/-1;margin:0}

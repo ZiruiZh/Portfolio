@@ -42,6 +42,13 @@
     "height": 4000
   },
   {
+    "id": "25",
+    "title": "PRISM Collective, electric spectrum",
+    "source": "prism-1.webp",
+    "width": 1488,
+    "height": 1800
+  },
+  {
     "id": "08",
     "title": "Sketchbook studies",
     "source": "IMG_8087.JPG",
@@ -61,6 +68,13 @@
     "source": "ORTBOSEVER.png",
     "width": 5000,
     "height": 5000
+  },
+  {
+    "id": "29",
+    "title": "Marianopolis Yearbook, front and back cover",
+    "source": "yearbook-1.webp",
+    "width": 1800,
+    "height": 1156
   },
   {
     "id": "12",
@@ -84,6 +98,13 @@
     "height": 4673
   },
   {
+    "id": "26",
+    "title": "PRISM Collective, flowing color",
+    "source": "prism-2.webp",
+    "width": 1800,
+    "height": 1350
+  },
+  {
     "id": "16",
     "title": "Weightless, 2025",
     "source": "TwaEAFdRFdni6xmfWOqToVBvGYU.png",
@@ -103,6 +124,13 @@
     "source": "XV6NmXn29Sqs0h1PnaBo6H4ER4.png",
     "width": 1290,
     "height": 1606
+  },
+  {
+    "id": "30",
+    "title": "Marianopolis Yearbook, New Mar City Map spread",
+    "source": "yearbook-2.webp",
+    "width": 1800,
+    "height": 1164
   },
   {
     "id": "20",
@@ -131,6 +159,13 @@
     "source": "osf3VTldTLEeFbeqpUlKWbPZ9VE.jpg",
     "width": 1721,
     "height": 2160
+  },
+  {
+    "id": "32",
+    "title": "PRISM Collective, light and texture",
+    "source": "prism-3.webp",
+    "width": 1800,
+    "height": 1350
   },
   {
     "id": "24",

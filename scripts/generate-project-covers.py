@@ -17,7 +17,7 @@ def run(args):
 
 # Let Prism's own motion design lead: a glimpse of the recorded home hero.
 # The crop drops the screen recorder's controls at the left edge and keeps the full wordmark.
-run(['-i', str(ASSETS / 'prism-walkthrough.mp4'), '-filter_complex_threads', '1',
+run(['-i', str(ROOT / '.reference' / 'removed-projects' / 'prism-walkthrough.mp4'), '-filter_complex_threads', '1',
      '-filter_complex',
      '[0:v]fps=24,crop=1150:720:64:0,'
      'setsar=1,split[a][b];[a]trim=start=0:end=7,setpts=PTS-STARTPTS[main];'

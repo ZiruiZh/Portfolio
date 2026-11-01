@@ -1,0 +1,622 @@
+{
+ "digital": {
+  "w": 923,
+  "h": 373,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-digital-bg.webp",
+    "x": 1.0,
+    "y": 1.0,
+    "w": 922.0,
+    "h": 371.0
+   },
+   {
+    "name": "z1",
+    "file": "zeen-anim-digital-z1.webp",
+    "x": 242.0,
+    "y": 1.0,
+    "w": 206.0,
+    "h": 122.0
+   },
+   {
+    "name": "z2",
+    "file": "zeen-anim-digital-z2.webp",
+    "x": 541.0,
+    "y": 1.0,
+    "w": 180.5,
+    "h": 115.5
+   },
+   {
+    "name": "z3",
+    "file": "zeen-anim-digital-z3.webp",
+    "x": 170.5,
+    "y": 249.0,
+    "w": 155.0,
+    "h": 123.0
+   },
+   {
+    "name": "z4",
+    "file": "zeen-anim-digital-z4.webp",
+    "x": 396.0,
+    "y": 243.5,
+    "w": 527.0,
+    "h": 128.5
+   },
+   {
+    "name": "z5",
+    "file": "zeen-anim-digital-z5.webp",
+    "x": 1.0,
+    "y": 1.0,
+    "w": 127.0,
+    "h": 371.0
+   },
+   {
+    "name": "z6",
+    "file": "zeen-anim-digital-z6.webp",
+    "x": 796.5,
+    "y": 1.0,
+    "w": 126.5,
+    "h": 196.0
+   },
+   {
+    "name": "text",
+    "file": "zeen-anim-digital-text.webp",
+    "x": 220.0,
+    "y": 166.0,
+    "w": 462.5,
+    "h": 46.5
+   }
+  ]
+ },
+ "glorified": {
+  "w": 923,
+  "h": 373,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-glorified-bg.webp",
+    "x": 1.0,
+    "y": 0.0,
+    "w": 922.0,
+    "h": 372.0
+   },
+   {
+    "name": "corner-end",
+    "file": "zeen-anim-glorified-corner-end.webp",
+    "x": 529.5,
+    "y": 260.5,
+    "w": 305.5,
+    "h": 111.5
+   },
+   {
+    "name": "corner-start",
+    "file": "zeen-anim-glorified-corner-start.webp",
+    "x": 56.0,
+    "y": 0.0,
+    "w": 294.0,
+    "h": 112.5
+   },
+   {
+    "name": "text",
+    "file": "zeen-anim-glorified-text.webp",
+    "x": 126.5,
+    "y": 170.0,
+    "w": 669.0,
+    "h": 38.5
+   }
+  ]
+ },
+ "create": {
+  "w": 923,
+  "h": 374,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-create-bg.webp",
+    "x": 0.0,
+    "y": 1.0,
+    "w": 921.0,
+    "h": 372.0
+   },
+   {
+    "name": "scissors-a",
+    "file": "zeen-anim-create-scissors-a.webp",
+    "x": 298.5,
+    "y": 79.5,
+    "w": 360.0,
+    "h": 218.0,
+    "pivot": [
+     483.5,
+     181.0
+    ]
+   },
+   {
+    "name": "scissors-b",
+    "file": "zeen-anim-create-scissors-b.webp",
+    "x": 298.5,
+    "y": 79.5,
+    "w": 360.0,
+    "h": 218.0,
+    "pivot": [
+     483.5,
+     181.0
+    ]
+   },
+   {
+    "name": "text",
+    "file": "zeen-anim-create-text.webp",
+    "x": 88.5,
+    "y": 172.0,
+    "w": 712.0,
+    "h": 38.5
+   },
+   {
+    "name": "line1",
+    "file": "zeen-anim-create-line1.webp",
+    "x": 452.0,
+    "y": 306.0,
+    "w": 43.0,
+    "h": 67.0,
+    "dx": 70,
+    "dy": 483
+   },
+   {
+    "name": "line2",
+    "file": "zeen-anim-create-line2.webp",
+    "x": 0.0,
+    "y": 206.0,
+    "w": 327.0,
+    "h": 167.0,
+    "dx": -396,
+    "dy": -214
+   },
+   {
+    "name": "line3",
+    "file": "zeen-anim-create-line3.webp",
+    "x": 652.5,
+    "y": 285.5,
+    "w": 86.0,
+    "h": 87.5,
+    "dx": 315,
+    "dy": 322
+   },
+   {
+    "name": "line4",
+    "file": "zeen-anim-create-line4.webp",
+    "x": 506.5,
+    "y": 0.0,
+    "w": 38.5,
+    "h": 69.5,
+    "dx": 34,
+    "dy": -449
+   },
+   {
+    "name": "line5",
+    "file": "zeen-anim-create-line5.webp",
+    "x": 760.0,
+    "y": 0.0,
+    "w": 161.0,
+    "h": 255.0,
+    "dx": -251,
+    "dy": -413
+   },
+   {
+    "name": "line6",
+    "file": "zeen-anim-create-line6.webp",
+    "x": 21.0,
+    "y": 0.0,
+    "w": 95.5,
+    "h": 178.5,
+    "dx": 199,
+    "dy": -440
+   }
+  ]
+ },
+ "flatten": {
+  "w": 923,
+  "h": 374,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-flatten-bg.webp",
+    "x": 0.0,
+    "y": 0.0,
+    "w": 923.0,
+    "h": 373.0
+   },
+   {
+    "name": "zine",
+    "file": "zeen-anim-flatten-zine.webp",
+    "x": 346.0,
+    "y": 57.0,
+    "w": 210.0,
+    "h": 260.5
+   },
+   {
+    "name": "page",
+    "file": "zeen-anim-flatten-page.webp",
+    "x": 599.0,
+    "y": 71.0,
+    "w": 262.0,
+    "h": 236.0
+   },
+   {
+    "name": "export",
+    "file": "zeen-anim-flatten-export.webp",
+    "x": 28.5,
+    "y": 125.5,
+    "w": 250.5,
+    "h": 119.5
+   }
+  ]
+ },
+ "interactive": {
+  "w": 427,
+  "h": 427,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-interactive-bg.webp",
+    "x": 0.0,
+    "y": 0.0,
+    "w": 427.0,
+    "h": 427.0
+   },
+   {
+    "name": "shadow",
+    "file": "zeen-anim-interactive-shadow.webp",
+    "x": 54.0,
+    "y": 360.0,
+    "w": 373.0,
+    "h": 51.5
+   },
+   {
+    "name": "panel1",
+    "file": "zeen-anim-interactive-panel1.webp",
+    "x": 46.0,
+    "y": 177.5,
+    "w": 27.5,
+    "h": 227.5
+   },
+   {
+    "name": "panel2",
+    "file": "zeen-anim-interactive-panel2.webp",
+    "x": 64.5,
+    "y": 178.0,
+    "w": 40.5,
+    "h": 227.5
+   },
+   {
+    "name": "panel3",
+    "file": "zeen-anim-interactive-panel3.webp",
+    "x": 95.5,
+    "y": 177.5,
+    "w": 62.5,
+    "h": 224.5
+   },
+   {
+    "name": "panel4",
+    "file": "zeen-anim-interactive-panel4.webp",
+    "x": 149.0,
+    "y": 188.0,
+    "w": 93.5,
+    "h": 214.5
+   },
+   {
+    "name": "panel5",
+    "file": "zeen-anim-interactive-panel5.webp",
+    "x": 233.0,
+    "y": 187.5,
+    "w": 194.0,
+    "h": 188.0
+   },
+   {
+    "name": "line",
+    "file": "zeen-anim-interactive-line.webp",
+    "x": 32.5,
+    "y": 86.5,
+    "w": 337.0,
+    "h": 65.0
+   },
+   {
+    "name": "start",
+    "file": "zeen-anim-interactive-start.webp",
+    "x": 19.0,
+    "y": 120.5,
+    "w": 42.5,
+    "h": 42.5
+   },
+   {
+    "name": "end",
+    "file": "zeen-anim-interactive-end.webp",
+    "x": 336.0,
+    "y": 117.5,
+    "w": 48.5,
+    "h": 48.5
+   },
+   {
+    "name": "cursor",
+    "file": "zeen-anim-interactive-cursor.webp",
+    "x": 354.0,
+    "y": 136.5,
+    "w": 59.0,
+    "h": 82.0
+   }
+  ]
+ },
+ "creative": {
+  "w": 427,
+  "h": 427,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-creative-bg.webp",
+    "x": 0.0,
+    "y": 0.0,
+    "w": 427.0,
+    "h": 427.0
+   },
+   {
+    "name": "paper",
+    "file": "zeen-anim-creative-paper.webp",
+    "x": 43.0,
+    "y": 152.5,
+    "w": 384.0,
+    "h": 274.5
+   },
+   {
+    "name": "photo",
+    "file": "zeen-anim-creative-photo.webp",
+    "x": 227.5,
+    "y": 127.5,
+    "w": 189.0,
+    "h": 159.0
+   },
+   {
+    "name": "tape1",
+    "file": "zeen-anim-creative-tape1.webp",
+    "x": 200.5,
+    "y": 122.0,
+    "w": 66.5,
+    "h": 63.5
+   },
+   {
+    "name": "tape2",
+    "file": "zeen-anim-creative-tape2.webp",
+    "x": 356.0,
+    "y": 102.0,
+    "w": 68.5,
+    "h": 61.0
+   },
+   {
+    "name": "sticker",
+    "file": "zeen-anim-creative-sticker.webp",
+    "x": 30.5,
+    "y": 150.5,
+    "w": 106.0,
+    "h": 109.0
+   },
+   {
+    "name": "letter-z",
+    "file": "zeen-anim-creative-letter-z.webp",
+    "x": 81.5,
+    "y": 286.0,
+    "w": 112.0,
+    "h": 98.0
+   },
+   {
+    "name": "letter-e",
+    "file": "zeen-anim-creative-letter-e.webp",
+    "x": 173.0,
+    "y": 290.5,
+    "w": 77.0,
+    "h": 92.5
+   },
+   {
+    "name": "letter-e2",
+    "file": "zeen-anim-creative-letter-e2.webp",
+    "x": 232.0,
+    "y": 285.0,
+    "w": 77.5,
+    "h": 88.5
+   },
+   {
+    "name": "letter-n",
+    "file": "zeen-anim-creative-letter-n.webp",
+    "x": 289.0,
+    "y": 288.5,
+    "w": 85.5,
+    "h": 96.5
+   },
+   {
+    "name": "squiggle",
+    "file": "zeen-anim-creative-squiggle.webp",
+    "x": 40.0,
+    "y": 46.0,
+    "w": 258.0,
+    "h": 63.0
+   }
+  ]
+ },
+ "collect": {
+  "w": 427,
+  "h": 427,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-collect-bg.webp",
+    "x": 0.0,
+    "y": 0.0,
+    "w": 427.0,
+    "h": 427.0
+   },
+   {
+    "name": "sheet",
+    "file": "zeen-anim-collect-sheet.webp",
+    "x": 78.0,
+    "y": 98.0,
+    "w": 349.0,
+    "h": 329.0
+   },
+   {
+    "name": "zine",
+    "file": "zeen-anim-collect-zine.webp",
+    "x": 327.5,
+    "y": 83.5,
+    "w": 86.5,
+    "h": 102.0
+   },
+   {
+    "name": "sleeves",
+    "file": "zeen-anim-collect-sleeves.webp",
+    "x": 125.0,
+    "y": 142.5,
+    "w": 302.0,
+    "h": 284.5
+   },
+   {
+    "name": "spark1",
+    "file": "zeen-anim-collect-spark1.webp",
+    "x": 334.0,
+    "y": 55.0,
+    "w": 18.5,
+    "h": 27.5
+   },
+   {
+    "name": "spark2",
+    "file": "zeen-anim-collect-spark2.webp",
+    "x": 358.0,
+    "y": 50.0,
+    "w": 18.5,
+    "h": 33.5
+   },
+   {
+    "name": "spark3",
+    "file": "zeen-anim-collect-spark3.webp",
+    "x": 382.5,
+    "y": 58.5,
+    "w": 18.5,
+    "h": 27.5
+   },
+   {
+    "name": "star",
+    "file": "zeen-anim-collect-star.webp",
+    "x": 51.0,
+    "y": 222.0,
+    "w": 31.0,
+    "h": 31.0
+   },
+   {
+    "name": "dot",
+    "file": "zeen-anim-collect-dot.webp",
+    "x": 43.5,
+    "y": 270.5,
+    "w": 19.0,
+    "h": 19.0
+   }
+  ]
+ },
+ "accessible": {
+  "w": 428,
+  "h": 428,
+  "layers": [
+   {
+    "name": "bg",
+    "file": "zeen-anim-accessible-bg.webp",
+    "x": 0.0,
+    "y": 0.0,
+    "w": 427.5,
+    "h": 427.5
+   },
+   {
+    "name": "inside",
+    "file": "zeen-anim-accessible-inside.webp",
+    "x": 136.0,
+    "y": 98.0,
+    "w": 173.0,
+    "h": 212.5
+   },
+   {
+    "name": "bubble1",
+    "file": "zeen-anim-accessible-bubble1.webp",
+    "x": 152.5,
+    "y": 117.0,
+    "w": 99.5,
+    "h": 71.5
+   },
+   {
+    "name": "bubble2",
+    "file": "zeen-anim-accessible-bubble2.webp",
+    "x": 212.0,
+    "y": 162.5,
+    "w": 88.5,
+    "h": 78.5
+   },
+   {
+    "name": "bubble3",
+    "file": "zeen-anim-accessible-bubble3.webp",
+    "x": 148.0,
+    "y": 222.0,
+    "w": 69.5,
+    "h": 60.5
+   },
+   {
+    "name": "star",
+    "file": "zeen-anim-accessible-star.webp",
+    "x": 259.0,
+    "y": 256.0,
+    "w": 38.0,
+    "h": 38.0
+   },
+   {
+    "name": "frame",
+    "file": "zeen-anim-accessible-frame.webp",
+    "x": 116.5,
+    "y": 74.5,
+    "w": 212.0,
+    "h": 255.5
+   },
+   {
+    "name": "sill",
+    "file": "zeen-anim-accessible-sill.webp",
+    "x": 106.0,
+    "y": 307.0,
+    "w": 233.5,
+    "h": 32.5
+   },
+   {
+    "name": "shutter-left",
+    "file": "zeen-anim-accessible-shutter-left.webp",
+    "x": 84.5,
+    "y": 87.5,
+    "w": 49.5,
+    "h": 233.5
+   },
+   {
+    "name": "shutter-right",
+    "file": "zeen-anim-accessible-shutter-right.webp",
+    "x": 311.0,
+    "y": 87.5,
+    "w": 49.5,
+    "h": 233.5
+   },
+   {
+    "name": "bubble4",
+    "file": "zeen-anim-accessible-bubble4.webp",
+    "x": 25.5,
+    "y": 317.5,
+    "w": 72.5,
+    "h": 62.0
+   },
+   {
+    "name": "bubble5",
+    "file": "zeen-anim-accessible-bubble5.webp",
+    "x": 315.5,
+    "y": 324.0,
+    "w": 81.5,
+    "h": 66.0
+   }
+  ]
+ }
+}

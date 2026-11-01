@@ -50,12 +50,16 @@ function caption(title, meta) {
 
 // Case studies share one card builder between the feature grid and the visual grid.
 // A card shows a still unless it names a video recorded from the project itself.
-// Each one links to the case study's own route, so it behaves like any other link.
+// Each one links to the case study's own route, or to the project's own site if it has no case study.
 function projectCard(key, className, featured) {
   const project = projects[key];
   const { card } = project;
   const link = h('a', className);
-  link.href = projectRoute(key);
+  link.href = project.link ?? projectRoute(key);
+  if (project.link) {
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  }
   link.dataset.project = key;
   const art = card.video
     ? { ratio: card.ratio, video: projectVideo(card.video), poster: projectImage(card.poster) }

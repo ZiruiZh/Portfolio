@@ -107,7 +107,7 @@ function navigate(route, animate = true) {
     .call(() => textReactions.measure());
 }
 
-// #work/prism is a case study; anything unknown falls back to the home page.
+// #work/allot is a case study; anything unknown falls back to the home page.
 function routeFromHash() {
   const [name, key] = location.hash.slice(1).split('/');
   if (name === 'work' && isProject(key)) return { page: 'project', project: key };

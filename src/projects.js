@@ -1,5 +1,4 @@
 // Original four projects imported from zirui.ca; provenance: .reference/projects-source.json
-// PRISM assets, recording, and timeline supplied directly by Zirui.
 export const projects = {
   "zeen": {
     "title": "Zeen",
@@ -173,14 +172,14 @@ export const projects = {
     "walkthrough": "zeen-cover.mp4",
     "playOnce": true,
     "images": [
-      { "file": "zeen-i-digital.webp", "caption": "What’s a digital zine?", "width": 1844, "height": 742 },
-      { "file": "zeen-i-flatten.webp", "caption": "A zine net flattened into a print layout, beside an Export as PDF button", "width": 1846, "height": 747 },
-      { "file": "zeen-i-glorified.webp", "caption": "Digital zines are glorified slideshows.", "width": 1844, "height": 744 },
-      { "file": "zeen-i-create.webp", "caption": "Creating for all, with a pair of red scissors", "width": 1842, "height": 746 },
-      { "file": "zeen-i-interactive.webp", "caption": "An accordion zine being pulled open", "width": 854, "height": 854 },
-      { "file": "zeen-i-creative.webp", "caption": "Collage scraps spelling out zeen", "width": 854, "height": 854 },
-      { "file": "zeen-i-collectible.webp", "caption": "A wall of zine covers, with the top right one glowing", "width": 854, "height": 854 },
-      { "file": "zeen-i-accessible.webp", "caption": "A kiosk of open speech bubbles", "width": 854, "height": 854 },
+      { "file": "zeen-i-digital.webp", "scene": "digital", "caption": "What’s a digital zine?", "width": 1844, "height": 742 },
+      { "file": "zeen-i-flatten.webp", "scene": "flatten", "caption": "A zine net flattened into a print layout, beside an Export as PDF button", "width": 1846, "height": 747 },
+      { "file": "zeen-i-glorified.webp", "scene": "glorified", "caption": "Digital zines are glorified slideshows.", "width": 1844, "height": 744 },
+      { "file": "zeen-i-create.webp", "scene": "create", "caption": "Creating for all, with a pair of red scissors", "width": 1842, "height": 746 },
+      { "file": "zeen-i-interactive.webp", "scene": "interactive", "caption": "An accordion zine being pulled open", "width": 854, "height": 854 },
+      { "file": "zeen-i-creative.webp", "scene": "creative", "caption": "Collage scraps spelling out zeen", "width": 854, "height": 854 },
+      { "file": "zeen-i-collectible.webp", "scene": "collect", "caption": "A wall of zine covers, with the top right one glowing", "width": 854, "height": 854 },
+      { "file": "zeen-i-accessible.webp", "scene": "accessible", "caption": "A kiosk of open speech bubbles", "width": 854, "height": 854 },
       { "file": "zeen-i-cut.webp", "caption": "How do we make the perfect cut?, over a cutting mat", "width": 1850, "height": 746 },
       { "file": "zeen-i-reading.webp", "caption": "Elements of zine storytelling: free to flip, nonlinear, intuitive", "width": 1884, "height": 778 },
       { "file": "zeen-i-wip.webp", "caption": "A collage of sticky notes, wireframes and work-in-progress screens, beside a phone clock in the small hours", "width": 1676, "height": 657 }
@@ -280,36 +279,8 @@ export const projects = {
   },
   "prism": {
     "title": "Prism Collective",
-    "accent": "#b83fe0",
     "category": "Website Design",
-    "sections": [
-      {
-        "label": "Overview",
-        "body": "A website for PRISM Collective, a creative technology community at the University of Waterloo."
-      },
-      {
-        "label": "Solution",
-        "body": "Iridescent graphics, playful motion, and expressive typography bring its world of art and technology online. The site introduces the collective, showcases its projects, and invites new collaborators to join.",
-        "images": [
-          "prism-1.webp",
-          "prism-2.webp",
-          "prism-3.webp"
-        ]
-      }
-    ],
-    "metadata": {
-      "Project": "PRISM Collective",
-      "Timeline": "8 weeks",
-      "Focus": "Website and visual design"
-    },
-    "cover": "prism-thumb.webp",
-    "walkthrough": "prism-walkthrough.mp4",
-    "images": [
-      { "file": "prism-thumb.webp", "caption": "PRISM Collective website home page", "width": 1214, "height": 720 },
-      { "file": "prism-1.webp", "caption": "Iridescent graphic, electric spectrum", "width": 1488, "height": 1800 },
-      { "file": "prism-2.webp", "caption": "Iridescent graphic, flowing color", "width": 1800, "height": 1350 },
-      { "file": "prism-3.webp", "caption": "Iridescent graphic, light and texture", "width": 1350, "height": 1800 }
-    ],
+    "link": "https://prismcollective.ca/",
     "headline": "Bringing art and technology online",
     "year": "2026",
     "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "1150 / 720" }
@@ -448,65 +419,6 @@ export const projects = {
     "year": "2025",
     "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "3 / 2", "mat": true }
   },
-  "yearbook": {
-    "title": "Marianopolis Yearbook",
-    "accent": "#13689e",
-    "category": "Editorial",
-    "sections": [
-      {
-        "label": "Overview",
-        "body": "As yearbook chief, I took on the design of the cover and a spread while coordinating 36 people working toward the same goal.",
-        "images": [
-          "yearbook-1.webp",
-          "yearbook-2.webp"
-        ]
-      },
-      {
-        "label": "Outcome",
-        "body": "It was a lot of moving pieces, but the final product made it worth it.",
-        "images": [
-          "yearbook-3.webp"
-        ]
-      }
-    ],
-    "metadata": {
-      "Client": "Marianopolis College",
-      "Industry": "Education",
-      "Timeline": "12 weeks (2025-26)",
-      "My Role": "Creative Director"
-    },
-    "cover": "yearbook-thumb.webp",
-    "images": [
-      {
-        "file": "yearbook-0.webp",
-        "caption": "Marianopolis Yearbook cover presentation",
-        "width": 1800,
-        "height": 1156
-      },
-      {
-        "file": "yearbook-1.webp",
-        "caption": "Front and back cover design",
-        "width": 1800,
-        "height": 1156
-      },
-      {
-        "file": "yearbook-2.webp",
-        "caption": "New Mar City Map editorial spread",
-        "width": 1800,
-        "height": 1164
-      },
-      {
-        "file": "yearbook-3.webp",
-        "caption": "Editorial spread in the finished yearbook",
-        "width": 1800,
-        "height": 1038
-      }
-    ],
-    "source": "https://www.zirui.ca/works/yearbook",
-    "headline": "A yearbook built by a team of 36",
-    "year": "2025–26",
-    "card": { "images": ["yearbook-0.webp"], "ratio": "1800 / 1156" }
-  },
   "artsfest": {
     "title": "ArtsFest",
     "accent": "#d9503f",
@@ -571,7 +483,8 @@ export const visualWork = [
 
 // Each case study is its own route under the work page.
 export const projectRoute = key => `#work/${key}`;
-export const isProject = key => Object.hasOwn(projects, key);
+// A project with a link of its own has no case study here.
+export const isProject = key => Object.hasOwn(projects, key) && !projects[key].link;
 
 const assets = import.meta.glob('../assets/projects/*.webp', { eager: true, query: '?url', import: 'default' });
 export const projectImage = file => assets[`../assets/projects/${file}`];
