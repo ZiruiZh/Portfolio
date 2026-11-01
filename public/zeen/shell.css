@@ -1,0 +1,72 @@
+/* Shell tweaks layered over the built prototype: backdrop choice, phone size. */
+.video-link { display: none !important; }
+
+/* The framed phone only appears from 600px up; below that the app fills the screen. */
+@media (width >= 600px) {
+  .phone-preview { width: min(340px, 36dvh - 12px, 100vw - 32px) !important; }
+}
+
+body[data-bg] { background: var(--zeen-backdrop) !important; }
+body[data-bg="dither"] { --zeen-backdrop: linear-gradient(#ffffff99, #ffffff99), url(/zeen/assets/brand/bg-dither.webp) bottom center / 100% auto no-repeat, #fff; }
+body[data-bg="dots"] { --zeen-backdrop: radial-gradient(circle, #cfd4da 1.7px, transparent 2.2px) 0 0 / 26px 26px, #fff; }
+body[data-bg="grey"] { --zeen-backdrop: #e9e9e9; }
+body[data-bg="peach"] { --zeen-backdrop: #ffe6d2; }
+
+.bg-switch {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 6;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 999px;
+  background: #fffffff2;
+  box-shadow: 0 8px 28px #0000001f, 0 2px 6px #0000000f;
+}
+.bg-switch button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #0000001f;
+  border-radius: 50%;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+}
+.bg-switch button[aria-pressed="true"] { outline: 2px solid #1a1a1a; outline-offset: 2px; }
+
+@media (hover: hover) {
+  .bg-switch { opacity: 0; transition: opacity .18s ease; }
+  .bg-switch:hover, .bg-switch:focus-within { opacity: 1; }
+}
+.bg-switch button:focus-visible { outline: 2px solid #ff4934; outline-offset: 2px; }
+
+@media (max-width: 420px) {
+  .bg-switch { left: 50%; transform: translateX(-50%); padding: 6px; gap: 6px; }
+  .bg-switch button { width: 24px; height: 24px; }
+}
+
+.zeen-back {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #000;
+  background: #fff;
+  color: #000;
+  transition: background .15s ease;
+}
+.zeen-back svg { display: block; width: 20px; height: 20px; }
+.zeen-back:hover, .zeen-back:focus-visible { background: #ff5a1f; }
+.zeen-back:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+
+/* On a phone the app fills the screen, so the arrow waits in the corner clear of its header. */
+@media (width < 600px) {
+  .zeen-back { top: auto; bottom: 16px; width: 32px; height: 32px; }
+  .zeen-back svg { width: 16px; height: 16px; }
+}
