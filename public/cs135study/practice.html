@@ -1594,7 +1594,7 @@ function lintRecursion(src, an, p) {
         else if (new RegExp('^\\(- ' + escRe(pn) + ' 1\\)$').test(t)) why = 'Write `(sub1 ' + pn + ')`, not `' + t + '`: the rules say to recur with sub1.';
         else if (new RegExp('^\\((- ' + escRe(pn) + ' \\d+|quotient ' + escRe(pn) + ' \\d+|sub1 \\(sub1 ' + escRe(pn) + '\\))\\)$').test(t)) why = '`' + t + '` doesn\'t follow the Rules for Recursion: a Nat argument may only change by `(sub1 ' + pn + ')`.';
         else if (new RegExp('^\\(add1 ' + escRe(pn) + '\\)$').test(t) && rules !== 'acc') why = '`' + t + '` moves away from the base case. To count up, use an accumulator (L10) or count down and compute with arithmetic.';
-        if (!why && a.type === 'id' && params.includes(a.name)) why = 'it passes `' + a.name + '` where `' + pn + '` goes, swapping the arguments. Under the Rules for Recursion each argument must stay in its own position, either unchanged or made smaller (`(rest ' + pn + ')`). Handle the two lists with separate clauses instead.';
+        if (!why && rules !== 'acc' && a.type === 'id' && params.includes(a.name)) why = 'it passes `' + a.name + '` where `' + pn + '` goes, swapping the arguments. Under the Rules for Recursion each argument must stay in its own position, either unchanged or made smaller (`(rest ' + pn + ')`). Handle the two lists with separate clauses instead.';
         if (why) issues.push({ sev: 'error', cat: 'rules', line: a.line, msg: where + ': ' + why });
         else if (rules !== 'acc') issues.push({ sev: 'error', cat: 'rules', line: a.line, msg: where + ': the argument `' + clip(t, 40) + '` for `' + pn + '` changes, but isn\'t `(rest ' + pn + ')` or `(sub1 ' + pn + ')`. Changing an argument freely is accumulative recursion (L10)' + (rules === 'final' || rules === 'v2' || rules === 'v1' ? ', which this problem doesn\'t allow.' : '.') });
       }
@@ -2522,7 +2522,7 @@ Write the predicate \`time?\`, which consumes **anything** and produces \`true\`
        (empty? (rest (rest x)))
        (integer? (first x)) (<= 0 (first x) 23)
        (integer? (second x)) (<= 0 (second x) 59)))`,
-  tests: [t('(time? (list 12 30))', 'valid', true), t('(time? (list 0 0))', 'midnight'), t('(time? (list 23 59))', 'last minute of the day'), t('(time? (list 24 0))', 'hour too big', true), t('(time? (list 7 60))', 'minute too big'), t('(time? (list -1 5))', 'negative hour'), t('(time? (list 12.5 3))', 'non-integer hour'), t("(time? (list 'noon 0))", 'symbol hour'), t('(time? (list 12))', 'too short'), t('(time? (list 12 30 0))', 'too long'), t('(time? empty)', 'empty list'), t("(time? 'noon)", 'not a list')],
+  tests: [t('(time? (list 12 30))', 'valid', true), t('(time? (list 0 0))', 'midnight'), t('(time? (list 23 59))', 'last minute of the day'), t('(time? (list 24 0))', 'hour too big', true), t('(time? (list 7 60))', 'minute too big'), t('(time? (list -1 5))', 'negative hour'), t('(time? (list 5 -1))', 'negative minute'), t('(time? (list 12.5 3))', 'non-integer hour'), t("(time? (list 'noon 0))", 'symbol hour'), t('(time? (list 12))', 'too short'), t('(time? (list 12 30 0))', 'too long'), t('(time? empty)', 'empty list'), t("(time? 'noon)", 'not a list')],
   notes: 'Check the shape before you look inside: `(cons? x)` makes `(rest x)` safe, and short-circuiting `and` stops before any unsafe `first`.' });
 
 /* ======================= L05-L07 ======================= */
@@ -3860,7 +3860,7 @@ def({ id: 'simulate', title: 'Simulate over time', lec: [3, 4, 5, 10], kind: 'wr
     text: `\`\`\`
 ;; A ${C.rec} is a (list Sym Nat Nat)   ; kind, ${C.what}, ${C.step}s so far
 \`\`\`
-Each ${C.step}, a ${k0} uses ${use[0]}${C.unit} of ${C.what}, a ${k1} uses ${use[1]}${C.unit}, and a ${k2} uses ${use[2]}${C.unit}; the third field counts the ${C.step}s completed. If at the start of a ${C.step} there isn't **enough** ${C.what} for it, the ${C.rec.toLowerCase()} becomes \`'${C.end}\`.
+Each ${C.step}, a ${k0} uses ${use[0]}${C.unit} of ${C.what}, a ${k1} uses ${use[1]}${C.unit}, and a ${k2} uses ${use[2]}${C.unit}; the third field counts the ${C.step}s completed. If at the start of ${C.step === 'hour' ? 'an' : 'a'} ${C.step} there isn't **enough** ${C.what} for it, the ${C.rec.toLowerCase()} becomes \`'${C.end}\`.
 
 Write \`${C.fname}\`, which consumes a ${C.rec} and a Nat \`n\` and produces the ${C.rec} after \`n\` ${C.step}s, or \`'${C.end}\`.
 
@@ -3959,7 +3959,7 @@ ${D.desc}
 ;; ${D.fname}: (listof Num) (listof Num) -> Bool
 (define (${D.fname} a b)
   (cond ${D.body}))`,
-    tests: [t(`(${D.fname} empty empty)`, 'both empty'), t(`(${D.fname} empty (list 1))`, 'empty vs one'), t(`(${D.fname} (list 1) empty)`, 'one vs empty'), t(`(${D.fname} (list 4 2) (list 4 3))`, 'differ at the end', true), t(`(${D.fname} (list 4 3) (list 4 2))`, 'differ at the end, other way'), t(`(${D.fname} (list 5 1 1) (list 4 9))`, 'first differs, different lengths', true), t(`(${D.fname} (list 4 9) (list 5 1 1))`, 'reverse of that'), t(`(${D.fname} (list 7 7) (list 7 7 0))`, 'prefix'), t(`(${D.fname} (list 3 1 2) (list 3 1 2))`, 'equal lists')]
+    tests: [t(`(${D.fname} empty empty)`, 'both empty'), t(`(${D.fname} empty (list 1))`, 'empty vs one'), t(`(${D.fname} (list 1) empty)`, 'one vs empty'), t(`(${D.fname} (list 4 2) (list 4 3))`, 'differ at the end', true), t(`(${D.fname} (list 4 3) (list 4 2))`, 'differ at the end, other way'), t(`(${D.fname} (list 5 1) (list 4 9))`, 'bigger first, smaller later'), t(`(${D.fname} (list 5 1 1) (list 4 9))`, 'first differs, different lengths', true), t(`(${D.fname} (list 4 9) (list 5 1 1))`, 'reverse of that'), t(`(${D.fname} (list 7 7) (list 7 7 0))`, 'prefix'), t(`(${D.fname} (list 3 1 2) (list 3 1 2))`, 'equal lists')]
   };
 } });
 
@@ -4099,7 +4099,7 @@ def({ id: 'word-order', title: 'Alphabetical comparisons', lec: [6, 12], kind: '
         [(and (string<=? lo (first words)) (string<=? (first words) hi))
          (cons (first words) (words-between lo hi (rest words)))]
         [else (words-between lo hi (rest words))]))`,
-    tests: [t(`(words-between "b" "m" empty)`, 'empty list'), t(`(words-between "b" "m" ${W})`, 'typical', true), t(`(words-between ${str(words[1])} ${str(words[2])} ${W})`, 'bounds are words in the list', true), t(`(words-between "a" "z" ${W})`, 'lower-case range'), t(`(words-between "A" "Z" ${W})`, 'capital range')]
+    tests: [t(`(words-between "b" "m" empty)`, 'empty list'), t(`(words-between "b" "m" ${W})`, 'typical', true), t(`(words-between ${str([words[1], words[2]].sort()[0])} ${str([words[1], words[2]].sort()[1])} ${W})`, 'bounds are words in the list', true), t(`(words-between "a" "z" ${W})`, 'lower-case range'), t(`(words-between "A" "Z" ${W})`, 'capital range')]
   };
 } });
 
