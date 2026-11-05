@@ -2101,25 +2101,6 @@ function errorHint(msg) {
 }
 CS.errorHint = errorHint;
 
-/* run only the student's own tests (the "Run" button) */
-function runOwn(src) {
-  const R = { outputs: [], tests: [], marks: [] };
-  const r = CS.runAll(src, { coverage: true });
-  if (r.error) {
-    const e = r.error;
-    R.error = { msg: e.message, line: e.node ? e.node.line : null, kind: e.kind, hint: errorHint(e.message) };
-    if (e.node) R.marks.push({ kind: 'error', s: e.node.s, e: e.node.e, line: e.node.line });
-  }
-  R.outputs = r.outputs.map(o => ({ line: o.node.line, value: show(o.value) }));
-  R.tests = r.tests.map(t => ({ line: t.line, pass: t.pass, msg: t.msg }));
-  if (!r.error && r.interp.an) {
-    const unc = uncovered(src, r.interp.an, r.interp.cov);
-    R.uncovered = unc;
-    unc.forEach(u => R.marks.push({ kind: 'uncovered', s: u.s, e: u.e, line: u.line }));
-  }
-  return R;
-}
-
 /* ---------------- value problems ---------------- */
 function isValueForm(n) {
   switch (n.type) {
@@ -2296,7 +2277,7 @@ function gradeChoice(p, answers) {
   return { kind: 'choice', parts, verdict: parts.every(x => x.ok) ? 'accepted' : 'wrong' };
 }
 
-CS.grade = { gradeWrite, runOwn, gradeValue, gradeStep, gradeContract, gradeTests, gradeChoice, stepTrace, partExpected, isValueForm, lintStyle, lintRecipe, lintRecursion, lintRestrictions };
+CS.grade = { gradeWrite, gradeValue, gradeStep, gradeContract, gradeTests, gradeChoice, stepTrace, partExpected, isValueForm, lintStyle, lintRecipe, lintRecursion, lintRestrictions };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -4416,7 +4397,7 @@ class Editor {
   }
   key(e) {
     const ta = this.ta, mod = e.metaKey || e.ctrlKey;
-    if (mod && e.key === 'Enter') { e.preventDefault(); if (e.shiftKey) { if (this.opts.onRun) this.opts.onRun(); } else if (this.opts.onSubmit) this.opts.onSubmit(); return; }
+    if (mod && e.key === 'Enter') { e.preventDefault(); if (this.opts.onSubmit) this.opts.onSubmit(); return; }
     if (mod && (e.key === 'i' || e.key === 'I')) { e.preventDefault(); this.reindent(); return; }
     if (e.key === 'Tab' && !mod && !e.altKey) {
       e.preventDefault();
@@ -4583,11 +4564,11 @@ function starterFor(p) {
 function buildCodeWork(P) {
   const p = P.p, w = W(p.id);
   const bar = el('div', { class: 'bar' });
-  const run = el('button', { class: 'btn', text: 'Run', title: 'Run your code and your own tests (Ctrl/Cmd+Shift+Enter)' });
-  const sub = el('button', { class: 'btn primary', text: 'Submit', title: 'Check against the hidden tests (Ctrl/Cmd+Enter)' });
+  const sub = el('button', { class: 'btn primary', text: submitLabel(p.id), title: 'Check against the hidden tests (Ctrl/Cmd+Enter)' });
+  P.submitBtn = sub;
   const re = el('button', { class: 'btn', text: 'Reindent', title: 'Indent everything the way DrRacket does (Ctrl/Cmd+I)' });
   const reset = el('button', { class: 'btn', text: 'Reset' });
-  bar.append(run, sub, re, reset, el('span', { class: 'sp' }), el('span', { class: 'kbd', text: p.kind === 'tests' ? 'tests only' : 'BSL with list abbreviations' }));
+  bar.append(sub, re, reset, el('span', { class: 'sp' }), el('span', { class: 'kbd', text: p.kind === 'tests' ? 'tests only' : 'BSL with list abbreviations' }));
   const host = el('div');
   P.work.append(host, bar);
   P.res = el('div', { class: 'res', 'aria-live': 'polite' });
@@ -4595,9 +4576,8 @@ function buildCodeWork(P) {
   P.editor = new Editor(host, w.code !== undefined ? w.code : starterFor(p), {
     label: 'Your solution for ' + p.title,
     onChange: v => { W(p.id).code = v; save(); },
-    onSubmit: () => submit(P), onRun: () => runOwn(P)
+    onSubmit: () => submit(P)
   });
-  run.onclick = () => runOwn(P);
   sub.onclick = () => submit(P);
   re.onclick = () => P.editor.reindent();
   reset.onclick = () => { if (confirm('Replace your code with the starting template?')) { P.editor.value = starterFor(p); W(p.id).code = P.editor.value; save(); } };
@@ -4677,7 +4657,8 @@ function buildChoiceWork(P) {
 }
 function addCheck(P, note) {
   const bar = el('div', { class: 'bar' });
-  bar.append(el('button', { class: 'btn primary', text: 'Check answers', onclick: () => submit(P) }), el('span', { class: 'sp' }), note ? el('span', { class: 'kbd', text: note }) : null);
+  P.submitBtn = el('button', { class: 'btn primary', text: submitLabel(P.p.id), onclick: () => submit(P) });
+  bar.append(P.submitBtn, el('span', { class: 'sp' }), note ? el('span', { class: 'kbd', text: note }) : null);
   P.work.append(bar);
   P.res = el('div', { class: 'res', 'aria-live': 'polite' });
   P.work.append(P.res);
@@ -4704,32 +4685,7 @@ function updateProgress() {
 function busy(P, on) { P.el.querySelectorAll('.bar .btn').forEach(b => b.disabled = on); }
 function later(fn) { setTimeout(fn, 20); }
 
-function runOwn(P) {
-  busy(P, true);
-  later(() => {
-    let r;
-    try { r = CS.grade.runOwn(P.editor.value); } catch (e) { r = { error: { msg: 'Internal error: ' + e.message } }; }
-    busy(P, false);
-    P.editor.setMarks(r.marks);
-    const box = el('div', { class: 'res' });
-    if (r.error) box.append(errBox(P, r.error, r.error.kind === 'read' || r.error.kind === 'syntax' ? 'Syntax error' : 'Error'));
-    if (r.outputs && r.outputs.length) box.append(el('div', { class: 'box' }, el('h4', { text: 'Output' }), el('pre', { class: 'code', html: r.outputs.map(o => esc(o.value)).join('\n') })));
-    const tb = el('div', { class: 'box' }, el('h4', { text: 'Your tests' }));
-    if (!r.tests || !r.tests.length) tb.append(el('p', { class: 'muted', text: r.error ? 'Tests run only once the program runs without errors.' : 'No check-expect tests yet. Run checks your own tests; Submit uses the hidden ones.' }));
-    else {
-      const passed = r.tests.filter(t => t.pass).length;
-      tb.append(el('p', null, el('b', { text: passed + ' of ' + r.tests.length + ' passed' })));
-      const ul = el('ul', { style: 'margin:0;padding-left:18px' });
-      r.tests.filter(t => !t.pass).forEach(t => ul.append(el('li', null, lineLink(P, t.line), ' ', t.msg)));
-      tb.append(ul);
-    }
-    if (r.uncovered && r.uncovered.length && r.tests && r.tests.length) tb.append(el('p', null, 'Not reached by your tests (highlighted): ', ...r.uncovered.slice(0, 5).map((u, i) => el('span', null, i ? ', ' : '', lineLink(P, u.line), ' ', el('code', { text: u.text })))));
-    else if (r.tests && r.tests.length && !r.error) tb.append(el('p', { class: 'muted', text: 'Every part of your code ran during your tests (full coverage).' }));
-    box.append(tb);
-    P.res.innerHTML = ''; P.res.append(box);
-    W(P.p.id).lastHTML = null; save();
-  });
-}
+function submitLabel(id) { const w = S.work[id]; return w && (w.tries || w.last) ? 'Resubmit' : 'Submit'; }
 
 function submit(P) {
   const p = P.p;
@@ -4747,6 +4703,7 @@ function submit(P) {
     busy(P, false);
     showResult(P, r);
     setStatus(p.id, r.verdict === 'accepted');
+    if (P.submitBtn) P.submitBtn.textContent = 'Resubmit';
     const w = W(p.id); w.last = { verdict: r.verdict, at: Date.now() };
     w.lastHTML = (p.kind === 'write' || p.kind === 'tests') ? P.res.innerHTML : null;
     save();
