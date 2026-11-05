@@ -43,15 +43,15 @@ function media({ images, video, poster, ratio, mat }) {
   return frame;
 }
 
-// A headline on the left, and who, what, and when on the right.
-function caption(title, meta) {
-  return h('span', 'work-caption', h('span', 'work-title', title), meta ? h('span', 'work-meta', meta) : null);
+// The project's name, followed by what kind of work it was in a lighter grey.
+function caption(title) {
+  return h('span', 'work-caption', h('span', 'work-title', ...[title].flat()));
 }
 
 // Case studies share one card builder between the feature grid and the visual grid.
 // A card shows a still unless it names a video recorded from the project itself.
 // Each one links to the case study's own route, or to the project's own site if it has no case study.
-function projectCard(key, className, featured) {
+function projectCard(key, className, featured, bare) {
   const project = projects[key];
   const { card } = project;
   const link = h('a', className);
@@ -61,12 +61,14 @@ function projectCard(key, className, featured) {
     link.rel = 'noopener noreferrer';
   }
   link.dataset.project = key;
-  const art = card.video
+  const art = bare
+    ? { ratio: bare, images: card.images.map(projectImage) }
+    : card.video
     ? { ratio: card.ratio, video: projectVideo(card.video), poster: projectImage(card.poster) }
     : { ratio: card.ratio, mat: card.mat, images: card.images.map(projectImage) };
-  link.append(media(art), featured
-    ? caption(project.headline, `${project.title} • ${project.category} ${project.year}`)
-    : caption(project.title));
+  // In the visual grid the art speaks for itself: no caption, just a name for screen readers.
+  if (featured) link.append(media(art), caption([project.cardName ?? project.title, h('span', 'work-type', ` / ${project.category}${project.year ? ` ${project.year}` : ''}`)]));
+  else { link.append(media(art)); link.setAttribute('aria-label', project.title); }
   return link;
 }
 
@@ -94,14 +96,16 @@ export function installWork({ reducedQuery, openImage }) {
   const imageIds = visualWork.filter(item => item.playground).map(item => item.playground);
   const visuals = visualWork.map(item => {
     if (item.project) {
-      return { el: projectCard(item.project, 'visual-item', false), ratio: parseRatio(projects[item.project].card.ratio) };
+      const ratio = item.ratio || projects[item.project].card.ratio;
+      return { el: projectCard(item.project, 'visual-item', false, ratio), ratio: parseRatio(ratio) };
     }
     const data = playgroundImages.find(entry => entry.id === item.playground);
-    const ratio = item.ratio || `${data.width} / ${data.height}`;
+    const ratio = `${data.width} / ${data.height}`;
     const el = h('button', 'visual-item');
     el.type = 'button';
     el.setAttribute('aria-haspopup', 'dialog');
-    el.append(media({ images: [playgroundImage(data.id, 'grid') || playgroundImage(data.id)], ratio, mat: item.mat }), caption(item.title));
+    el.setAttribute('aria-label', item.title);
+    el.append(media({ images: [playgroundImage(data.id, 'grid') || playgroundImage(data.id)], ratio }));
     el.addEventListener('click', () => openImage(data.id, el, imageIds));
     return { el, ratio: parseRatio(ratio) };
   });
@@ -112,7 +116,7 @@ export function installWork({ reducedQuery, openImage }) {
     if (counts.join() === layout) return;
     layout = counts.join();
     masonry(featureGrid, features, counts[0], 64);
-    masonry(visualGrid, visuals, counts[1], 44);
+    masonry(visualGrid, visuals, counts[1], 0);
   }
   layoutGrids();
   ['(max-width:1024px)', '(max-width:600px)'].forEach(query => matchMedia(query).addEventListener('change', layoutGrids, options));

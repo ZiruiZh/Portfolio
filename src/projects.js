@@ -190,6 +190,7 @@ export const projects = {
   },
   "allot": {
     "title": "Ramp Allot",
+    "cardName": "Allot",
     "accent": "#959c00",
     "category": "Product Design",
     "sections": [
@@ -464,21 +465,21 @@ export const projects = {
   }
 };
 
-// Work tab "Visual" grid, in reading order. Captions show only the title;
-// `mat` sets artwork on a surface with room around it.
+// Work tab "Visual" grid, in reading order. Each piece shows bare, at its own proportions;
+// the title is only read out to screen readers. A project entry gives its cover's ratio.
 export const visualWork = [
-  { project: 'artsfest' },
+  { project: 'artsfest', ratio: '1165 / 1800' },
   { playground: '16', title: 'Weightless' },
-  { playground: '07', title: 'Luciole', mat: true, ratio: '1 / 1' },
+  { playground: '07', title: 'Luciole' },
   { playground: '06', title: 'FILLED' },
   { playground: '11', title: 'What’s an ORTBO?' },
-  { playground: '24', title: 'Summer gone', mat: true, ratio: '4 / 5' },
+  { playground: '24', title: 'Summer gone' },
   { playground: '12', title: 'Teenager Room Design' },
-  { playground: '02', title: 'Eggloo', mat: true, ratio: '5 / 4' },
+  { playground: '02', title: 'Eggloo' },
   { playground: '23', title: 'AI Dehumanization' },
-  { playground: '18', title: 'Student agenda', mat: true, ratio: '4 / 5' },
+  { playground: '18', title: 'Student agenda' },
   { playground: '20', title: 'Pixel bunny' },
-  { playground: '21', title: 'Red-haired character', mat: true, ratio: '1 / 1' },
+  { playground: '21', title: 'Red-haired character' },
 ];
 
 // Each case study is its own route under the work page.

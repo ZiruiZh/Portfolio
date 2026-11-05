@@ -39,9 +39,11 @@
         <a class="cell nav-link" href="#playground"><span>playground</span></a>
         <a class="cell nav-link" href="#about"><span>about</span></a>
       </nav>
-      <a class="cell square waterloo" href="https://cs.uwatering.com/#https://www.zirui.ca/" target="_blank" rel="noopener noreferrer" aria-label="University of Waterloo CS webring"><img src="/assets/waterlooanimal.svg" alt="" /></a>
-      <a class="cell square" id="previous" href="https://cs.uwatering.com/#https://www.zirui.ca/?nav=prev" aria-label="Previous website in the UW CS webring"><svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 5-10 7 10 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
-      <a class="cell square" id="next" href="https://cs.uwatering.com/#https://www.zirui.ca/?nav=next" aria-label="Next website in the UW CS webring"><svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5 10 7-10 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
+      <a class="cell square waterloo" href="https://cs.uwatering.com/#https://www.zirui.ca/" target="_blank" rel="noopener noreferrer" aria-label="University of Waterloo CS webring" aria-controls="ring-arrows" aria-expanded="false"><img src="/assets/waterlooanimal.svg" alt="" /></a>
+      <div class="ring-arrows" id="ring-arrows" inert>
+        <a class="cell square" id="previous" href="https://cs.uwatering.com/#https://www.zirui.ca/?nav=prev" aria-label="Previous website in the UW CS webring"><svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 5-10 7 10 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
+        <a class="cell square" id="next" href="https://cs.uwatering.com/#https://www.zirui.ca/?nav=next" aria-label="Next website in the UW CS webring"><svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5 10 7-10 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
+      </div>
     </header>
 
     <main id="main" tabindex="-1">
@@ -85,7 +87,6 @@
 
       <section class="page playground-page" id="playground" aria-labelledby="playground-heading" hidden>
         <div class="playground-heading"><h1 class="sr-only" id="playground-heading" tabindex="-1">Playground</h1><p>Scroll or drag in any direction.</p></div>
-        <div class="play-controls" aria-label="Playground controls"><button id="remix">Remix colors <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M5 5h14v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></button><button id="reset-play">Start again <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 8a8 8 0 1 1-1 8M5 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></button></div>
       </section>
 
       <section class="page about-page" id="about" aria-labelledby="about-heading" hidden>

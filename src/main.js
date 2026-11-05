@@ -4,6 +4,9 @@ import { gsap } from 'gsap';
 import { SculptureStage } from './physics.js';
 import { TextReactions } from './text-reactions.js';
 import { installCursor } from './cursor.js';
+import { installShapeGradient } from './shape-gradient.js';
+import { installWebring } from './webring.js';
+import { installPlaygroundHint } from './playground-hint.js';
 import { PlaygroundBackground } from './playground-background.js';
 import { installPlaygroundGallery } from './playground-gallery.js';
 import { AboutCube } from './about-cube.js';
@@ -26,6 +29,8 @@ function refreshAccent(shapeColor) {
 const introAccents = ['#FF3899', '#CDFF00', '#FF5934', '#FFBE00', '#AC80FF', '#00FFD0', '#F0FF00'];
 refreshAccent(introAccents[Math.floor(Math.random() * introAccents.length)]);
 const removeCursor = installCursor(reducedQuery);
+installShapeGradient();
+installWebring(reducedQuery);
 const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
 document.querySelectorAll('.resume-link, [data-resume-link]').forEach(link => { link.href = resumeURL; });
 // The router decides where each route lands, so the browser must not also guess.
@@ -37,6 +42,7 @@ const scrollMemory = { home: 0, work: 0 };
 let transition;
 let pendingShapeTheme = null;
 const sculptures = new SculptureStage(document.getElementById('stage'), reduced);
+installPlaygroundHint(sculptures.looping);
 const gallery = installPlaygroundGallery(sculptures, reducedQuery);
 const caseStudy = installCaseStudy({ reducedQuery });
 const work = installWork({ reducedQuery, openImage: gallery.open });
@@ -116,8 +122,6 @@ function routeFromHash() {
 window.addEventListener('hashchange', () => navigate(routeFromHash()));
 document.querySelector('.skip-link').addEventListener('click', e => { e.preventDefault(); document.getElementById('main').focus({ preventScroll: true }); });
 document.getElementById('reset-home').addEventListener('click', () => sculptures.reset(!reduced));
-document.getElementById('reset-play').addEventListener('click', () => sculptures.reset(!reduced));
-document.getElementById('remix').addEventListener('click', () => sculptures.remix());
 
 // A character responds to proximity without making the heading look like a link.
 const name = document.querySelector('.name');
