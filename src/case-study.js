@@ -281,6 +281,16 @@ export function installCaseStudy({ reducedQuery }) {
       h('div', null, h('dt', null, label === 'My Role' ? 'Role' : label),
         ...[value].flat().map(entry => h('dd', null, entry)))));
 
+    // An unfinished case study says so under its facts, with a way to ask about it.
+    const notice = document.getElementById('case-notice');
+    notice.hidden = !project.notice;
+    notice.replaceChildren(...(project.notice ?? []).map(part => {
+      if (typeof part === 'string') return part;
+      const link = h('a', null, part.text);
+      link.href = part.href;
+      return link;
+    }));
+
     document.getElementById('case-sections').replaceChildren(
       ...project.sections.map(section => sectionBlock(project, section, autoplay)));
     index.replaceChildren(...project.sections.map(section => {

@@ -191,6 +191,7 @@ export const projects = {
   "allot": {
     "title": "Ramp Allot",
     "cardName": "Allot",
+    "notice": ["This case study is still a work in progress. Want to hear more about Allot? Let’s chat, or ", { "text": "email me", "href": "mailto:z457zhao@uwaterloo.ca" }, "."],
     "accent": "#959c00",
     "category": "Product Design",
     "sections": [

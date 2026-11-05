@@ -7,6 +7,7 @@ export function installWebring(reducedQuery) {
   const tray = document.getElementById('ring-arrows');
   if (!crest || !tray) return;
   const icons = tray.querySelectorAll('.arrow-icon');
+  const badge = crest.querySelector('img');
   let open = false, tl;
 
   const setOpen = value => {
@@ -41,7 +42,16 @@ export function installWebring(reducedQuery) {
       .to(tray, { width: 0, duration: .32, ease: 'power3.inOut' }, .1);
   };
 
+  // every click gets a tiny hop, straight up and back, before anything else happens
+  const hop = () => {
+    if (reducedQuery.matches || !badge) return;
+    gsap.timeline({ overwrite: 'auto' })
+      .to(badge, { y: -3, duration: .09, ease: 'power2.out' })
+      .to(badge, { y: 0, duration: .22, ease: 'bounce.out' });
+  };
+
   crest.addEventListener('click', event => {
+    hop();
     // a modified click still opens the ring in a new tab, and once the arrows are out the crest is a link again
     if (open || event.metaKey || event.ctrlKey || event.shiftKey || event.button) return;
     event.preventDefault();
