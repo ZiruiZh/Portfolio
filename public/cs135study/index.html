@@ -85,6 +85,11 @@ nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self
 .lg-trap{background:var(--trap-soft);color:var(--trap)} .lg-tip{background:var(--tip-soft);color:var(--tip)}
 .lg-exam{background:var(--exam-soft);color:var(--exam)} .lg-steps{background:var(--accent-soft);color:var(--accent)}
 .empty-msg{display:none;padding:24px 0;color:var(--ink-2)}
+.labcta{display:flex;align-items:center;gap:12px;margin-top:18px;padding:12px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--accent-soft);color:var(--ink);text-decoration:none}
+.labcta:hover{filter:brightness(.98)}
+.labcta-k{font:600 12px var(--f-mono);color:var(--accent);white-space:nowrap}
+.labcta-t{flex:1;font-weight:600}
+.labcta-a{font:600 18px var(--f-mono);color:var(--accent)}
 
 /* sections */
 section.lec{padding-top:44px}
@@ -184,7 +189,7 @@ details[open] summary{margin-bottom:6px}
   body{font-size:14px;line-height:1.5;background:#fff}
   .layout{display:block;max-width:none;padding:0;margin:0}
   main{max-width:none}
-  nav.toc,.tools,.empty-msg{display:none!important}
+  nav.toc,.tools,.empty-msg,.labcta{display:none!important}
   .mast{padding-bottom:16px}
   section.lec{padding-top:0;break-before:page}
   main>section.lec:first-of-type{break-before:auto;padding-top:20px}
@@ -228,6 +233,7 @@ details[open] summary{margin-bottom:6px}
   </ol>
   <p class="toc-title">Across the course</p>
   <ol>
+    <li><a href="practice.html" class="lablink"><span class="n">&#9654;</span>Practice lab<span class="cnt">&#8599;</span></a></li>
     <li><a href="#recipe"><span class="n">;;</span>Design recipe &amp; style<span class="cnt" data-cnt="recipe"></span></a></li>
     <li><a href="#patterns"><span class="n">&#955;</span>Pattern library</a></li>
     <li><a href="#stepping"><span class="n">&#8658;</span>Stepping rules</a></li>
@@ -247,6 +253,7 @@ details[open] summary{margin-bottom:6px}
     <div class="progress"><div class="bar"><i id="barfill"></i></div><span id="progtext">0 / 0 topics</span></div>
     <a class="pdf-link" href="cs135-study-guide.pdf" download>Download PDF</a>
   </div>
+  <a class="labcta" href="practice.html"><span class="labcta-k">;; new</span><span class="labcta-t">Practice lab: generate midterm-style problems and get your Racket graded in the browser</span><span class="labcta-a">&#8594;</span></a>
   <div class="legend" aria-label="Callout types">
     <span class="lg-steps">Steps</span><span class="lg-tip">Shortcut</span><span class="lg-trap">Trap</span><span class="lg-exam">On the exam</span>
   </div>
