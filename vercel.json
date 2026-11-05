@@ -1,3 +1,12 @@
 {
-  "redirects": [{ "source": "/zeen", "destination": "/zeen/", "permanent": false }]
+  "redirects": [
+    { "source": "/zeen", "destination": "/zeen/", "permanent": false },
+    { "source": "/cs135study", "destination": "/cs135study/", "permanent": false }
+  ],
+  "headers": [
+    {
+      "source": "/cs135study/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ]
 }
