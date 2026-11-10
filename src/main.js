@@ -58,6 +58,16 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden) tickClock();
 });
 
+// An icon changes shape with a quick crossfade rather than a pop.
+function swapIcon(path, name) {
+  if (!path || path.getAttribute('d') === iconPath(name)) return;
+  if (reducedQuery.matches || !path.animate) { path.setAttribute('d', iconPath(name)); return; }
+  path.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 75, easing: 'ease-in' }).onfinish = () => {
+    path.setAttribute('d', iconPath(name));
+    path.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 75, easing: 'ease-out' });
+  };
+}
+
 // A link marked to copy puts its text on the clipboard instead of opening anything. Footers are cloned onto every
 // case study, so one listener serves them all. If the clipboard is refused, the link opens as usual.
 document.addEventListener('click', event => {
@@ -65,41 +75,18 @@ document.addEventListener('click', event => {
   if (!link || !navigator.clipboard) return;
   event.preventDefault();
   navigator.clipboard.writeText(link.dataset.copy).then(() => {
-    // The only sign on screen is the word waving again; screen readers are told it was copied.
+    // The copy icon turns into a check for a moment; screen readers are told it was copied.
     const note = link.parentElement.querySelector('.copy-note');
     if (note) note.textContent = 'copied';
-    clearTimeout(link.waveTimer);
-    // The icon becomes a check at the bottom of the dip, rises with the letters, and turns back after a moment.
     const path = link.querySelector('.copy-icon path');
     clearTimeout(link.checkTimer);
+    swapIcon(path, 'check');
+    link.classList.add('is-copied');
     link.checkTimer = setTimeout(() => {
-      if (!path) return;
-      // Still in view, it fades across rather than popping.
-      const fade = path.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease-in' });
-      fade.onfinish = () => {
-        path.setAttribute('d', iconPath('copy'));
-        link.classList.remove('is-copied');
-        path.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' });
-      };
-    }, 1630);
-    if (reducedQuery.matches) {
-      // No wave when motion is unwelcome: the check simply appears.
-      path?.setAttribute('d', iconPath('check'));
-      link.classList.add('is-copied');
-      link.waveTimer = setTimeout(() => { if (note) note.textContent = ''; }, 1500);
-      return;
-    }
-    link.classList.remove('is-wave');
-    link.classList.add('is-rewave');
-    link.waveTimer = setTimeout(() => {
-      path?.setAttribute('d', iconPath('check'));
-      link.classList.add('is-copied');
-      link.classList.replace('is-rewave', 'is-wave');
-      link.waveTimer = setTimeout(() => {
-        link.classList.remove('is-wave');
-        if (note) note.textContent = '';
-      }, 900);
-    }, 130);
+      swapIcon(path, 'copy');
+      link.classList.remove('is-copied');
+      if (note) note.textContent = '';
+    }, 1500);
   }, () => { location.href = link.href; });
 });
 // The router decides where each route lands, so the browser must not also guess.

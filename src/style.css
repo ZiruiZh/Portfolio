@@ -236,19 +236,16 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 .work-info .text-link{font-size:16px;color:var(--muted);transition:color .2s}
 .info-sections .text-link:focus-visible{color:var(--ink)}@media(hover:hover){.info-sections .text-link:hover{color:var(--ink)}}
 .info-links .text-link:focus-visible{color:var(--contact-color)}@media(hover:hover){.info-links .text-link:hover{color:var(--contact-color)}}
-/* copying the email replays the letters' wave: they drop for a beat, then lift again with their arrow */
 .copy-note{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.work-info a.is-rewave>.link-label .link-char{transform:none;transition-duration:.12s;transition-delay:0ms;transition-timing-function:ease-in}
-.work-info a.is-wave>.link-label .link-char{transform:translate3d(6px,-.3em,0) rotate(-4deg) scaleY(1.06);transition-duration:.6s;transition-timing-function:cubic-bezier(.2,1.6,.35,1);transition-delay:var(--glide-delay)}
 /* links show only words; pointed at or focused, a link's arrow rises out of its tail, the way it points.
    It hangs in the gap beside the word, so nothing beside it moves, and lifts with the letters on their springy curve,
    starting with the word's last letter. Icon-only controls keep their icons. */
 .link-label .arrow-icon{position:absolute;left:100%;top:50%;margin:-.4em 0 0 .3em;opacity:0;clip-path:inset(100% 100% 0 0);translate:0 5px;transition:opacity .2s,clip-path .25s cubic-bezier(.22,1,.36,1),translate .25s cubic-bezier(.22,1,.36,1)}
+/* while it is a check, a copy icon shows even with nothing pointing at it */
+a.is-copied>.link-label .arrow-icon{opacity:1;clip-path:inset(0);translate:6px 0}
 a:focus-visible>.link-label .arrow-icon{opacity:1;clip-path:inset(0);translate:6px -.3em;transition:opacity .2s,clip-path .25s cubic-bezier(.22,1,.36,1),translate .6s cubic-bezier(.2,1.6,.35,1) var(--glide-end,0ms)}
 @media(hover:hover){a:hover>.link-label .arrow-icon{opacity:1;clip-path:inset(0);translate:6px -.3em;transition:opacity .2s,clip-path .25s cubic-bezier(.22,1,.36,1),translate .6s cubic-bezier(.2,1.6,.35,1) var(--glide-end,0ms)}}
 .work-info .arrow-icon{width:.75em;height:.75em;margin-top:-.375em}
-.work-info a.is-rewave .arrow-icon{translate:6px 0;transition:translate .12s ease-in}
-.work-info a.is-wave .arrow-icon{opacity:1;clip-path:inset(0);translate:6px -.3em;transition:opacity .2s,clip-path .25s cubic-bezier(.22,1,.36,1),translate .6s cubic-bezier(.2,1.6,.35,1) var(--glide-end,0ms)}
 /* the way back and the reset button keep a place for their icon, so the word never shifts; the icon slides in from its tail */
 :is(.case-back,#reset-home) .arrow-icon{opacity:0;transition:opacity .2s,clip-path .25s cubic-bezier(.22,1,.36,1),translate .25s cubic-bezier(.22,1,.36,1)}
 .case-back .arrow-icon{clip-path:inset(0 0 0 100%);translate:5px 0}
