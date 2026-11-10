@@ -232,6 +232,7 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 .work-info:before{content:'';position:absolute;top:0;left:-100vw;right:-100vw;height:1px;background:var(--soft-line)}
 .info-name{margin:0;font:400 16px/1.3 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:.01em;color:var(--ink);transform:scaleX(.9);transform-origin:left center;white-space:nowrap}
 /* Marr's digits are not all one width, so the clock holds the width of its widest time and nothing beside it shifts as it ticks */
+.info-phone-name{display:none}
 .info-clock{display:inline-block;min-width:4.8em;margin-left:.35em;color:var(--muted);font-variant-numeric:tabular-nums}
 .info-sections ul,.info-links{display:flex;flex-wrap:wrap;gap:6px 32px;margin:0;padding:0;list-style:none}
 .work-info .text-link{font-size:16px;color:var(--muted);transition:color .2s}
@@ -254,7 +255,8 @@ a:focus-visible>.link-label .arrow-icon{opacity:1;clip-path:inset(0);translate:6
 :is(.case-back,#reset-home):focus-visible .arrow-icon{opacity:1;clip-path:inset(0);translate:0 0}
 @media(hover:hover){:is(.case-back,#reset-home):hover .arrow-icon{opacity:1;clip-path:inset(0);translate:0 0}}
 /* with nothing to point at them, their icons would only ever leave an empty space, so on touch screens they go */
-@media(hover:none){:is(.case-back,#reset-home) .arrow-icon{display:none}}
+@media(hover:none){#reset-home .arrow-icon{display:none}}
+@media(hover:none) and (min-width:601px){.case-back .arrow-icon{display:none}}
 @media(max-width:600px){
   :is(.work-page,.project-page){--wk-gutter:12px;--wk-gap:12px;--wk-side:16px}
   #work-visual{margin-top:72px}
@@ -263,13 +265,17 @@ a:focus-visible>.link-label .arrow-icon{opacity:1;clip-path:inset(0);translate:6
   .work-caption{padding-top:12px}
   .work-title,#visual-heading{font-size:15px}
   .visual-more{margin-top:32px}
-  /* on a phone the footer is just the ways to reach me, on one line; the menu has the sections and the clock */
-  .work-info{flex-wrap:nowrap;margin-top:72px;padding:13px 0 14px}
+  /* on a phone the footer is one line: the name, then the ways to reach me; the menu has the sections and the clock */
+  .work-info{flex-wrap:nowrap;column-gap:16px;margin-top:72px;padding:13px 0 14px}
   .info-name,.info-sections,.info-links .info-wide{display:none}
+  /* the name on the left, the links pushed to the right */
+  .info-phone-name{display:block;margin:0;font:400 15px/1.3 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:.01em;color:var(--ink);transform:scaleX(.9);transform-origin:left center;white-space:nowrap;margin-right:-.8em}
   .info-links{flex-wrap:nowrap;gap:24px}
   .info-links li{flex-shrink:0;white-space:nowrap}
   .work-info .text-link,.info-name{font-size:15px}
 }
+/* the narrowest phones get slightly smaller type and gaps so the copyright and the links still share one line */
+@media(max-width:365px){.work-info{column-gap:12px}.work-info .text-link,.info-phone-name{font-size:14px}.info-links{gap:14px}}
 
 @font-face{font-family:MarrRegular;src:url('../assets/fonts/MarrSans-Regular-Trial.otf') format('opentype');font-weight:400;font-display:swap}
 @font-face{font-family:MarrWebMedium;src:url('../assets/fonts/MarrSansWeb-Medium.woff2') format('woff2');font-weight:500;font-display:swap}
@@ -471,12 +477,15 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   .phone-head-bio{flex:0 0 calc((100% - 56px) / .9);min-width:0;margin:0 calc((100% - 56px) / -9) 0 0;padding-top:9px;font:400 19px/1.35 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:.01em;color:var(--ink);text-wrap:pretty;transform:scaleX(.9);transform-origin:left top}
   /* the logo reads as the first word of the sentence */
   .phone-head-mark img{display:inline-block;height:.82em;width:auto;vertical-align:-.04em}
-  /* now and then the logo glitches into the name it stands for, and back: black and white only, a slice or two flipping
-     to white on black (paper behind it, then inverted) */
-  .phone-head-name{display:none}
-  .phone-head-mark.is-name img{display:none}
-  .phone-head-mark.is-name .phone-head-name{display:inline}
-  .phone-head-mark.is-glitching :is(img,.phone-head-name){animation:name-glitch .34s steps(1) both}
+  /* the logo is five slots, one per letter; each shows its piece of the logo or, while it scrambles, a character */
+  .phone-head-mark{white-space:nowrap}
+  .phone-head-slot{display:inline-block;width:calc(var(--step) * .82em);text-align:left}
+  .phone-head-glyph{display:inline-block;height:.82em;width:calc(var(--w) * .82em);vertical-align:-.04em;overflow:visible}
+  .phone-head-char{display:none}
+  /* a character takes its own width, so the name reads as one word rather than five spaced letters */
+  .phone-head-slot.is-char{width:auto}
+  .phone-head-slot.is-char .phone-head-glyph{display:none}
+  .phone-head-slot.is-char .phone-head-char{display:inline}
   .phone-head-logo{display:none;align-items:center;height:44px}
   .phone-head-logo img{display:block;height:22px;width:auto}
   body:not([data-page=home]) .phone-head{align-items:center;justify-content:space-between}
@@ -489,7 +498,13 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   body[data-page=home] .work-page{padding-top:20px}
   .about-page{padding-top:24px}
   .playground-heading{top:16px}
+  /* on a case study the way back reads "back to work", in grey body type, with its arrow always showing */
+  #project .case-back{font:var(--case-type);letter-spacing:-.007em;color:var(--case-text);gap:6px;padding-block:10px;margin-block:-6px}
+  #project .case-back .arrow-icon{display:inline-block;width:14px;height:14px;opacity:1;clip-path:none;translate:none}
+  .case-back-wide{display:none}
 }
+.case-back-narrow{display:none}
+@media(max-width:600px){.case-back-narrow{display:inline}}
 /* the menu is the whole site on one white page */
 .phone-menu{position:fixed;inset:0;width:100%;max-width:none;height:100%;max-height:none;margin:0;padding:0 16px calc(28px + env(safe-area-inset-bottom));border:0;background:var(--paper);color:var(--ink);overflow:auto;overscroll-behavior:contain}
 .phone-menu::backdrop{background:transparent}
@@ -511,14 +526,3 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
 .phone-menu-clock{margin:48px 0 0;font:400 15px/1.3 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:.01em;color:var(--ink);transform:scaleX(.9);transform-origin:left center}
 html.menu-open,html.menu-open body{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.menu-lines span{transition:none}}
-@keyframes name-glitch{
-  0%{translate:0 0;clip-path:inset(0)}
-  12%{translate:-3px 0;clip-path:inset(0 0 55% 0)}
-  24%{translate:4px 1px;clip-path:inset(40% 0 10% 0)}
-  36%{translate:-2px -1px;clip-path:inset(10% 0 60% 0);background:var(--paper);filter:invert(1)}
-  48%{translate:2px 0;clip-path:inset(65% 0 0 0);background:none;filter:none}
-  60%{translate:-4px 0;clip-path:inset(0 0 30% 0)}
-  72%{translate:3px -1px;clip-path:inset(30% 0 35% 0);background:var(--paper);filter:invert(1)}
-  84%{translate:-1px 0;clip-path:inset(0 0 70% 0);background:none;filter:none}
-  100%{translate:0 0;clip-path:inset(0);background:none;filter:none}
-}

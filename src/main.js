@@ -39,6 +39,9 @@ installWebring(reducedQuery);
 const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
 document.querySelectorAll('.resume-link, [data-resume-link]').forEach(link => { link.href = resumeURL; });
 
+// The copyright line always shows this year.
+document.querySelectorAll('[data-year]').forEach(year => { year.textContent = new Date().getFullYear(); });
+
 // The footer keeps Montreal's time to the second. Footers are cloned onto every case study, so each tick finds them all.
 const montreal = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Toronto', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
 function tickClock() {

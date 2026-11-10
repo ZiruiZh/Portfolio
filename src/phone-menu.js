@@ -1,4 +1,51 @@
 import { gsap } from 'gsap';
+import logo from '../assets/ziruilogo.svg?raw';
+
+const NAME = 'Zirui';
+const NOISE = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+// The logo's letters, left to right, by the parts of the drawing that make each one up.
+const LETTERS = [['#z'], ['#i'], ['#R', '#R_2'], ['#U'], ['#i_2']];
+
+// Five slots, one per letter. Each holds its own piece of the logo, cut out of the full drawing so it lines up
+// exactly where it sits in the logo, and can show a character instead. A slot is as wide as the step from its
+// letter to the next, so the letters keep their places whatever the slots show.
+function buildSlots(mark) {
+  const source = new DOMParser().parseFromString(logo, 'image/svg+xml').documentElement;
+  const height = Number(source.getAttribute('viewBox').split(' ')[3]);
+  const measure = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  measure.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  document.body.append(measure);
+  const pieces = LETTERS.map(ids => {
+    const svg = source.cloneNode(true);
+    svg.querySelectorAll('#Logo > *').forEach(part => { if (!ids.some(id => part.matches(id))) part.remove(); });
+    measure.replaceChildren(svg.querySelector('#Logo').cloneNode(true));
+    const box = measure.firstChild.getBBox();
+    return { svg, x: box.x, width: box.width };
+  });
+  measure.remove();
+  const slots = pieces.map((piece, i) => {
+    const step = (pieces[i + 1]?.x ?? piece.x + piece.width) - piece.x;
+    const { svg } = piece;
+    svg.removeAttribute('width'); svg.removeAttribute('height');
+    svg.setAttribute('viewBox', `${piece.x} 0 ${piece.width} ${height}`);
+    svg.setAttribute('class', 'phone-head-glyph');
+    svg.style.setProperty('--w', piece.width / height);
+    const char = document.createElement('span');
+    char.className = 'phone-head-char';
+    const el = document.createElement('span');
+    el.className = 'phone-head-slot';
+    el.setAttribute('aria-hidden', 'true');
+    el.style.setProperty('--step', step / height);
+    el.append(svg, char);
+    return { el, show(what) {
+      const glyph = what === 'glyph';
+      el.classList.toggle('is-char', !glyph);
+      if (!glyph) char.textContent = what;
+    } };
+  });
+  mark.replaceChildren(...slots.map(slot => slot.el));
+  return slots;
+}
 
 // On a phone there is no top bar: the bio (or the logo) leads each page with a two-line menu icon beside it. The icon opens the whole site as one page:
 // it comes down from under its top row like a blind, its lines turn into a cross, and it rolls back up once a choice is made.
@@ -60,53 +107,56 @@ export function installPhoneMenu({ reducedQuery, phoneQuery }) {
   // Grown past phone width, there is a full navigation bar again and no menu to keep open.
   phoneQuery.addEventListener('change', () => { if (!phoneQuery.matches) close(true); }, options);
 
-  // Every few seconds the logo at the start of the bio glitches into the name it stands for, holds, and glitches back.
-  // A tap, or a mouse passing over it, sets it off too. It rests while the bio is out of sight.
+  // Every few seconds the logo at the start of the bio scrambles into the name "Zirui" and back. The logo's five
+  // letterforms and the name's five letters share five slots: each slot runs through random characters and then
+  // locks, left to right, into its letter or its piece of the logo. A tap, or a mouse passing over it, sets it off too.
   const mark = document.querySelector('.phone-head-mark');
-  const nameEl = mark?.querySelector('.phone-head-name');
-  const NAME = 'Zirui Zhao', NOISE = '#%&/<>?!*+=01';
-  let glitchTimer = 0, scrambleTimer = 0, inView = true, busy = false;
+  const slots = mark ? buildSlots(mark) : [];
+  let glitchTimer = 0, scrambleTimer = 0, inView = true, busy = false, state = 'logo';
   const showing = () => phoneQuery.matches && document.body.dataset.page === 'home' && !document.hidden && !dialog.open && inView;
-  // The name arrives as noise that settles, a letter at a time, into the real thing.
-  function scramble() {
+
+  function scrambleTo(target, done) {
     clearInterval(scrambleTimer);
-    let frame = 0;
-    scrambleTimer = setInterval(() => {
-      frame += 1;
-      nameEl.textContent = [...NAME].map((ch, i) => ch === ' ' || i < frame * 2 ? ch : NOISE[Math.floor(Math.random() * NOISE.length)]).join('');
-      if (frame * 2 >= NAME.length) clearInterval(scrambleTimer);
-    }, 40);
-  }
-  function glitch(next) {
-    clearTimeout(glitchTimer);
-    if (reducedQuery.matches || !showing()) { glitchTimer = setTimeout(() => glitch(next), 3000); return; }
     busy = true;
-    mark.classList.remove('is-glitching');
-    void mark.offsetWidth;
-    mark.classList.add('is-glitching');
-    // Halfway through the stutter the one becomes the other.
-    glitchTimer = setTimeout(() => {
-      mark.classList.toggle('is-name', next === 'name');
-      if (next === 'name') scramble();
-      glitchTimer = setTimeout(() => {
-        mark.classList.remove('is-glitching');
+    mark.classList.add('is-scrambling');
+    let locked = 0;
+    scrambleTimer = setInterval(() => {
+      slots.forEach((slot, i) => {
+        if (i < locked) slot.show(target === 'logo' ? 'glyph' : NAME[i]);
+        else slot.show(NOISE[Math.floor(Math.random() * NOISE.length)]);
+      });
+      if (locked >= slots.length) {
+        clearInterval(scrambleTimer);
+        mark.classList.remove('is-scrambling');
         busy = false;
-        glitchTimer = next === 'name'
-          ? setTimeout(() => glitch('logo'), 1800)
-          : setTimeout(() => glitch('name'), 6000 + Math.random() * 4000);
-      }, 160);
-    }, 160);
+        state = target;
+        done?.();
+      }
+      locked += 1 / 3;
+    }, 30);
   }
-  const poke = () => { if (!busy && !mark.classList.contains('is-name')) glitch('name'); };
+  function cycle() {
+    clearTimeout(glitchTimer);
+    if (reducedQuery.matches || !showing()) { glitchTimer = setTimeout(cycle, 3000); return; }
+    scrambleTo('name', () => {
+      glitchTimer = setTimeout(() => scrambleTo('logo', () => { glitchTimer = setTimeout(cycle, 6000 + Math.random() * 4000); }), 1800);
+    });
+  }
+  const poke = () => { if (!busy && state === 'logo' && !reducedQuery.matches) cycle(); };
   if (mark) {
-    glitchTimer = setTimeout(() => glitch('name'), 3000);
+    glitchTimer = setTimeout(cycle, 3000);
     mark.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') poke(); }, options);
-    // On Home the logo is already where it leads, so a tap plays the glitch instead.
+    // On Home the logo is already where it leads, so a tap plays the scramble instead.
     mark.addEventListener('click', e => { if (document.body.dataset.page === 'home') { e.preventDefault(); poke(); } }, options);
     const seen = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; });
     seen.observe(mark);
     controller.signal.addEventListener('abort', () => seen.disconnect());
   }
 
-  return { dispose: () => { close(true); controller.abort(); clearTimeout(glitchTimer); clearInterval(scrambleTimer); mark?.classList.remove('is-glitching', 'is-name'); } };
+  return {
+    dispose: () => {
+      close(true); controller.abort(); clearTimeout(glitchTimer); clearInterval(scrambleTimer);
+      mark?.classList.remove('is-scrambling'); slots.forEach(slot => slot.show('glyph'));
+    },
+  };
 }

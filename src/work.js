@@ -90,10 +90,8 @@ export function installWork({ reducedQuery, openImage }) {
 
   // Case studies listed in the visual grid are left out of the feature grid.
   const inVisual = new Set(visualWork.map(item => item.project).filter(Boolean));
-  const featureCard = key => ({ key, el: projectCard(key, 'work-card', true), ratio: parseRatio(projects[key].card.ratio) });
-  const features = Object.keys(projects).filter(key => !inVisual.has(key)).map(featureCard);
-  // A phone has no visual grid, so the case studies that only live there join the others, in the projects' own order.
-  const phoneFeatures = Object.keys(projects).map(key => features.find(card => card.key === key) ?? featureCard(key));
+  const features = Object.keys(projects).filter(key => !inVisual.has(key))
+    .map(key => ({ el: projectCard(key, 'work-card', true), ratio: parseRatio(projects[key].card.ratio) }));
   const phoneQuery = matchMedia('(max-width:600px)');
   const visualSection = document.getElementById('work-visual');
 
@@ -120,8 +118,9 @@ export function installWork({ reducedQuery, openImage }) {
     const counts = [featureColumns(innerWidth), visualColumns(innerWidth), phone];
     if (counts.join() === layout) return;
     layout = counts.join();
-    masonry(featureGrid, phone ? phoneFeatures : features, counts[0], 64);
-    // On a phone the visual grid is never built, so none of its pictures load; it comes back when the window grows.
+    masonry(featureGrid, features, counts[0], 64);
+    // On a phone the visual grid (and what lives only in it, like ArtsFest) is never built, so none of its pictures load;
+    // it comes back when the window grows.
     visualSection.hidden = phone;
     if (phone) visualGrid.replaceChildren();
     else masonry(visualGrid, visuals, counts[1], 0);
@@ -131,7 +130,7 @@ export function installWork({ reducedQuery, openImage }) {
 
   // Only videos near the viewport play; everything pauses outside Work, behind the lightbox, or in a hidden tab.
   // Every card's reel, whether or not its grid is on the page right now.
-  const reels = [...new Set([...phoneFeatures, ...visuals].flatMap(card => [...card.el.querySelectorAll('video[data-src]')]))];
+  const reels = [...features, ...visuals].flatMap(card => [...card.el.querySelectorAll('video[data-src]')]);
   const nearby = new Set();
   let enabled = false;
   function syncReels() {
