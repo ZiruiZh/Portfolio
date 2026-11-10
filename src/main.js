@@ -15,7 +15,6 @@ import { installWork } from './work.js';
 import { installCaseStudy } from './case-study.js';
 import { installPhoneMenu } from './phone-menu.js';
 import { isProject } from './projects.js';
-import { makeRun } from './palette.js';
 import { makeAccent } from './experience-math.js';
 
 const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
@@ -236,8 +235,6 @@ sculptures.onFrame = (time, moving) => {
 };
 
 let introFinished = false;
-let introTimeline;
-let introFailsafe;
 let heroTimeline;
 const heroAnimated = '.hero-copy, .name .letter, .chinese, .hero-line, .text-word, .typed-char';
 
@@ -291,17 +288,6 @@ function revealHome(animate = true) {
 function finishIntro(animateHero = false) {
   if (introFinished) return;
   introFinished = true;
-  clearTimeout(introFailsafe);
-  introTimeline?.kill();
-  introTimeline = null;
-  const intro = document.getElementById('intro');
-  const restoreFocus = intro.contains(document.activeElement);
-  intro.hidden = true;
-  document.body.classList.remove('intro-open');
-  document.querySelector('.intro-shapes').replaceChildren();
-  document.querySelector('.skip-link').inert = false;
-  document.getElementById('main').inert = false;
-  document.querySelector('.topbar').inert = false;
   visuals?.setMode(current);
   gsap.set(['.topbar', '#stage'], { clearProps: 'opacity,visibility,transform' });
   sculptures.active = current === 'playground' || (current === 'home' && sculpturesOnHome());
@@ -311,56 +297,18 @@ function finishIntro(animateHero = false) {
       yPercent: 0, duration: .32, ease: 'power3.out', clearProps: 'transform',
     });
   }
-  if (restoreFocus) document.getElementById('main').focus({ preventScroll: true });
 }
 
+// The page opens straight onto Home: the shapes drop in and the name's letters rise into place, with no opening circle.
 function runIntro() {
   if (introFinished) return;
   if (current === 'home' && sculpturesOnHome()) sculptures.build();
   textReactions.measure();
-  // A phone skips the opening circle and the falling letters and goes straight to the bio.
-  if (reduced || current !== 'home' || !sculpturesOnHome()) { finishIntro(); return; }
-  const intro = document.getElementById('intro');
-  const host = document.querySelector('.intro-shapes');
-  intro.hidden = false;
-  document.body.classList.add('intro-open');
-  sculptures.active = false;
-  document.getElementById('main').inert = true;
-  document.querySelector('.topbar').inert = true;
-  document.querySelector('.skip-link').inert = true;
-  gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlpha: 0 });
-
-  const circle = document.createElement('div');
-  circle.className = 'intro-circle';
-  const radii = [1, .91, .62, .57, .31, .12];
-  const colors = [...makeRun(radii.length - 1), '#FFFFFF'];
-  radii.forEach((radius, index) => {
-    const layer = document.createElement('div');
-    layer.className = 'intro-circle-layer';
-    layer.style.cssText = `width:${radius * 100}%;height:${radius * 100}%;background:${colors[index]}`;
-    circle.appendChild(layer);
-  });
-  host.replaceChildren(circle);
-  const diameter = Math.min(innerWidth, innerHeight) * .65;
-  circle.style.width = circle.style.height = `${diameter}px`;
-  // The innermost white circle covers every corner before revealing the page.
-  const finalScale = Math.hypot(innerWidth, innerHeight) / (diameter * radii.at(-1)) * 1.02;
-  introFailsafe = setTimeout(() => finishIntro(true), 4500);
-  introTimeline = gsap.timeline({ onComplete: () => finishIntro(true) })
-    .fromTo(circle, { scale: .001 }, {
-      scale: finalScale, duration: 1.05,
-      ease: t => .002 * t + .998 * Math.pow(t, 12),
-    });
-  intro.focus({ preventScroll: true });
+  finishIntro(current === 'home' && !reduced && sculpturesOnHome());
 }
 
-document.getElementById('enter-portfolio').addEventListener('click', e => {
-  e.preventDefault();
-  finishIntro(true);
-});
 window.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !introFinished) finishIntro(true);
-  else if (e.key === 'Escape' && heroTimeline) { stopHeroReveal(); textReactions.measure(); }
+  if (e.key === 'Escape' && heroTimeline) { stopHeroReveal(); textReactions.measure(); }
   if (!['home','playground'].includes(current) || !introFinished || document.querySelector('dialog[open]') || e.target.closest('button,a,input,textarea,[role=button]')) return;
   if (e.key.toLowerCase() === 'r' && sculptures.active) sculptures.remix();
 });
@@ -401,4 +349,4 @@ if (current === 'home') gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlph
 // The page is already usable if a font is slow or unavailable.
 Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);
 if (import.meta.env.DEV) window.__portfolio = { sculptures, textReactions };
-if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); work.dispose(); caseStudy.dispose(); phoneMenu.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { stopHeroReveal(); work.dispose(); caseStudy.dispose(); phoneMenu.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });

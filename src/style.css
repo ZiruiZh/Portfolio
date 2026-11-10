@@ -7,7 +7,15 @@
 /* tracking measured against each link's own size */
 .topbar .nav-link{letter-spacing:.01em}
 /* the letters are drawn at 90% of their natural width (the font has no narrower cut in this weight) */
-.topbar .nav-link span{display:inline-block;transform:scaleX(.9)}
+.topbar .nav-link>.link-label,.topbar .nav-link:is(:hover,:focus-visible)>.link-label{display:inline-block;transform:scaleX(.9)}
+/* the bar's sections move like the footer's: grey at rest, black and gliding letter by letter when pointed at,
+   with no fill behind them; the page you are on stays black */
+.topbar .nav-link:before{display:none}
+.topbar .nav-link{color:var(--muted);transition:color .2s}
+.topbar .nav-link[aria-current]{color:var(--ink)}
+/* in the bar the letters rise a little less than elsewhere, so the wave stays inside its narrow strip */
+.topbar .nav-link:focus-visible>.link-label .link-char{transform:translate3d(4px,-.2em,0) rotate(-2.5deg) scaleY(1.04)}
+@media(hover:hover){.topbar .nav-link:hover>.link-label .link-char{transform:translate3d(4px,-.2em,0) rotate(-2.5deg) scaleY(1.04)}}
 .topbar nav{display:flex;align-items:stretch}.cell{position:relative;isolation:isolate;display:flex;justify-content:center;align-items:center;height:100%;padding:0;flex-shrink:0;font-size:var(--nav-text);overflow:hidden}.cell:before,.case-back:before,.lightbox-bar button:before{content:'';position:absolute;inset:0;background:var(--ink);z-index:-1;transform:scaleY(0);transform-origin:top;transition:transform .2s cubic-bezier(.22,1,.36,1)}
 .cell:focus-visible:before,.case-back:focus-visible:before,.lightbox-bar button:focus-visible:before{transform:scaleY(1);transform-origin:bottom}@media(hover:hover){.cell:hover:before,.case-back:hover:before,.lightbox-bar button:hover:before{transform:scaleY(1);transform-origin:bottom}}.cell:focus-visible{color:var(--paper)}@media(hover:hover){.cell:hover{color:var(--paper)}}.cell img{display:block;transition:filter .15s}.cell:focus-visible img{filter:invert(1)}@media(hover:hover){.cell:hover img{filter:invert(1)}}.logo{width:8.5vw;min-width:90px;border-left:0;padding:0 1.15vw}.logo img{width:100%;max-height:78%}.bar-space{flex:1}.nav-link{padding:0 2.1vw;white-space:nowrap}.square{width:var(--bar);min-width:var(--bar);font-family:Marr,Arial,sans-serif;font-size:25px;font-weight:600}.waterloo img{height:50%;width:calc(var(--bar) * .5);object-fit:contain}
 .page{position:relative;min-height:100svh;padding-top:calc(var(--bar) + env(safe-area-inset-top));overflow:hidden}.home-page{height:100svh;min-height:640px}.hero-copy{position:absolute;left:var(--pad);top:calc(var(--bar) + 10.4vh);z-index:5;transform-origin:20% 50%;cursor:default;perspective:800px}.hero-copy h1{display:flex;align-items:baseline;gap:1vw;white-space:nowrap;line-height:1.02;letter-spacing:-.065em;margin-left:-.008em}.name,.name .letter,.name .text-impact{font-family:MarrWebMedium,Marr,Arial,sans-serif;font-weight:500}
@@ -20,7 +28,7 @@
 .playground-heading{position:absolute;top:calc(var(--bar) + 4vw);left:var(--pad);pointer-events:none;z-index:5}.playground-heading h1{font-size:6.4vw;letter-spacing:-.065em;line-height:.98}.playground-heading p{font-size:clamp(17px,1.3vw,24px);margin-top:20px;letter-spacing:-.035em}
 .about-page{padding:calc(var(--bar) + 5vw) var(--pad) 5vw}.about-page h1{font-size:6.2vw;letter-spacing:-.06em;line-height:1.02;margin-top:4vw}.about-bottom{display:grid;grid-template-columns:1fr 1fr;gap:10vw;align-items:center;margin-top:5vw}.about-mark{height:22vw}.about-mark img{height:100%;width:100%;object-fit:contain}.about-copy p{font-size:clamp(22px,1.9vw,36px);line-height:1.3;letter-spacing:-.015em;margin-bottom:1em}.text-link{display:inline-block;border-bottom:var(--line);padding-bottom:4px;font-family:MarrCond;font-size:20px}@media(hover:hover){.text-link:hover{color:#5520ff;border-color:currentColor}}
 dialog{width:min(1200px,92vw);max-height:88svh;border:var(--line);padding:0;color:var(--ink);background:var(--paper)}dialog::backdrop{background:rgb(0 0 0 / .55);backdrop-filter:blur(7px)}
-.intro{position:fixed;inset:0;background:var(--paper);z-index:100;overflow:hidden;pointer-events:auto}.intro-shapes{position:absolute;inset:0}.text-word,.text-impact,.text-space{display:inline-block}.text-space{width:.24em;user-select:none}.text-impact{transform-origin:center 75%}
+.text-word,.text-impact,.text-space{display:inline-block}.text-space{width:.24em;user-select:none}.text-impact{transform-origin:center 75%}
 @media(min-width:1900px){.hero-copy{top:calc(var(--bar) + 9vh)}}
 @media(max-width:900px){:root{--pad:6vw}.hero-copy{top:calc(var(--bar) + 9vh)}.hero-line{font-size:2.8vw}.chinese{font-size:1.8vw}.name{font-size:10.35vw}}
 @media(max-width:600px){:root{--bar:48px;--pad:6vw;--nav-text:16px}.logo{width:66px;min-width:66px;padding:0 8px}.bar-space{display:none}.topbar nav{flex:1}.nav-link{padding:0 6px;flex:1;font-size:var(--nav-text)}.square{width:34px;min-width:34px;font-size:21px}.waterloo img{width:18px;height:22px}.home-page{min-height:620px}.hero-copy{top:calc(var(--bar) + 7vh);right:5vw}.hero-copy h1{gap:2vw;flex-wrap:wrap;row-gap:8px;white-space:normal}.name{font-size:12.96vw;white-space:nowrap}.chinese{font-size:15.3px;letter-spacing:-.05em}.hero-line{font-size:clamp(20px,5.2vw,31px);line-height:1.23;margin-top:20px;letter-spacing:-.04em}.study{margin-top:22px;max-width:90%}.home-note{justify-content:flex-end}.playground-heading{top:95px}.playground-heading h1{font-size:12vw}.playground-heading p{font-size:17px;max-width:75%}.about-page{padding-top:90px}.about-page h1{font-size:11.2vw;margin-top:40px}.about-bottom{display:flex;flex-direction:column;gap:40px;margin-top:40px}.about-mark{height:52vw}.about-copy p{font-size:24px}.about-copy{padding-bottom:30px}}
@@ -46,8 +54,8 @@ body[data-page=playground]{overflow:hidden}.playground-page{height:100svh;min-he
 @media(max-width:600px){.hero-line{font-size:clamp(20.7px,5.4vw,28.8px);letter-spacing:-.01em}.playground-heading{top:75px;left:6vw}.playground-heading h1{font-size:30px}.playground-heading p{max-width:none;font-size:15px}.shape-label{font-size:21px;padding:8px 12px}}
 @media(prefers-reduced-motion:reduce){.cursor-core{transition:none}}
 
-.intro-circle{position:absolute;left:50%;top:50%;translate:-50% -50%;transform-origin:50% 50%;will-change:transform;pointer-events:none}
-.intro-circle-layer{position:absolute;left:50%;top:50%;translate:-50% -50%;transform-origin:50% 50%;border-radius:50%}
+
+
 .topbar,.hero-copy,.playground-heading,.color-scene,.piece{transition:opacity .25s ease}
 body.shape-focus .playground-heading,body.shape-focus .color-scene,body.shape-focus .home-note{opacity:.18}
 body.shape-focus .piece:not(.shape-focused){opacity:.18}
@@ -78,7 +86,9 @@ body.shape-focus .shape-gradient.is-textured{opacity:1}
 
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
 p,.about-copy p{font-family:MarrCond,Arial,sans-serif;font-weight:500}
-main{position:relative;z-index:1}.shape-gradient{z-index:0}.hero-copy{opacity:1!important}
+main{position:relative;z-index:1}
+/* the wash lies over the page, text included, below the bar; it multiplies, so black type stays black under it */
+.shape-gradient{z-index:2;mix-blend-mode:multiply}.hero-copy{opacity:1!important}
 .playground-heading p{background:none;margin-top:0}.playground-heading{top:calc(var(--bar) + 28px)}
 .playground-grid{position:fixed;inset:-64px;background-image:radial-gradient(circle,var(--grid-dot) 1px,transparent 1.4px);background-size:48px 48px;pointer-events:none;z-index:0;will-change:transform}
 .resume-link{display:block;width:fit-content;margin-top:22px;font:20px MarrCond}
@@ -120,6 +130,13 @@ a:focus-visible>.link-label:after{transform:scaleX(1);transform-origin:left}@med
 .contact-email{max-width:100%;overflow-wrap:anywhere}
 .contact-socials{display:flex;flex-wrap:wrap;gap:12px 25px;list-style:none;padding:0;margin:16px 0 0}
 .contact-socials .text-link{font-size:20px}
+/* the address and the four profiles share one line, spread evenly across the column; on a narrow screen they wrap */
+.about-contact{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;column-gap:24px;row-gap:12px}
+.about-contact h2{flex-basis:100%}
+.about-contact .contact-socials{display:contents}
+/* the About page's own links (the resume, the address and the profiles) share one size */
+.about-contact :is(.contact-email,.contact-socials .text-link){white-space:nowrap}
+.about-page :is(.about-copy .resume-link,.about-contact .contact-email,.about-contact .contact-socials .text-link){font-size:18px}
 
 @font-face{font-family:MarrCondRegular;src:url('../assets/fonts/MarrSansCondensed-Regular-Trial.otf') format('opentype');font-weight:400;font-display:swap}
 .work-experience{margin-top:clamp(60px,7vw,120px);padding-top:26px;border-top:var(--line)}
@@ -177,9 +194,12 @@ a:focus-visible>.link-label .link-char{transform:translate3d(6px,-.3em,0) rotate
 html,body{background:var(--paper);color:var(--ink)}
 ::selection,.skip-link,.cell:not(.logo):not(.waterloo):focus-visible,.case-back:focus-visible,.lightbox-bar button:focus-visible{color:#000}@media(hover:hover){.cell:not(.logo):not(.waterloo):hover,.case-back:hover,.lightbox-bar button:hover{color:#000}}
 
-/* the letters rise from below a clipped edge, so only the vertical axis is clipped: the tight tracking lets the last letter's
-   round side poke past the box, and a horizontal clip shaved it off */
-.name{overflow-x:visible;overflow-y:clip;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+/* the letters rise from below a clipped edge, so only the vertical axis is ever clipped: the tight tracking lets the last
+   letter's round side poke past the box, and a horizontal clip shaved it off */
+.name{overflow:visible;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+/* the hidden edge is only there while the letters rise into place; afterwards a letter tipped by the pointer can lean
+   past any edge without being cut */
+body[data-home-reveal] .name{overflow-y:clip}
 .typed-char{display:inline-block;transform-origin:50% 85%}
 .hero-university{pointer-events:auto;position:relative;display:inline-block;color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.14em}
 .hero-university:focus-visible{color:var(--accent)}@media(hover:hover){.hero-university:hover{color:var(--accent)}}
@@ -189,10 +209,10 @@ html,body{background:var(--paper);color:var(--ink)}
 .text-word{transform-origin:50% 80%}
 
 /* Automatic color tunnel; no extra page or scroll space. */
-body.intro-open{overflow:hidden}
-.intro:focus{outline:none}
-.intro-skip{position:absolute;left:4vw;bottom:24px;padding:12px 16px;background:var(--paper);color:var(--ink);font:500 20px MarrCond;opacity:0;pointer-events:none}
-.intro-skip:focus-visible{opacity:1;pointer-events:auto}
+body
+
+
+
 
 /* Work: feature grid, visual masonry, information. */
 :is(.work-page,.project-page){--wk-gutter:16px;--wk-gap:16px;--wk-side:28px;--wk-text:#1a1a1a;--wk-quiet:#9a9a9a;--wk-mat:var(--surface)}
@@ -510,6 +530,9 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   body[data-page=home] .work-page{padding-top:20px}
   .about-page{padding-top:24px}
   .playground-heading{top:16px}
+  /* About: too narrow for one line, so the address takes a line of its own and the profiles follow it, evenly spaced */
+  .about-contact{justify-content:flex-start;column-gap:28px}
+  .about-contact .contact-email{flex-basis:100%}
   /* About: the links sit a shade greyer */
   .about-page :is(.text-link,.resume-link,.experience-link){color:#4a4a4a}
   /* on a case study the way back reads "back to work", in grey body type, with its arrow always showing */
@@ -541,3 +564,10 @@ body:not([data-page=home]) .phone-menu-bar{align-items:center;justify-content:sp
 .phone-menu-clock{margin:48px 0 0;font:400 15px/1.3 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:.01em;color:var(--ink);transform:scaleX(.9);transform-origin:left center}
 html.menu-open,html.menu-open body{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.menu-lines span{transition:none}}
+
+/* where a ball passes behind the name and bio, that part of it is frosted: blurred and half faded into the page,
+   while the text itself stays crisp on top */
+/* its edges fade out over a band around the text, so there is no hard line between frosted and clear */
+.hero-copy:before{content:'';position:absolute;inset:-36px -44px;z-index:-1;pointer-events:none;background:rgb(255 255 255 / .5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  --feather:linear-gradient(to bottom,transparent,#000 32px,#000 calc(100% - 32px),transparent),linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent);
+  -webkit-mask-image:var(--feather);-webkit-mask-composite:source-in;mask-image:var(--feather);mask-composite:intersect}

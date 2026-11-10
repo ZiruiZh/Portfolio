@@ -1,4 +1,4 @@
-// Split only content links; navigation-bar labels deliberately stay static.
+// Every link label glides letter by letter on hover, the top bar's sections included.
 export function installLinkGlide() {
   document.querySelectorAll('.link-label').forEach(label => {
     if (label.dataset.glide) return;

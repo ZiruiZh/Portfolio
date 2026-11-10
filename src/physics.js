@@ -12,6 +12,8 @@ const artwork = import.meta.glob('../assets/shapes/*.svg', { query: '?raw', impo
 const { Engine, Bodies, Body, Composite, Constraint, Vertices, Sleeping, Query } = Matter;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const hoverCapable = matchMedia('(hover: hover)');
+const CEILING = 0x0002;
+const DROP_LIFE = 2000, DROP_CAP = 24;
 
 export class SculptureStage {
   constructor(element, reduced) {
@@ -70,6 +72,9 @@ export class SculptureStage {
     this.height = this.element.clientHeight;
     const W = this.width, H = this.height;
     this.walls = this.mode === 'home' ? createEnclosure(W, H) : [];
+    // Falling balls start above the stage and pass through the ceiling on their way in.
+    this.walls.forEach(wall => { if (wall.label === 'ceiling') wall.collisionFilter.category = CEILING; });
+    this.dropClock = 0; this.dropWait = 400;
     Composite.add(this.engine.world, this.walls);
     const mobile = W < 600;
     const S = mobile ? Math.min(W / 1550, H * .28 / 662) : Math.min(W / 2830, H * .49 / 662);
@@ -270,6 +275,75 @@ export class SculptureStage {
     this.items.forEach(item => item.el.classList.remove('shape-focused'));
     this.focusedShape = null;
     this.hovered = null;
+  }
+
+  // On Home, balls keep falling in from above the top edge in all sizes. Each lives about two seconds and then pops,
+  // or pops at once when it is clicked. They wear the same ringed colours as the resting circles.
+  spawnDrop() {
+    const diameter = 28 + Math.random() ** 1.6 * 120;
+    const r = diameter / 2;
+    const layerCount = 3 + Math.floor(Math.random() * 3);
+    const radii = [1];
+    for (let n = 1; n < layerCount; n++) radii.push(radii[n - 1] * (.58 + Math.random() * .29));
+    const el = document.createElement('div');
+    el.className = 'piece ring-piece drop-piece';
+    el.setAttribute('aria-hidden', 'true');
+    el.style.cssText = `width:${diameter}px;height:${diameter}px;border-radius:50%;`;
+    makeRun(layerCount, { allowWhite: true }).forEach((color, n) => {
+      const ring = document.createElement('div');
+      ring.className = 'ring-layer';
+      const size = diameter * radii[n];
+      ring.style.cssText = `position:absolute;border-radius:50%;width:${size}px;height:${size}px;left:${(diameter - size) / 2}px;top:${(diameter - size) / 2}px;background:${color};pointer-events:none;`;
+      el.appendChild(ring);
+    });
+    const x = r + Math.random() * Math.max(1, this.width - diameter);
+    const body = Bodies.circle(x, -r - 8, r, {
+      density: .008, friction: .65, frictionAir: .018, restitution: .3,
+      collisionFilter: { category: 0x0001, mask: 0xFFFFFFFF ^ CEILING },
+    });
+    Body.setVelocity(body, { x: (Math.random() - .5) * 2, y: 2 });
+    const item = { entrance: 1, el, body, center: { x: r, y: r }, w: diameter, h: diameter, layers: [], pulse: 0, drop: true, age: 0 };
+    // A click pops it; a press that moves is left alone so the stage can still be played with.
+    el.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      this.popDrop(item);
+    });
+    this.element.appendChild(el);
+    this.items.push(item);
+    Composite.add(this.engine.world, body);
+  }
+
+  // A quick squash, a little swell, and gone. The body leaves the world at once,
+  // so nothing bumps into a ball that is already on its way out.
+  popDrop(item) {
+    if (item.popping) return;
+    item.popping = true;
+    Composite.remove(this.engine.world, item.body);
+    const finish = () => { item.el.remove(); this.items = this.items.filter(other => other !== item); };
+    if (this.reduced) { finish(); return; }
+    gsap.timeline({ onComplete: finish })
+      .to(item, { entrance: .86, duration: .05, ease: 'power1.in' })
+      .to(item, { entrance: 1.16, duration: .07, ease: 'power2.out' })
+      .to(item, { entrance: 0, duration: .09, ease: 'power2.in' });
+  }
+
+  updateDrops(delta) {
+    // Spawning rests while motion is unwelcome; any balls already falling still pop on time.
+    if (!this.reduced && !this.navigating) {
+      this.dropClock += delta;
+      if (this.dropClock >= this.dropWait && this.items.filter(item => item.drop && !item.popping).length < DROP_CAP) {
+        this.dropClock = 0;
+        this.dropWait = 600 + Math.random() * 400;
+        this.spawnDrop();
+      }
+    }
+    for (const item of this.items) {
+      if (!item.drop || item.popping) continue;
+      item.age += delta;
+      if (item.age >= DROP_LIFE) this.popDrop(item);
+    }
   }
 
   // Rings pull back from the rim in sequence, so a circle reads as clickable
@@ -482,14 +556,16 @@ export class SculptureStage {
         Sleeping.set(item.body, false);
         gsap.to(item, { entrance: 1, duration: .28, ease: 'back.out(1.8)' });
       }
+      if (this.mode === 'home') this.updateDrops(delta);
       if (this.mode === 'playground') this.looping.update(delta);
-      else if ((!this.reduced || this.interacting) && (this.drag || this.items.some(item => !item.body.isSleeping))) {
+      else if ((!this.reduced || this.interacting || this.items.some(item => item.drop)) && (this.drag || this.items.some(item => !item.body.isSleeping))) {
         moving = true;
         this.accumulator += delta;
         const step = 1000 / 120;
         while (this.accumulator >= step) {
           Engine.update(this.engine, step);
-          this.items.forEach(item => this.constrain(item.body));
+          // A ball still falling in from above the stage is left to come through the top.
+          this.items.forEach(item => { if (!item.drop || item.body.position.y > item.h / 2) this.constrain(item.body); });
           this.accumulator -= step;
         }
       }

@@ -69,15 +69,20 @@ export class LoopingCanvas {
     // A canvas smaller than the screen would show a piece twice, so it never repeats sooner than that.
     this.bounds = { width: Math.max(x - 32, W), height: Math.max(period, H) };
     this.camera = { x: 0, y: 0 };
-    // The canvas opens centred on Weightless, in the part of it that is showing: on a phone the header row sits over
-    // its top, so the middle is measured from below that.
+    // The canvas opens on Weightless, placed within the part of it that is showing: on a phone the header row sits
+    // over its top, so positions are measured from below that.
     const start = items.find(item => item.image?.id === '16');
     if (start) {
       const head = document.querySelector('.phone-head');
       const covered = head && head.getClientRects().length
         ? Math.max(0, head.getBoundingClientRect().bottom - this.stage.element.getBoundingClientRect().top) : 0;
       const p = this.position(start);
-      this.camera = { x: p.x - W / 2, y: p.y - (H + covered) / 2 };
+      // Weightless sits a little left of and above the middle, so the view reads as a glimpse rather than a frame,
+      // but never so far that any of it is cut off: on a phone, where it is nearly as wide as the screen, it stays put.
+      const keep = (spot, size, low, high) => Math.min(Math.max(spot, low + size / 2 + 8), high - size / 2 - 8);
+      const spotX = keep(W * .36, start.w, 0, W);
+      const spotY = keep(covered + (H - covered) * .42, start.h, covered, H);
+      this.camera = { x: p.x - spotX, y: p.y - spotY };
     }
     this.target = { ...this.camera };
   }
