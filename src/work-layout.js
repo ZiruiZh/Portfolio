@@ -15,10 +15,6 @@ export function featureColumns(viewportWidth) {
   return viewportWidth > 600 ? 2 : 1;
 }
 
-export function visualColumns(viewportWidth) {
-  return viewportWidth > 1024 ? 4 : viewportWidth > 600 ? 3 : 2;
-}
-
 // Each item joins the shortest column; near-ties go left so the first row reads in order.
 export function distributeColumns(heights, count, tolerance = 1) {
   const columns = Array.from({ length: Math.max(1, count) }, () => ({ items: [], height: 0 }));

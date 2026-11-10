@@ -1,6 +1,6 @@
 import { projects, projectImage, projectVideo, projectRoute, visualWork } from './projects.js';
-import { playgroundImages, playgroundImage } from './playground-gallery.js';
-import { parseRatio, featureColumns, visualColumns, distributeColumns } from './work-layout.js';
+import { playgroundImage } from './playground-gallery.js';
+import { parseRatio, featureColumns, distributeColumns } from './work-layout.js';
 
 function h(tag, className, ...children) {
   const node = document.createElement(tag);
@@ -48,7 +48,7 @@ function caption(title) {
   return h('span', 'work-caption', h('span', 'work-title', ...[title].flat()));
 }
 
-// Case studies share one card builder between the feature grid and the visual grid.
+// One card builder for every case study on the work list.
 // A card shows a still unless it names a video recorded from the project itself.
 // Each one links to the case study's own route, or to the project's own site if it has no case study.
 function projectCard(key, className, featured, bare) {
@@ -82,18 +82,16 @@ function masonry(grid, cards, count, captionHeight) {
     h('div', 'work-column', ...indices.map(index => cards[index].el))));
 }
 
-export function installWork({ reducedQuery, openImage }) {
+export function installWork({ reducedQuery }) {
   const featureGrid = document.getElementById('feature-grid');
-  const visualGrid = document.getElementById('visual-grid');
   const controller = new AbortController();
   const options = { signal: controller.signal };
 
-  // Case studies listed in the visual grid are left out of the feature grid.
+  // Case studies that only ever lived in the old visual grid (ArtsFest) stay off the list; their routes still work.
   const inVisual = new Set(visualWork.map(item => item.project).filter(Boolean));
   const features = Object.keys(projects).filter(key => !inVisual.has(key))
     .map(key => ({ el: projectCard(key, 'work-card', true), ratio: parseRatio(projects[key].card.ratio) }));
-  const phoneQuery = matchMedia('(max-width:600px)');
-  // A phone has no visual grid, so the playground gets a card of its own after the case studies:
+  // The playground has a card of its own after the case studies:
   // a glimpse of its canvas, a few pieces scattered over the dotted grid and running off the edges.
   const glimpse = h('span', 'work-media playground-glimpse');
   glimpse.style.setProperty('--ratio', '3 / 2');
@@ -105,44 +103,19 @@ export function installWork({ reducedQuery, openImage }) {
   const playgroundLink = h('a', 'work-card', glimpse, caption(['Playground', h('span', 'work-type', ' / Portfolio 2026')]));
   playgroundLink.href = '#playground';
   const playgroundCard = { el: playgroundLink, ratio: 3 / 2 };
-  const visualSection = document.getElementById('work-visual');
-
-  const imageIds = visualWork.filter(item => item.playground).map(item => item.playground);
-  const visuals = visualWork.map(item => {
-    if (item.project) {
-      const ratio = item.ratio || projects[item.project].card.ratio;
-      return { el: projectCard(item.project, 'visual-item', false, ratio), ratio: parseRatio(ratio) };
-    }
-    const data = playgroundImages.find(entry => entry.id === item.playground);
-    const ratio = `${data.width} / ${data.height}`;
-    const el = h('button', 'visual-item');
-    el.type = 'button';
-    el.setAttribute('aria-haspopup', 'dialog');
-    el.setAttribute('aria-label', item.title);
-    el.append(media({ images: [playgroundImage(data.id, 'grid') || playgroundImage(data.id)], ratio }));
-    el.addEventListener('click', () => openImage(data.id, el, imageIds));
-    return { el, ratio: parseRatio(ratio) };
-  });
-
   let layout = '';
+  const cards = [...features, playgroundCard];
   function layoutGrids() {
-    const phone = phoneQuery.matches;
-    const counts = [featureColumns(innerWidth), visualColumns(innerWidth), phone];
-    if (counts.join() === layout) return;
-    layout = counts.join();
-    masonry(featureGrid, phone ? [...features, playgroundCard] : features, counts[0], 64);
-    // On a phone the visual grid (and what lives only in it, like ArtsFest) is never built, so none of its pictures load;
-    // it comes back when the window grows.
-    visualSection.hidden = phone;
-    if (phone) visualGrid.replaceChildren();
-    else masonry(visualGrid, visuals, counts[1], 0);
+    const count = featureColumns(innerWidth);
+    if (String(count) === layout) return;
+    layout = String(count);
+    masonry(featureGrid, cards, count, 64);
   }
   layoutGrids();
-  ['(max-width:1024px)', '(max-width:600px)'].forEach(query => matchMedia(query).addEventListener('change', layoutGrids, options));
+  matchMedia('(max-width:600px)').addEventListener('change', layoutGrids, options);
 
   // Only videos near the viewport play; everything pauses outside Work, behind the lightbox, or in a hidden tab.
-  // Every card's reel, whether or not its grid is on the page right now.
-  const reels = [...features, ...visuals].flatMap(card => [...card.el.querySelectorAll('video[data-src]')]);
+  const reels = cards.flatMap(card => [...card.el.querySelectorAll('video[data-src]')]);
   const nearby = new Set();
   let enabled = false;
   function syncReels() {

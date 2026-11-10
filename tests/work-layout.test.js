@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { slugify, parseRatio, featureColumns, visualColumns, distributeColumns } from '../src/work-layout.js';
+import { slugify, parseRatio, featureColumns, distributeColumns } from '../src/work-layout.js';
 
 test('section labels become stable anchor ids', () => {
   assert.equal(slugify('Overview'), 'overview');
@@ -21,14 +21,6 @@ test('aspect ratios parse from CSS ratio strings', () => {
   assert.equal(parseRatio('4 / 5'), .8);
   assert.equal(parseRatio('1800 / 1156'), 1800 / 1156);
   assert.equal(parseRatio('2'), 2);
-});
-
-test('visual grid narrows from four columns to two', () => {
-  assert.equal(visualColumns(1512), 4);
-  assert.equal(visualColumns(1024), 3);
-  assert.equal(visualColumns(768), 3);
-  assert.equal(visualColumns(600), 2);
-  assert.equal(visualColumns(375), 2);
 });
 
 test('masonry fills the first row in reading order', () => {

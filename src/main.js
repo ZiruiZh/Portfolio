@@ -106,7 +106,7 @@ const phoneMenu = installPhoneMenu({ reducedQuery, phoneQuery });
 installPlaygroundHint(sculptures.looping);
 const gallery = installPlaygroundGallery(sculptures, reducedQuery);
 const caseStudy = installCaseStudy({ reducedQuery });
-const work = installWork({ reducedQuery, openImage: gallery.open });
+const work = installWork({ reducedQuery });
 const visuals = new PlaygroundBackground(reducedQuery);
 // Both layers read the same eased offset; pointer parallax cannot drift apart.
 sculptures.parallax = visuals.offset;

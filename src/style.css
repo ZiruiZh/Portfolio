@@ -197,7 +197,6 @@ body.intro-open{overflow:hidden}
 :is(.work-page,.project-page){--wk-gutter:16px;--wk-gap:16px;--wk-side:28px;--wk-text:#1a1a1a;--wk-quiet:#9a9a9a;--wk-mat:var(--surface)}
 .work-page{overflow:clip;padding:calc(var(--bar) + env(safe-area-inset-top) + var(--wk-gutter)) var(--wk-side) 0}
 html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var(--bar) + env(safe-area-inset-top) + 16px)}
-#work-visual{margin-top:120px}
 .work-label{margin:0 0 14px;font:400 17px/1.25 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;color:var(--wk-quiet)}
 .work-label:focus{outline:none}
 .feature-grid,.visual-grid{display:grid;grid-template-columns:repeat(var(--columns,2),minmax(0,1fr));gap:var(--wk-gap);align-items:start}
@@ -205,11 +204,12 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 .feature-grid .work-column{gap:56px}
 /* a little more air between the two columns of project cards than between the art pieces */
 @media(min-width:601px){.feature-grid{column-gap:calc(var(--wk-gap) + 12px)}}
-.visual-grid .work-column{gap:var(--wk-gap)}
 .work-card,.visual-item{display:block;width:100%;padding:0;text-align:left;color:var(--wk-text)}
 .work-card:focus-visible,.visual-item:focus-visible{outline:none}
 .work-media{position:relative;display:block;overflow:hidden;aspect-ratio:var(--ratio);background:var(--wk-mat);transition:transform .7s cubic-bezier(.2,.75,.15,1),box-shadow .3s cubic-bezier(.22,1,.36,1)}
 .work-media>:is(img,video){position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* Prism's cover is drawn 2% larger from its left edge, so the sliver of the next slide on its right is cropped away */
+.work-card[data-project=prism] .work-media>video{scale:1.02;transform-origin:left center}
 .work-mat{position:absolute;inset:10% 8%;display:flex;justify-content:center;gap:4%}
 .work-mat img{flex:1 1 0;min-width:0;height:100%;object-fit:contain;filter:drop-shadow(0 1px 1px rgb(0 0 0 / .08)) drop-shadow(0 10px 20px rgb(0 0 0 / .1))}
 .work-mat img:first-child:not(:only-child){object-position:right center}
@@ -230,7 +230,6 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 @media(hover:hover){:is(.work-card,.visual-item):hover .work-media{transform:scale(1.025)}}
 /* a thumbnail being pointed at or focused casts the same soft shadow as the case study images */
 @media(hover:hover){:is(.work-card,.visual-item):is(:hover,:focus-visible) .work-media{box-shadow:0 10px 24px -8px rgba(0,0,0,.18)}}
-.visual-more{margin-top:44px;font-size:18px}
 /* the footer is one quiet row under a hairline: the name, the site's sections, then the ways to reach me */
 .work-info{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:14px 56px;margin-top:112px;padding:15px 0 15px}
 /* the hairline runs past the margins to both edges of the window; the page clips the overhang */
@@ -264,12 +263,10 @@ a:focus-visible>.link-label .arrow-icon{opacity:1;clip-path:inset(0);translate:6
 @media(hover:none) and (min-width:601px){.case-back .arrow-icon{display:none}}
 @media(max-width:600px){
   :is(.work-page,.project-page){--wk-gutter:12px;--wk-gap:12px;--wk-side:16px}
-  #work-visual{margin-top:72px}
   .work-label{font-size:16px}
   .feature-grid .work-column{gap:40px}
   .work-caption{padding-top:12px}
   .work-title,#visual-heading{font-size:15px}
-  .visual-more{margin-top:32px}
   /* on a phone the footer is one line: the name, then the ways to reach me; the menu has the sections and the clock */
   .work-info{flex-wrap:nowrap;column-gap:16px;margin-top:72px;padding:13px 0 14px}
   .info-name,.info-sections,.info-links .info-wide{display:none}
