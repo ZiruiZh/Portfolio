@@ -61,8 +61,9 @@ body.shape-focus .piece:not(.shape-focused){opacity:.18}
 .custom-cursor::backdrop{display:none}
 
 .ring-piece{overflow:hidden;isolation:isolate}
-.shape-gradient{position:fixed;inset:calc(var(--bar) + env(safe-area-inset-top)) 0 auto;height:42vh;background:linear-gradient(to bottom,var(--shape-color),transparent);opacity:0;pointer-events:none;z-index:3;transition:opacity .14s}
-body.shape-focus .shape-gradient{opacity:.55}
+.shape-gradient{position:fixed;inset:calc(var(--bar) + env(safe-area-inset-top)) 0 auto;height:42vh;background:linear-gradient(to bottom,var(--shape-color),transparent);opacity:0;pointer-events:none;z-index:3;transition:opacity .5s cubic-bezier(.45,0,.55,1)}
+/* the wash eases in over a shape and eases back out when the pointer leaves */
+body.shape-focus .shape-gradient{opacity:.55;transition-duration:.6s}
 .shape-gradient.is-textured{background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated}
 body.shape-focus .shape-gradient.is-textured{opacity:1}
 .topbar,.hero-copy,.playground-heading,.color-scene,.piece{transition:opacity .14s ease}
