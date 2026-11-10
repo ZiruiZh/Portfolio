@@ -115,7 +115,8 @@ a:focus-visible>.link-label:after{transform:scaleX(1);transform-origin:left}@med
 @media(max-width:600px){.lightbox-figure{padding:12px}.lightbox-art{height:65svh}.lightbox-bar button{padding:12px 15px}.lightbox-figure figcaption{font-size:16px}}
 
 .about-contact{margin-top:34px;padding-top:22px;border-top:var(--line)}
-.about-contact h2{margin:0 0 14px;font:14px MarrCond,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+/* "Contact" is set like the site's other section labels, in sentence case rather than spaced capitals */
+.about-contact h2{margin:0 0 14px;font:400 17px/1.25 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;color:var(--muted)}
 .contact-email{max-width:100%;overflow-wrap:anywhere}
 .contact-socials{display:flex;flex-wrap:wrap;gap:12px 25px;list-style:none;padding:0;margin:16px 0 0}
 .contact-socials .text-link{font-size:20px}
@@ -172,7 +173,7 @@ a:focus-visible>.link-label .link-char{transform:translate3d(6px,-.3em,0) rotate
 .about-contact .text-link:focus-visible{color:var(--contact-color)}@media(hover:hover){.about-contact .text-link:hover{color:var(--contact-color)}}
 
 /* Fixed light interface; artwork retains its original colors. */
-:root{color-scheme:light;--paper:#fff;--ink:#000;--muted:#707070;--surface:#f7f7f5;--soft-line:#e5e5e5;--grid-dot:#999}
+:root{color-scheme:light;--paper:#fff;--ink:#000;--muted:#707070;--surface:#f7f7f5;--soft-line:#e5e5e5;--grid-dot:#ccc}
 html,body{background:var(--paper);color:var(--ink)}
 ::selection,.skip-link,.cell:not(.logo):not(.waterloo):focus-visible,.case-back:focus-visible,.lightbox-bar button:focus-visible{color:#000}@media(hover:hover){.cell:not(.logo):not(.waterloo):hover,.case-back:hover,.lightbox-bar button:hover{color:#000}}
 
@@ -226,12 +227,21 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 .visual-item .work-media{background:none}
 /* the playground's card is a glimpse of its canvas: pieces scattered over the dotted grid */
 .playground-glimpse{background:var(--paper) radial-gradient(circle,var(--grid-dot) 1px,transparent 1.4px) 0 0/22px 22px}
-.work-media.playground-glimpse>img{position:absolute;inset:auto;height:auto;object-fit:contain;box-shadow:0 6px 16px -8px rgba(0,0,0,.25)}
+.playground-glimpse-pieces{position:absolute;inset:0;opacity:.85}
+.playground-glimpse-pieces>img{position:absolute;height:auto;object-fit:contain;box-shadow:0 6px 16px -8px rgba(0,0,0,.25)}
 @media(hover:hover){:is(.work-card,.visual-item):hover .work-media{transform:scale(1.025)}}
 /* a thumbnail being pointed at or focused casts the same soft shadow as the case study images */
 @media(hover:hover){:is(.work-card,.visual-item):is(:hover,:focus-visible) .work-media{box-shadow:0 10px 24px -8px rgba(0,0,0,.18)}}
 /* the footer is one quiet row under a hairline: the name, the site's sections, then the ways to reach me */
 .work-info{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:14px 56px;margin-top:112px;padding:15px 0 15px}
+/* wider than a phone, the sections sit on the page's exact centre whatever the widths of the clock and the links;
+   the side columns never shrink below their content, so on a narrow window they push rather than collide */
+@media(min-width:601px){
+  .work-info{display:grid;grid-template-columns:minmax(max-content,1fr) auto minmax(max-content,1fr)}
+  .work-info .info-name{justify-self:start}
+  .work-info .info-sections{justify-self:center}
+  .work-info .info-links{justify-self:end}
+}
 /* the hairline runs past the margins to both edges of the window; the page clips the overhang */
 .work-info:before{content:'';position:absolute;top:0;left:-100vw;right:-100vw;height:1px;background:var(--soft-line)}
 .info-name{margin:0;font:400 16px/1.3 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:.01em;color:var(--ink);transform:scaleX(.9);transform-origin:left center;white-space:nowrap}
@@ -500,8 +510,7 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   body[data-page=home] .work-page{padding-top:20px}
   .about-page{padding-top:24px}
   .playground-heading{top:16px}
-  /* About: "Contact" is set like the other section labels (the Visual one), not in spaced capitals, and the links sit a shade greyer */
-  .about-page .about-contact h2{font:400 17px/1.25 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;text-transform:none;color:var(--muted)}
+  /* About: the links sit a shade greyer */
   .about-page :is(.text-link,.resume-link,.experience-link){color:#4a4a4a}
   /* on a case study the way back reads "back to work", in grey body type, with its arrow always showing */
   #project .case-back{font:var(--case-type);letter-spacing:-.007em;color:var(--case-text);gap:6px;padding-block:10px;margin-block:-6px}

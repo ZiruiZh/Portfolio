@@ -28,13 +28,6 @@
     "height": 1081
   },
   {
-    "id": "33",
-    "title": "Brave Hearts Alliance logo",
-    "source": "bha-logo.webp",
-    "width": 971,
-    "height": 651
-  },
-  {
     "id": "06",
     "title": "FILLED poster",
     "source": "FILLED.jpg",
@@ -74,7 +67,8 @@
     "title": "What's an ORTBO?",
     "source": "ORTBOSEVER.png",
     "width": 5000,
-    "height": 5000
+    "height": 5000,
+    "scale": 1.6
   },
   {
     "id": "29",
@@ -103,7 +97,7 @@
     "source": "bcrc-1.webp",
     "width": 1273,
     "height": 1800,
-    "scale": 1.32
+    "scale": 1.6
   },
   {
     "id": "15",
@@ -124,7 +118,8 @@
     "title": "Weightless, 2025",
     "source": "TwaEAFdRFdni6xmfWOqToVBvGYU.png",
     "width": 5000,
-    "height": 4063
+    "height": 4063,
+    "scale": 1.6
   },
   {
     "id": "17",
@@ -148,13 +143,6 @@
     "height": 1164
   },
   {
-    "id": "20",
-    "title": "Pixel bunny",
-    "source": "lilbunnyguy.png",
-    "width": 1000,
-    "height": 1000
-  },
-  {
     "id": "21",
     "title": "Red-haired character illustration",
     "source": "mXjYvhYSyLIQ3Hj0qmlgpedjoY.png",
@@ -166,7 +154,8 @@
     "title": "BCRC Montreal, Map of Care poster",
     "source": "bcrc-2.webp",
     "width": 1273,
-    "height": 1800
+    "height": 1800,
+    "scale": 1.6
   },
   {
     "id": "22",

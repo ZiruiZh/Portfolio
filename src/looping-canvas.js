@@ -36,41 +36,49 @@ export class LoopingCanvas {
     const ordered = [];
     photos.forEach((photo, i) => { ordered.push(photo); if (i % 2 === 0 && shapes.length) ordered.push(shapes.shift()); });
     ordered.push(...shapes);
-    const columns = Math.ceil(Math.sqrt(ordered.length));
-    const rowCount = Math.ceil(ordered.length / columns);
-    const GAP_X = 28, GAP_Y = 35;
-    // Each piece claims room for its slight tilt.
-    const extent = item => item.w + item.h * .09;
-    // Rows break where their running width passes an even share, so they come out about the same length.
-    const share = (ordered.reduce((sum, item) => sum + extent(item) + GAP_X, 0)) / rowCount;
-    const rows = [[]];
-    let run = 0;
+    // A salon wall rather than rows: the pieces stack in columns, each column starts at its own height and each piece
+    // sits a little off its column's centre, so no two neighbours share a top line or a baseline.
+    const GAP_X = 44, GAP_Y = 40;
+    const count = Math.max(2, Math.round(Math.sqrt(ordered.length * 1.4)));
+    const columns = Array.from({ length: count }, () => ({ items: [], height: 0, width: 0 }));
+    // Each piece joins the shortest column so far, so the columns come out about the same height.
     for (const item of ordered) {
-      const room = extent(item) + GAP_X;
-      if (rows.at(-1).length && run + room / 2 > share * rows.length && rows.length < rowCount) rows.push([]);
-      rows.at(-1).push(item);
-      run += room;
+      const column = columns.reduce((low, c) => (c.height < low.height ? c : low));
+      column.items.push(item);
+      column.height += item.h + GAP_Y;
+      column.width = Math.max(column.width, item.w);
     }
-    // The canvas repeats every widest row plus one gap. Shorter rows spread their slack across their own gaps,
-    // the one at the seam included, so the spacing where the canvas wraps matches the spacing everywhere else.
-    const rowWidth = row => row.reduce((sum, item) => sum + extent(item) + GAP_X, 0);
-    const period = Math.max(...rows.map(rowWidth));
-    let y = 75, i = 0;
-    rows.forEach((row, r) => {
-      const rowHeight = Math.max(...row.map(item => item.h + item.w * .09));
-      const gap = GAP_X + (period - rowWidth(row)) / row.length;
-      let x = 32 + Math.sin(r * 2.3) * 12 + gap / 2;
-      row.forEach(item => {
-        item.world = { x: x + extent(item) / 2, y: y + rowHeight / 2 + Math.cos(i * 7.23) * 12, angle: item.image ? Math.sin(i * 3.7) * .08 : (i % 3 - 1) * .13 };
-        x += extent(item) + gap;
+    // The canvas repeats every tallest column. Shorter columns spread their slack across their own gaps, the one at
+    // the seam included, so the spacing where the canvas wraps matches the spacing everywhere else; sideways it
+    // repeats after the last column and one ordinary gap.
+    const period = Math.max(...columns.map(c => c.height));
+    const golden = .618034;
+    let x = 32, i = 0;
+    columns.forEach((column, c) => {
+      const gap = GAP_Y + (period - column.height) / column.items.length;
+      let y = ((c * golden) % 1) * period;
+      column.items.forEach(item => {
+        // A steady sway left and right within the column, never past its edges.
+        const sway = (column.width - item.w) / 2 * Math.sin(i * 2.399);
+        item.world = { x: x + column.width / 2 + sway, y: y + item.h / 2, angle: item.image ? 0 : (i % 3 - 1) * .13 };
+        y += item.h + gap;
         i++;
       });
-      y += rowHeight + GAP_Y;
+      x += column.width + GAP_X;
     });
-    // Likewise downwards: the last row is followed by one ordinary row gap before the first comes round again.
     // A canvas smaller than the screen would show a piece twice, so it never repeats sooner than that.
-    this.bounds = { width: Math.max(period, W), height: Math.max(y - 75, H) };
+    this.bounds = { width: Math.max(x - 32, W), height: Math.max(period, H) };
     this.camera = { x: 0, y: 0 };
+    // The canvas opens centred on Weightless, in the part of it that is showing: on a phone the header row sits over
+    // its top, so the middle is measured from below that.
+    const start = items.find(item => item.image?.id === '16');
+    if (start) {
+      const head = document.querySelector('.phone-head');
+      const covered = head && head.getClientRects().length
+        ? Math.max(0, head.getBoundingClientRect().bottom - this.stage.element.getBoundingClientRect().top) : 0;
+      const p = this.position(start);
+      this.camera = { x: p.x - W / 2, y: p.y - (H + covered) / 2 };
+    }
     this.target = { ...this.camera };
   }
 

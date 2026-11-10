@@ -345,7 +345,6 @@ export const visualWork = [
   { playground: '02', title: 'Eggloo' },
   { playground: '23', title: 'AI Dehumanization' },
   { playground: '18', title: 'Student agenda' },
-  { playground: '20', title: 'Pixel bunny' },
   { playground: '21', title: 'Red-haired character' },
 ];
 

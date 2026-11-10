@@ -91,16 +91,27 @@ export function installWork({ reducedQuery }) {
   const inVisual = new Set(visualWork.map(item => item.project).filter(Boolean));
   const features = Object.keys(projects).filter(key => !inVisual.has(key))
     .map(key => ({ el: projectCard(key, 'work-card', true), ratio: parseRatio(projects[key].card.ratio) }));
-  // The playground has a card of its own after the case studies:
-  // a glimpse of its canvas, a few pieces scattered over the dotted grid and running off the edges.
+  // The playground has a card of its own after the case studies: a collage of its pieces over its dotted grid.
   const glimpse = h('span', 'work-media playground-glimpse');
   glimpse.style.setProperty('--ratio', '3 / 2');
-  [['16', -6, 22, 42, -4], ['34', 31, 8, 24, 3], ['11', 57, 34, 30, -2], ['06', 85, -8, 24, 5]].forEach(([id, x, y, w, turn]) => {
-    const piece = image(playgroundImage(id, 'grid') || playgroundImage(id));
-    piece.style.cssText = `left:${x}%;top:${y}%;width:${w}%;rotate:${turn}deg`;
-    glimpse.append(piece);
+  // The pieces fade back a touch as one layer, so where they overlap they don't show through each other.
+  const pieces = h('span', 'playground-glimpse-pieces');
+  glimpse.append(pieces);
+  // Laid out as a collage, every piece upright. Weightless is the hero, about half the card, with the Trains of Thought
+  // poster and the Severance piece beside it; Map of Care and RUN. hold the bottom, medium pieces fill the edges and
+  // small ones sit at the corners of the big ones. Everything runs off the edges; later pieces sit on top.
+  [
+    ['21', -6, 56, 28], ['24', 84, 46, 20], ['02', 50, 84, 26], ['25', 78, 78, 18],
+    ['16', -4, -4, 50], ['11', 68, -6, 36], ['34', 42, -2, 26],
+    ['04', 46, 54, 38], ['35', 24, 52, 22],
+    ['17', 35, 42, 11], ['15', 16, 86, 10],
+  ].forEach(([id, x, y, w]) => {
+    // The hero is drawn large enough to want the sharper grid size; the rest make do with thumbnails.
+    const piece = image(playgroundImage(id, id === '16' ? 'grid' : 'thumb') || playgroundImage(id, 'grid'));
+    piece.style.cssText = `left:${x}%;top:${y}%;width:${w}%`;
+    pieces.append(piece);
   });
-  const playgroundLink = h('a', 'work-card', glimpse, caption(['Playground', h('span', 'work-type', ' / Portfolio 2026')]));
+  const playgroundLink = h('a', 'work-card', glimpse, caption(['Visit the playground!', h('span', 'work-type', ' / Portfolio 2026')]));
   playgroundLink.href = '#playground';
   const playgroundCard = { el: playgroundLink, ratio: 3 / 2 };
   let layout = '';

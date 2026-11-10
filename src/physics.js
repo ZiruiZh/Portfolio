@@ -228,7 +228,8 @@ export class SculptureStage {
     const sizeVariation = [1.1, .82, 1.32, .94, 1.2, .88, 1.26, 1.02];
     for (const image of playgroundImages) {
       // A piece can ask for its own size; the rest take turns through the variation.
-      const size = baseSize * (image.scale ?? sizeVariation[(Number(image.id) - 1) % sizeVariation.length]);
+      // Nothing grows wider than most of a phone's screen, so the large pieces still read as pieces there.
+      const size = Math.min(baseSize * (image.scale ?? sizeVariation[(Number(image.id) - 1) % sizeVariation.length]), this.width * .82);
       const scale = size / Math.max(image.width, image.height);
       const w = image.width * scale, h = image.height * scale;
       const el = document.createElement('div');
