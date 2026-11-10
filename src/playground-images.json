@@ -28,6 +28,13 @@
     "height": 1081
   },
   {
+    "id": "33",
+    "title": "Brave Hearts Alliance logo",
+    "source": "bha-logo.webp",
+    "width": 971,
+    "height": 651
+  },
+  {
     "id": "06",
     "title": "FILLED poster",
     "source": "FILLED.jpg",
@@ -91,6 +98,14 @@
     "height": 2806
   },
   {
+    "id": "34",
+    "title": "BCRC Montreal, Trains of Thought poster",
+    "source": "bcrc-1.webp",
+    "width": 1273,
+    "height": 1800,
+    "scale": 1.32
+  },
+  {
     "id": "15",
     "title": "Finn the Human",
     "source": "Tbqrdv9Pf1gVN7i4S2y17siJMBU.png",
@@ -145,6 +160,13 @@
     "source": "mXjYvhYSyLIQ3Hj0qmlgpedjoY.png",
     "width": 4999,
     "height": 5350
+  },
+  {
+    "id": "35",
+    "title": "BCRC Montreal, Map of Care poster",
+    "source": "bcrc-2.webp",
+    "width": 1273,
+    "height": 1800
   },
   {
     "id": "22",

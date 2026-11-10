@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND = ROOT / 'assets' / 'playground'
 PROJECTS = ROOT / 'assets' / 'projects'
 # Posters shown on a mat inside a card never render wider than a grid column.
-PROJECT_STILLS = ['artsfest-1.webp', 'bcrc-1.webp', 'bcrc-2.webp']
+PROJECT_STILLS = ['artsfest-1.webp']
 
 
 def encode(source, target, width=None):

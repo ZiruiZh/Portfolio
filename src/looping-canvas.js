@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import { loopBounds, wrap } from './experience-math.js';
+import { wrap } from './experience-math.js';
 
 export class LoopingCanvas {
   constructor(stage) {
@@ -37,22 +37,39 @@ export class LoopingCanvas {
     photos.forEach((photo, i) => { ordered.push(photo); if (i % 2 === 0 && shapes.length) ordered.push(shapes.shift()); });
     ordered.push(...shapes);
     const columns = Math.ceil(Math.sqrt(ordered.length));
-    // Size each row to its artwork, keeping generous gaps around large pieces
-    // without making every small piece occupy the largest image's footprint.
-    let y = 75;
-    for (let start = 0; start < ordered.length; start += columns) {
-      const row = ordered.slice(start, start + columns);
-      const rowHeight = Math.max(...row.map(item => item.h + item.w * .09));
-      let x = 32 + Math.sin(start * 2.3) * 12;
-      row.forEach((item, col) => {
-        const i = start + col;
-        const extent = item.w + item.h * .09;
-        item.world = { x: x + extent / 2, y: y + rowHeight / 2 + Math.cos(i * 7.23) * 12, angle: item.image ? Math.sin(i * 3.7) * .08 : (i % 3 - 1) * .13 };
-        x += extent + 28;
-      });
-      y += rowHeight + 35;
+    const rowCount = Math.ceil(ordered.length / columns);
+    const GAP_X = 28, GAP_Y = 35;
+    // Each piece claims room for its slight tilt.
+    const extent = item => item.w + item.h * .09;
+    // Rows break where their running width passes an even share, so they come out about the same length.
+    const share = (ordered.reduce((sum, item) => sum + extent(item) + GAP_X, 0)) / rowCount;
+    const rows = [[]];
+    let run = 0;
+    for (const item of ordered) {
+      const room = extent(item) + GAP_X;
+      if (rows.at(-1).length && run + room / 2 > share * rows.length && rows.length < rowCount) rows.push([]);
+      rows.at(-1).push(item);
+      run += room;
     }
-    this.bounds = loopBounds(items, W, H);
+    // The canvas repeats every widest row plus one gap. Shorter rows spread their slack across their own gaps,
+    // the one at the seam included, so the spacing where the canvas wraps matches the spacing everywhere else.
+    const rowWidth = row => row.reduce((sum, item) => sum + extent(item) + GAP_X, 0);
+    const period = Math.max(...rows.map(rowWidth));
+    let y = 75, i = 0;
+    rows.forEach((row, r) => {
+      const rowHeight = Math.max(...row.map(item => item.h + item.w * .09));
+      const gap = GAP_X + (period - rowWidth(row)) / row.length;
+      let x = 32 + Math.sin(r * 2.3) * 12 + gap / 2;
+      row.forEach(item => {
+        item.world = { x: x + extent(item) / 2, y: y + rowHeight / 2 + Math.cos(i * 7.23) * 12, angle: item.image ? Math.sin(i * 3.7) * .08 : (i % 3 - 1) * .13 };
+        x += extent(item) + gap;
+        i++;
+      });
+      y += rowHeight + GAP_Y;
+    });
+    // Likewise downwards: the last row is followed by one ordinary row gap before the first comes round again.
+    // A canvas smaller than the screen would show a piece twice, so it never repeats sooner than that.
+    this.bounds = { width: Math.max(period, W), height: Math.max(y - 75, H) };
     this.camera = { x: 0, y: 0 };
     this.target = { ...this.camera };
   }

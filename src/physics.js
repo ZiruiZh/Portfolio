@@ -43,7 +43,8 @@ export class SculptureStage {
     this.release();
     this.clearFocus();
     this.mode = mode;
-    this.active = ['home', 'playground'].includes(mode);
+    // Home can be told to go without its sculptures (on a phone), and then the physics never starts there.
+    this.active = mode === 'playground' || (mode === 'home' && (this.allowHome?.() ?? true));
     this.element.hidden = !this.active;
     this.element.tabIndex = mode === 'playground' ? 0 : -1;
     this.element.setAttribute('aria-label', mode === 'playground' ? 'Infinite canvas. Scroll or drag in any direction. Arrow keys pan.' : 'Interactive letter sculptures');
@@ -116,9 +117,14 @@ export class SculptureStage {
       this.setPalette(item, this.palettes[i]);
       el.style.transformOrigin = `${center.x}px ${center.y}px`;
       el.addEventListener('pointerdown', e => this.grab(e, item));
-      el.addEventListener('pointerenter', () => { this.hovered = item; });
+      // A finger has no hover; only a mouse or pen pointing at a shape lights it.
+      el.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') this.hovered = item; });
       el.addEventListener('pointerleave', () => { if (!this.drag) this.hovered = null; });
-      el.addEventListener('focus', () => { this.hovered = item; if (this.mode === 'playground') this.looping.focus(item); });
+      el.addEventListener('focus', () => {
+        if (!el.matches(':focus-visible')) return; // Focus a tap or a script left behind lights nothing.
+        this.hovered = item;
+        if (this.mode === 'playground') this.looping.focus(item);
+      });
       el.addEventListener('blur', () => { this.hovered = null; });
       el.addEventListener('keydown', e => {
         if (item.destination && ['Enter',' '].includes(e.key)) { e.preventDefault(); this.activate(item); return; }
@@ -221,7 +227,8 @@ export class SculptureStage {
     const baseSize = this.width < 600 ? clamp(this.width * .65, 210, 310) : clamp(this.width * .32, 340, 430);
     const sizeVariation = [1.1, .82, 1.32, .94, 1.2, .88, 1.26, 1.02];
     for (const image of playgroundImages) {
-      const size = baseSize * sizeVariation[(Number(image.id) - 1) % sizeVariation.length];
+      // A piece can ask for its own size; the rest take turns through the variation.
+      const size = baseSize * (image.scale ?? sizeVariation[(Number(image.id) - 1) % sizeVariation.length]);
       const scale = size / Math.max(image.width, image.height);
       const w = image.width * scale, h = image.height * scale;
       const el = document.createElement('div');
@@ -236,7 +243,7 @@ export class SculptureStage {
       el.appendChild(img);
       const item = { image, el, img, w, h, center: { x: w / 2, y: h / 2 }, entrance: 1 };
       el.addEventListener('pointerdown', e => this.grab(e, item));
-      el.addEventListener('focus', () => this.looping.focus(item));
+      el.addEventListener('focus', () => { if (el.matches(':focus-visible')) this.looping.focus(item); });
       el.addEventListener('keydown', e => { if (['Enter', ' '].includes(e.key)) { e.preventDefault(); this.activate(item); } });
       this.element.appendChild(el); this.items.push(item);
     }

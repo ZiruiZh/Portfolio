@@ -32,6 +32,8 @@ export function installLinkGlide() {
       });
       node.replaceWith(fragment);
     });
+    // When the last letter starts to lift, so anything trailing the word can lift with it.
+    label.style.setProperty('--glide-end', `${Math.min(Math.max(index - 1, 0) * 20, 360)}ms`);
     label.replaceChildren(accessible, visual);
   });
 }

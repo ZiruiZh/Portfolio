@@ -1,4 +1,5 @@
 import { installLinkGlide } from './link-motion.js';
+import { iconPath } from './icons.js';
 import './style.css';
 import { gsap } from 'gsap';
 import { SculptureStage } from './physics.js';
@@ -12,11 +13,15 @@ import { installPlaygroundGallery } from './playground-gallery.js';
 import { AboutCube } from './about-cube.js';
 import { installWork } from './work.js';
 import { installCaseStudy } from './case-study.js';
+import { installPhoneMenu } from './phone-menu.js';
 import { isProject } from './projects.js';
 import { makeRun } from './palette.js';
 import { makeAccent } from './experience-math.js';
 
 const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
+// On a phone, Home is a short bio instead of the falling letters, and the top bar is just the logo and a menu.
+const phoneQuery = matchMedia('(max-width: 600px)');
+const sculpturesOnHome = () => !phoneQuery.matches;
 let reduced = reducedQuery.matches;
 let accentHue = Math.floor(Math.random() * 360);
 function refreshAccent(shapeColor) {
@@ -33,6 +38,70 @@ installShapeGradient();
 installWebring(reducedQuery);
 const resumeURL = new URL('../assets/resume.pdf', import.meta.url).href;
 document.querySelectorAll('.resume-link, [data-resume-link]').forEach(link => { link.href = resumeURL; });
+
+// The footer keeps Montreal's time to the second. Footers are cloned onto every case study, so each tick finds them all.
+const montreal = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Toronto', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+function tickClock() {
+  const now = new Date();
+  const text = montreal.format(now);
+  document.querySelectorAll('[data-clock]').forEach(clock => {
+    clock.textContent = text;
+    clock.dateTime = now.toISOString();
+  });
+  clockTimer = setTimeout(tickClock, 1000 - now.getMilliseconds() + 5);
+}
+let clockTimer = 0;
+tickClock();
+// A hidden tab has no one to tell the time to; it catches up the moment it is seen again.
+document.addEventListener('visibilitychange', () => {
+  clearTimeout(clockTimer);
+  if (!document.hidden) tickClock();
+});
+
+// A link marked to copy puts its text on the clipboard instead of opening anything. Footers are cloned onto every
+// case study, so one listener serves them all. If the clipboard is refused, the link opens as usual.
+document.addEventListener('click', event => {
+  const link = event.target.closest('[data-copy]');
+  if (!link || !navigator.clipboard) return;
+  event.preventDefault();
+  navigator.clipboard.writeText(link.dataset.copy).then(() => {
+    // The only sign on screen is the word waving again; screen readers are told it was copied.
+    const note = link.parentElement.querySelector('.copy-note');
+    if (note) note.textContent = 'copied';
+    clearTimeout(link.waveTimer);
+    // The icon becomes a check at the bottom of the dip, rises with the letters, and turns back after a moment.
+    const path = link.querySelector('.copy-icon path');
+    clearTimeout(link.checkTimer);
+    link.checkTimer = setTimeout(() => {
+      if (!path) return;
+      // Still in view, it fades across rather than popping.
+      const fade = path.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease-in' });
+      fade.onfinish = () => {
+        path.setAttribute('d', iconPath('copy'));
+        link.classList.remove('is-copied');
+        path.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' });
+      };
+    }, 1630);
+    if (reducedQuery.matches) {
+      // No wave when motion is unwelcome: the check simply appears.
+      path?.setAttribute('d', iconPath('check'));
+      link.classList.add('is-copied');
+      link.waveTimer = setTimeout(() => { if (note) note.textContent = ''; }, 1500);
+      return;
+    }
+    link.classList.remove('is-wave');
+    link.classList.add('is-rewave');
+    link.waveTimer = setTimeout(() => {
+      path?.setAttribute('d', iconPath('check'));
+      link.classList.add('is-copied');
+      link.classList.replace('is-rewave', 'is-wave');
+      link.waveTimer = setTimeout(() => {
+        link.classList.remove('is-wave');
+        if (note) note.textContent = '';
+      }, 900);
+    }, 130);
+  }, () => { location.href = link.href; });
+});
 // The router decides where each route lands, so the browser must not also guess.
 history.scrollRestoration = 'manual';
 const pages = ['home', 'work', 'playground', 'about'];
@@ -42,6 +111,8 @@ const scrollMemory = { home: 0, work: 0 };
 let transition;
 let pendingShapeTheme = null;
 const sculptures = new SculptureStage(document.getElementById('stage'), reduced);
+sculptures.allowHome = sculpturesOnHome;
+const phoneMenu = installPhoneMenu({ reducedQuery, phoneQuery });
 installPlaygroundHint(sculptures.looping);
 const gallery = installPlaygroundGallery(sculptures, reducedQuery);
 const caseStudy = installCaseStudy({ reducedQuery });
@@ -69,7 +140,7 @@ function applyPage({ page, project }, focus = false) {
   document.querySelectorAll('.page').forEach(el => { el.hidden = !shown.includes(el.id); });
   const title = project ? caseStudy.render(project) : null;
   const tab = page === 'project' ? 'work' : page;
-  document.querySelectorAll('.nav-link').forEach(link => {
+  document.querySelectorAll('.nav-link, .phone-menu-nav a').forEach(link => {
     if (link.hash === `#${tab}`) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
@@ -83,7 +154,8 @@ function applyPage({ page, project }, focus = false) {
   work.setMode(page);
   if (page === 'home' && introFinished) revealHome(!reduced);
   if (focus) {
-    const heading = document.querySelector(`#${page} h1`);
+    // Home has a heading for each screen size; the one showing takes focus.
+    const heading = [...document.querySelectorAll(`#${page} h1`)].find(h => h.getClientRects().length) ?? document.querySelector(`#${page} h1`);
     heading.setAttribute('tabindex', '-1');
     heading.focus({ preventScroll: true });
   }
@@ -93,24 +165,29 @@ function navigate(route, animate = true) {
   const { page, project } = route;
   if (!introFinished) finishIntro();
   if (transition) transition.kill();
-  const wipe = document.querySelector('.route-wipe');
+  // Pages blur and fade out, then the next one blurs and fades in. The parts of each page fade rather than the page
+  // itself, since a filter on a page would pull its fixed sculpture stage out of place for the length of the fade.
+  const parts = () => document.querySelectorAll('.page:not([hidden]) > *');
+  const settle = () => gsap.set('.page > *', { clearProps: 'opacity,filter' });
   if (page === current && project === currentProject) {
-    gsap.set(wipe, { scaleY: 0 });
-    gsap.set('.page h1', { clearProps: 'transform,opacity' });
+    settle();
     return;
   }
   const shapeColor = pendingShapeTheme?.page === page ? pendingShapeTheme.color : undefined;
   pendingShapeTheme = null;
   refreshAccent(shapeColor);
-  if (reduced || !animate) { gsap.set(wipe, { scaleY: 0 }); applyPage(route, true); return; }
-  transition = gsap.timeline()
-    .set(wipe, { transformOrigin: 'bottom', scaleY: 0 })
-    .to(wipe, { scaleY: 1, duration: .18, ease: 'power3.inOut' })
-    .call(() => applyPage(route, true))
-    .set(wipe, { transformOrigin: 'top' })
-    .to(wipe, { scaleY: 0, duration: .25, ease: 'power3.inOut' })
-    .fromTo(`#${page} h1`, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .3, ease: 'power3.out', clearProps: 'transform,opacity' }, '-=.16')
-    .call(() => textReactions.measure());
+  if (reduced || !animate) { settle(); applyPage(route, true); return; }
+  transition = gsap.to(parts(), {
+    opacity: 0, filter: 'blur(10px)', duration: .2, ease: 'power2.in',
+    onComplete: () => {
+      applyPage(route, true);
+      settle();
+      transition = gsap.fromTo(parts(), { opacity: 0, filter: 'blur(10px)' }, {
+        opacity: 1, filter: 'blur(0px)', duration: .3, ease: 'power2.out', clearProps: 'opacity,filter',
+        onComplete: () => textReactions.measure(),
+      });
+    },
+  });
 }
 
 // #work/allot is a case study; anything unknown falls back to the home page.
@@ -185,8 +262,8 @@ function stopHeroReveal() {
 function revealHome(animate = true) {
   stopHeroReveal();
   if (current !== 'home') return;
-  sculptures.active = true;
-  if (!animate || reduced) { textReactions.measure(); return; }
+  sculptures.active = sculpturesOnHome();
+  if (!animate || reduced || !sculpturesOnHome()) { textReactions.measure(); return; }
   sculptures.reveal();
   document.body.dataset.homeReveal = 'shapes';
   document.querySelector('.hero-copy').inert = true;
@@ -237,7 +314,7 @@ function finishIntro(animateHero = false) {
   document.querySelector('.topbar').inert = false;
   visuals?.setMode(current);
   gsap.set(['.topbar', '#stage'], { clearProps: 'opacity,visibility,transform' });
-  sculptures.active = ['home', 'playground'].includes(current);
+  sculptures.active = current === 'playground' || (current === 'home' && sculpturesOnHome());
   revealHome(animateHero);
   if (animateHero && !reduced) {
     gsap.fromTo('.topbar', { yPercent: -110 }, {
@@ -249,9 +326,10 @@ function finishIntro(animateHero = false) {
 
 function runIntro() {
   if (introFinished) return;
-  if (current === 'home') sculptures.build();
+  if (current === 'home' && sculpturesOnHome()) sculptures.build();
   textReactions.measure();
-  if (reduced || current !== 'home') { finishIntro(); return; }
+  // A phone skips the opening circle and the falling letters and goes straight to the bio.
+  if (reduced || current !== 'home' || !sculpturesOnHome()) { finishIntro(); return; }
   const intro = document.getElementById('intro');
   const host = document.querySelector('.intro-shapes');
   intro.hidden = false;
@@ -294,7 +372,7 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !introFinished) finishIntro(true);
   else if (e.key === 'Escape' && heroTimeline) { stopHeroReveal(); textReactions.measure(); }
   if (!['home','playground'].includes(current) || !introFinished || document.querySelector('dialog[open]') || e.target.closest('button,a,input,textarea,[role=button]')) return;
-  if (e.key.toLowerCase() === 'r') sculptures.remix();
+  if (e.key.toLowerCase() === 'r' && sculptures.active) sculptures.remix();
 });
 
 let resizeTimer;
@@ -316,9 +394,15 @@ reducedQuery.addEventListener('change', e => {
     stopHeroReveal();
     textReactions.update();
     if (transition) { transition.kill(); applyPage(routeFromHash()); }
-    gsap.set('.route-wipe', { scaleY: 0 });
+    gsap.set('.page > *', { clearProps: 'opacity,filter' });
     if (sculptures.active) sculptures.build();
   }
+});
+
+phoneQuery.addEventListener('change', () => {
+  if (current !== 'home' || !introFinished) return;
+  sculptures.setMode('home');
+  revealHome(false);
 });
 
 installLinkGlide();
@@ -327,4 +411,4 @@ if (current === 'home') gsap.set(['.topbar', '.hero-copy', '#stage'], { autoAlph
 // The page is already usable if a font is slow or unavailable.
 Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 600))]).then(runIntro);
 if (import.meta.env.DEV) window.__portfolio = { sculptures, textReactions };
-if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); work.dispose(); caseStudy.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { clearTimeout(introFailsafe); introTimeline?.kill(); document.body.classList.remove('intro-open'); stopHeroReveal(); work.dispose(); caseStudy.dispose(); phoneMenu.dispose(); aboutCube.dispose(); gallery.dispose(); sculptures.destroy(); visuals?.dispose(); removeCursor(); });

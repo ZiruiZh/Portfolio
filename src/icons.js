@@ -8,7 +8,10 @@ const paths = {
   reset: 'M5 8a8 8 0 1 1-1 8M5 3v5h5',
   play: 'M7 4v16l13-8z',
   pause: 'M8 5v14M16 5v14',
+  copy: 'M9 9h11v11H9zM15 5V4H4v11h1',
+  check: 'M4 12.5 9.5 18 20 6',
 };
+export const iconPath = name => paths[name];
 export function arrowIcon(direction = 'up-right') {
   return `<svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${paths[direction]}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
 }

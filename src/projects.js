@@ -68,7 +68,7 @@ export const projects = {
           { "type": "text", "text": "Zeen brings the zine community into one app where people can create, collect, and explore zines. It keeps the non-linear storytelling that makes the form compelling intact on screen. While Zeen supports the full zine life cycle, we designed it around a single core experience: creating." },
           { "type": "text", "text": "Unlike art-sharing platforms or design tools, Zeen gives users total control over their work. We built it around two experiences: creating and sharing. Every tool serves those two goals, and we cut anything that pulled focus away from them." },
           { "type": "subhead", "text": "Have something  you want to share?" },
-          { "type": "clip", "file": "zeen-read-flip-square.mp4", "shape": "square", "alt": "Dragging a page's light to turn a zine all the way over" },
+          { "type": "clip", "file": "zeen-read-flip-square.mp4", "shape": "square", "full": true, "alt": "Dragging a page's light to turn a zine all the way over" },
           { "type": "subhead", "text": "Core Flows" },
           { "type": "side", "file": "zeen-home-narrow.mp4", "shape": "narrow", "alt": "Scrolling the Zeen home feed", "term": "Browsing today’s creations", "text": "The Explore page works like a dedicated zine library. Users can browse new releases, recent award-winning works, and the week’s top picks, site-wide or within a fandom." },
           { "type": "side", "file": "zeen-read-lights-narrow.mp4", "shape": "narrow", "alt": "Following glowing waypoints through a zine", "term": "Reading a zine", "text": "A story dial and glowing waypoints guide readers through each page, so they experience the zine the way its author intended." },
@@ -286,140 +286,6 @@ export const projects = {
     "headline": "Bringing art and technology online",
     "year": "2026",
     "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "1150 / 720" }
-  },
-  "bha": {
-    "title": "Brave Hearts Alliance",
-    "accent": "#ff3236",
-    "category": "Product Design",
-    "sections": [
-      {
-        "label": "Overview",
-        "body": "As founder and creative director, I designed the website, brand identity, and merchandise for Brave Hearts Alliance."
-      },
-      {
-        "label": "Problem",
-        "body": "Brave Hearts Alliance needed a brand that matched the heart behind their mission."
-      },
-      {
-        "label": "Solution",
-        "body": "The website, brand identity, and merchandise give the organization a cohesive visual voice that inspires action and builds community.",
-        "images": [
-          "bha-1.webp",
-          "bha-2.webp",
-          "bha-5.webp",
-          "bha-3.webp",
-          "bha-4.webp"
-        ]
-      }
-    ],
-    "metadata": {
-      "Client": "Brave Hearts Alliance, a Heart Nonprofit",
-      "Industry": "Nonprofit, Heart",
-      "Timeline": "8 weeks (2025)",
-      "My Role": "Creative Director"
-    },
-    "cover": "bha-thumb.webp",
-    "images": [
-      {
-        "file": "bha-0.webp",
-        "caption": "Brave Hearts Alliance website presentation",
-        "width": 1800,
-        "height": 1200
-      },
-      {
-        "file": "bha-1.webp",
-        "caption": "Website design",
-        "width": 1800,
-        "height": 1128
-      },
-      {
-        "file": "bha-2.webp",
-        "caption": "Brave Hearts Alliance brand identity",
-        "width": 1800,
-        "height": 1013
-      },
-      {
-        "file": "bha-3.webp",
-        "caption": "Volunteer T-shirt design",
-        "width": 1800,
-        "height": 993
-      },
-      {
-        "file": "bha-4.webp",
-        "caption": "Brave Hearts Alliance sweatshirt design",
-        "width": 1800,
-        "height": 993
-      },
-      {
-        "file": "bha-5.webp",
-        "caption": "Brave Hearts Alliance illustration",
-        "width": 1800,
-        "height": 1800
-      }
-    ],
-    "source": "https://www.zirui.ca/works/bha",
-    "headline": "Raising Awareness for CHD",
-    "year": "2025",
-    "card": { "images": ["bha-logo.webp"], "ratio": "971 / 651" }
-  },
-  "bcrc": {
-    "title": "BCRC Montreal",
-    "accent": "#78a000",
-    "category": "Communications",
-    "sections": [
-      {
-        "label": "Overview",
-        "body": "As communications coordinator for the Black Community Resource Center, I led the creative promotion behind their events, designing posters and web materials.",
-        "images": [
-          "bcrc-1.webp",
-          "bcrc-2.webp"
-        ]
-      },
-      {
-        "label": "Outcome",
-        "body": "The work reached over 20,000 viewers and brought more than 200 people through the door.",
-        "images": [
-          "bcrc-3.webp"
-        ]
-      }
-    ],
-    "metadata": {
-      "Client": "The Black Community Resource Center of Montreal",
-      "Industry": "Nonprofit, Social Services",
-      "Timeline": "9 weeks (2025)",
-      "My Role": "Marketing Communications Coordinator"
-    },
-    "cover": "bcrc-thumb.webp",
-    "images": [
-      {
-        "file": "bcrc-0.webp",
-        "caption": "Trains of Thought web banner",
-        "width": 1800,
-        "height": 900
-      },
-      {
-        "file": "bcrc-1.webp",
-        "caption": "Poster for Trains of Thought: A Tribute to Grizzle",
-        "width": 1273,
-        "height": 1800
-      },
-      {
-        "file": "bcrc-2.webp",
-        "caption": "Poster for Map of Care: A Zine-Making Workshop",
-        "width": 1273,
-        "height": 1800
-      },
-      {
-        "file": "bcrc-3.webp",
-        "caption": "Community photo collage",
-        "width": 1273,
-        "height": 1800
-      }
-    ],
-    "source": "https://www.zirui.ca/works/bcrc",
-    "headline": "Empowering the Black Community in Montreal",
-    "year": "2025",
-    "card": { "images": ["bcrc-1-grid.webp", "bcrc-2-grid.webp"], "ratio": "3 / 2", "mat": true }
   },
   "artsfest": {
     "title": "ArtsFest",
