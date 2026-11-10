@@ -63,6 +63,10 @@ export function installPhoneMenu({ reducedQuery, phoneQuery }) {
   function open() {
     if (dialog.open) return;
     tween?.kill();
+    // The page's own header (the bio on Home, the logo elsewhere) is copied into the menu's top row as it stands,
+    // so opening the menu leaves it looking untouched and the menu drops down from under it.
+    dialog.querySelector('.phone-menu-head').replaceChildren(
+      ...[...document.querySelectorAll('.phone-head > :not(.menu-toggle)')].map(node => node.cloneNode(true)));
     dialog.showModal();
     document.documentElement.classList.add('menu-open');
     opener.setAttribute('aria-expanded', 'true');
@@ -71,8 +75,8 @@ export function installPhoneMenu({ reducedQuery, phoneQuery }) {
     // The lines start as the icon that was tapped and turn into a cross once the page is showing.
     void dialog.offsetWidth;
     dialog.classList.add('is-open');
-    // The menu's own row (logo and cross) shows first, and the page below it comes down like a blind.
-    tween = gsap.fromTo(dialog, { clipPath: hidden() }, { clipPath: 'inset(0px 0px 0px 0px)', duration: .4, ease: 'power3.out', clearProps: 'clipPath' });
+    // The header row stays as it is and the menu comes down from under it like a blind.
+    tween = gsap.fromTo(dialog, { clipPath: hidden() }, { clipPath: 'inset(0px 0px 0px 0px)', duration: .16, ease: 'power3.out', clearProps: 'clipPath' });
   }
 
   // Put everything back the moment the dialog shuts, however it was shut.
@@ -90,7 +94,7 @@ export function installPhoneMenu({ reducedQuery, phoneQuery }) {
     tween?.kill();
     dialog.classList.remove('is-open');
     if (instant || reducedQuery.matches) { shut(); return; }
-    tween = gsap.fromTo(dialog, { clipPath: 'inset(0px 0px 0px 0px)' }, { clipPath: hidden(), duration: .3, ease: 'power3.in', onComplete: shut });
+    tween = gsap.fromTo(dialog, { clipPath: 'inset(0px 0px 0px 0px)' }, { clipPath: hidden(), duration: .13, ease: 'power2.in', onComplete: shut });
   }
 
   dialog.addEventListener('close', settle, options);

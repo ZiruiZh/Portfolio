@@ -96,6 +96,8 @@ a:focus-visible>.link-label:after{transform:scaleX(1);transform-origin:left}@med
 
 /* Image previews share the sculpture camera and pointer parallax. */
 .playground-image img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+/* each piece lifts off the dotted canvas with a faint shadow that follows its own outline */
+.playground-image img{filter:drop-shadow(0 4px 10px rgba(0,0,0,.1))}
 .playground-image:focus-visible img{transform:scale(1.035)}@media(hover:hover){.playground-image:hover img{transform:scale(1.035)}}
 .playground-image:focus-visible{filter:none}
 .playground-lightbox{width:min(1400px,94vw);max-height:94svh;overflow:hidden;background:var(--paper)}
@@ -222,6 +224,9 @@ html:has(body:is([data-page=work],[data-page=home])){scroll-padding-top:calc(var
 #visual-heading{font:400 17px/1.25 MarrRegular,MarrWebMedium,Arial,sans-serif;letter-spacing:-.007em;color:var(--wk-quiet)}
 /* visual pieces sit bare, at their own proportions, with nothing behind them */
 .visual-item .work-media{background:none}
+/* the playground's card is a glimpse of its canvas: pieces scattered over the dotted grid */
+.playground-glimpse{background:var(--paper) radial-gradient(circle,var(--grid-dot) 1px,transparent 1.4px) 0 0/22px 22px}
+.work-media.playground-glimpse>img{position:absolute;inset:auto;height:auto;object-fit:contain;box-shadow:0 6px 16px -8px rgba(0,0,0,.25)}
 @media(hover:hover){:is(.work-card,.visual-item):hover .work-media{transform:scale(1.025)}}
 /* a thumbnail being pointed at or focused casts the same soft shadow as the case study images */
 @media(hover:hover){:is(.work-card,.visual-item):is(:hover,:focus-visible) .work-media{box-shadow:0 10px 24px -8px rgba(0,0,0,.18)}}
@@ -463,7 +468,7 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
 .menu-toggle{position:relative;flex:none;width:44px;height:44px;padding:0;color:var(--ink)}
 /* two thin lines; open, they turn into a cross */
 .menu-lines{position:absolute;left:50%;top:50%;width:22px;height:9px;translate:-50% -50%}
-.menu-lines span{position:absolute;left:0;right:0;height:1.5px;background:currentColor;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.menu-lines span{position:absolute;left:0;right:0;height:1.5px;background:currentColor;transition:transform .16s cubic-bezier(.3,.9,.3,1)}
 .menu-lines span:first-child{top:0}
 .menu-lines span:last-child{bottom:0}
 .phone-menu.is-open .menu-lines span:first-child{transform:translateY(3.75px) rotate(45deg)}
@@ -498,6 +503,9 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
   body[data-page=home] .work-page{padding-top:20px}
   .about-page{padding-top:24px}
   .playground-heading{top:16px}
+  /* About: "Contact" is set like the other section labels (the Visual one), not in spaced capitals, and the links sit a shade greyer */
+  .about-page .about-contact h2{font:400 17px/1.25 MarrCondRegular,Arial,sans-serif;letter-spacing:.01em;text-transform:none;color:var(--muted)}
+  .about-page :is(.text-link,.resume-link,.experience-link){color:#4a4a4a}
   /* on a case study the way back reads "back to work", in grey body type, with its arrow always showing */
   #project .case-back{font:var(--case-type);letter-spacing:-.007em;color:var(--case-text);gap:6px;padding-block:10px;margin-block:-6px}
   #project .case-back .arrow-icon{display:inline-block;width:14px;height:14px;opacity:1;clip-path:none;translate:none}
@@ -508,9 +516,10 @@ body[data-page=project] .custom-cursor .cursor-core{background:var(--case-accent
 /* the menu is the whole site on one white page */
 .phone-menu{position:fixed;inset:0;width:100%;max-width:none;height:100%;max-height:none;margin:0;padding:0 16px calc(28px + env(safe-area-inset-bottom));border:0;background:var(--paper);color:var(--ink);overflow:auto;overscroll-behavior:contain}
 .phone-menu::backdrop{background:transparent}
-.phone-menu-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 0 0;margin-right:-10px}
-.phone-menu-logo{display:flex;align-items:center;height:44px}
-.phone-menu-logo img{display:block;height:22px;width:auto}
+/* the menu's top row is laid out exactly like the page header above, which it copies */
+.phone-menu-bar{display:flex;align-items:flex-start;gap:12px;padding:calc(env(safe-area-inset-top) + 18px) 0 0;margin-right:-10px}
+body:not([data-page=home]) .phone-menu-bar{align-items:center;justify-content:space-between}
+.phone-menu-head{display:contents}
 .phone-menu-group{margin-top:28px}
 /* the two groups are told apart by a gap alone; their names stay for screen readers */
 .phone-menu-group + .phone-menu-group{margin-top:64px}

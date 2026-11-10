@@ -93,6 +93,18 @@ export function installWork({ reducedQuery, openImage }) {
   const features = Object.keys(projects).filter(key => !inVisual.has(key))
     .map(key => ({ el: projectCard(key, 'work-card', true), ratio: parseRatio(projects[key].card.ratio) }));
   const phoneQuery = matchMedia('(max-width:600px)');
+  // A phone has no visual grid, so the playground gets a card of its own after the case studies:
+  // a glimpse of its canvas, a few pieces scattered over the dotted grid and running off the edges.
+  const glimpse = h('span', 'work-media playground-glimpse');
+  glimpse.style.setProperty('--ratio', '3 / 2');
+  [['16', -6, 22, 42, -4], ['34', 31, 8, 24, 3], ['11', 57, 34, 30, -2], ['06', 85, -8, 24, 5]].forEach(([id, x, y, w, turn]) => {
+    const piece = image(playgroundImage(id, 'grid') || playgroundImage(id));
+    piece.style.cssText = `left:${x}%;top:${y}%;width:${w}%;rotate:${turn}deg`;
+    glimpse.append(piece);
+  });
+  const playgroundLink = h('a', 'work-card', glimpse, caption(['Playground', h('span', 'work-type', ' / Portfolio 2026')]));
+  playgroundLink.href = '#playground';
+  const playgroundCard = { el: playgroundLink, ratio: 3 / 2 };
   const visualSection = document.getElementById('work-visual');
 
   const imageIds = visualWork.filter(item => item.playground).map(item => item.playground);
@@ -118,7 +130,7 @@ export function installWork({ reducedQuery, openImage }) {
     const counts = [featureColumns(innerWidth), visualColumns(innerWidth), phone];
     if (counts.join() === layout) return;
     layout = counts.join();
-    masonry(featureGrid, features, counts[0], 64);
+    masonry(featureGrid, phone ? [...features, playgroundCard] : features, counts[0], 64);
     // On a phone the visual grid (and what lives only in it, like ArtsFest) is never built, so none of its pictures load;
     // it comes back when the window grows.
     visualSection.hidden = phone;
