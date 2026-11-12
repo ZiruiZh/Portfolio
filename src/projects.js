@@ -287,6 +287,13 @@ export const projects = {
     "year": "2026",
     "card": { "video": "prism-cover.mp4", "poster": "prism-cover.webp", "ratio": "1150 / 720" }
   },
+  "brainfog": {
+    "title": "Brain Fog",
+    "category": "Exploration",
+    "link": "https://zirui.small.world/portfolio-1/",
+    "year": "2026",
+    "card": { "video": "brain-fog-cover.mp4", "poster": "brain-fog-cover.webp", "ratio": "16 / 9" }
+  },
   "artsfest": {
     "title": "ArtsFest",
     "accent": "#d9503f",
